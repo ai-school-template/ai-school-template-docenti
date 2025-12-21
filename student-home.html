@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Studenti - AI School Template</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/global-header.css">
+  
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Raleway", system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #085078 0%, #003B5C 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .welcome-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      flex: 1;
+    }
+    
+    .logo-section {
+      margin-bottom: 2rem;
+    }
+    
+    .logo-section img {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      background: #085078;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(8,80,120,0.4);
+      border: 2px solid #003B5C;
+    }
+    
+    h1 {
+      color: #085078;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 1.2rem;
+      margin: 0 0 2rem;
+      line-height: 1.6;
+    }
+    
+    .welcome-box {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: left;
+      margin: 2rem 0;
+    }
+    
+    .welcome-box h3 {
+      color: #085078;
+      margin: 0 0 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .welcome-box p {
+      color: #555;
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    
+    .lessons-button {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+      color: white;
+      padding: 1.5rem 3rem;
+      border-radius: 16px;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 2rem 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(40,167,69,0.3);
+    }
+    
+    .lessons-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(40,167,69,0.4);
+    }
+    
+    .accessibility-box {
+      background: #e3f2fd;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: left;
+      margin: 2rem 0;
+    }
+    
+    .accessibility-box h3 {
+      color: #1976d2;
+      margin: 0 0 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .accessibility-box p {
+      color: #555;
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    
+    footer {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      color: #999;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .welcome-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .lessons-button {
+        padding: 1.2rem 2rem;
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="logo-section">
+      <img src="assets/brand/logo_edubot_icon.png" alt="AI School Logo">
+      <h1>AI School Template</h1>
+    </div>
+    
+    <div class="welcome-box">
+      <h3>👋 Benvenuto!</h3>
+      <p>
+        Benvenuto nel template AI School! Qui troverai le lezioni e i materiali didattici 
+        pubblicati dal tuo docente. Esplora i contenuti interattivi e personalizzati 
+        per il tuo percorso di apprendimento.
+      </p>
+    </div>
+    
+    <a href="student-lessons.html" class="lessons-button">
+      📚 Vai alle lezioni e materiali didattici
+    </a>
+    
+    <div class="accessibility-box">
+      <h3>🔊 Accessibilità</h3>
+      <p>
+        Tutte le pagine hanno il lettore vocale integrato. Clicca sul pulsante "Ascolta" 
+        in basso a destra per ascoltare i contenuti ad alta voce.
+      </p>
+    </div>
+    
+    <!-- Icona lettura pagina per accessibilità -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+      <button id="readPageBtn" style="
+        background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(33,150,243,0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      " title="Ascolta la pagina" aria-label="Ascolta la pagina">
+        🔊
+      </button>
+    </div>
+    
+    <!-- Barra di controllo audio personalizzata -->
+    <div id="audioControls" style="
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      padding: 10px 20px;
+      border-radius: 25px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: none;
+      align-items: center;
+      gap: 15px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    ">
+      <button id="playPauseBtn" style="
+        background: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">▶️</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="currentTime" style="font-size: 0.9rem; color: #666;">0:00</span>
+        <div style="
+          width: 200px;
+          height: 4px;
+          background: #e0e0e0;
+          border-radius: 2px;
+          position: relative;
+          cursor: pointer;
+        " id="progressBar">
+          <div id="progress" style="
+            width: 0%;
+            height: 100%;
+            background: #2196f3;
+            border-radius: 2px;
+            transition: width 0.1s ease;
+          "></div>
+        </div>
+        <span id="totalTime" style="font-size: 0.9rem; color: #666;">0:00</span>
+      </div>
+      
+      <button id="stopBtn" style="
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">⏹️</button>
+    </div>
+    
+    <footer>
+      <p>
+        <strong>AI School Template</strong><br>
+        Ambiente educativo digitale per studenti, progettato dai docenti con il supporto dell'intelligenza artificiale.<br>
+        Licenza Creative Commons CC BY-NC-SA 4.0
+      </p>
+    </footer>
+  </div>
+  
+  <script src="assets/js/global-header.js"></script>
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="assets/js/voice-reader.js"></script>
+  
+  <script>
+    // Funzionalità lettura pagina con barra di controllo personalizzata
+    document.addEventListener('DOMContentLoaded', function() {
+      const readBtn = document.getElementById('readPageBtn');
+      const audioControls = document.getElementById('audioControls');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const progressBar = document.getElementById('progressBar');
+      const progress = document.getElementById('progress');
+      const currentTimeEl = document.getElementById('currentTime');
+      const totalTimeEl = document.getElementById('totalTime');
+      
+      let isPlaying = false;
+      let currentUtterance = null;
+      let startTime = 0;
+      let totalDuration = 0;
+      let progressInterval = null;
+      
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+      
+      function updateProgress() {
+        if (isPlaying && startTime) {
+          const elapsed = (Date.now() - startTime) / 1000;
+          const percentage = Math.min((elapsed / totalDuration) * 100, 100);
+          progress.style.width = percentage + '%';
+          currentTimeEl.textContent = formatTime(elapsed);
+        }
+      }
+      
+      function startProgress() {
+        startTime = Date.now();
+        progressInterval = setInterval(updateProgress, 100);
+      }
+      
+      function stopProgress() {
+        if (progressInterval) {
+          clearInterval(progressInterval);
+          progressInterval = null;
+        }
+      }
+      
+      function resetControls() {
+        isPlaying = false;
+        readBtn.innerHTML = '🔊';
+        readBtn.title = 'Ascolta la pagina';
+        playPauseBtn.innerHTML = '▶️';
+        audioControls.style.display = 'none';
+        progress.style.width = '0%';
+        currentTimeEl.textContent = '0:00';
+        stopProgress();
+      }
+      
+      // Pulsante principale (icona a destra)
+      if (readBtn) {
+        readBtn.addEventListener('click', function() {
+          if ('speechSynthesis' in window) {
+            if (isPlaying) {
+              // Se sta leggendo, metti in pausa
+              speechSynthesis.pause();
+              playPauseBtn.innerHTML = '▶️';
+              stopProgress();
+              isPlaying = false;
+            } else if (speechSynthesis.paused) {
+              // Se è in pausa, riprendi
+              speechSynthesis.resume();
+              playPauseBtn.innerHTML = '⏸️';
+              startProgress();
+              isPlaying = true;
+            } else {
+              // Inizia nuova lettura
+              speechSynthesis.cancel();
+              
+              const content = document.querySelector('.welcome-container');
+              const textToRead = content ? content.innerText : document.body.innerText;
+              
+              // Stima durata (circa 150 parole al minuto)
+              const wordCount = textToRead.split(' ').length;
+              totalDuration = (wordCount / 150) * 60; // secondi
+              totalTimeEl.textContent = formatTime(totalDuration);
+              
+              currentUtterance = new SpeechSynthesisUtterance(textToRead);
+              currentUtterance.lang = 'it-IT';
+              currentUtterance.rate = 0.9;
+              currentUtterance.pitch = 1;
+              
+              // Mostra controlli e inizia
+              audioControls.style.display = 'flex';
+              playPauseBtn.innerHTML = '⏸️';
+              readBtn.innerHTML = '⏸️';
+              readBtn.title = 'Metti in pausa';
+              isPlaying = true;
+              startProgress();
+              
+              currentUtterance.onend = function() {
+                resetControls();
+              };
+              
+              currentUtterance.onerror = function() {
+                resetControls();
+              };
+              
+              speechSynthesis.speak(currentUtterance);
+            }
+          } else {
+            alert('Il tuo browser non supporta la sintesi vocale.');
+          }
+        });
+        
+        // Effetto hover
+        readBtn.addEventListener('mouseenter', function() {
+          this.style.transform = 'scale(1.1)';
+          this.style.boxShadow = '0 6px 20px rgba(33,150,243,0.4)';
+        });
+        
+        readBtn.addEventListener('mouseleave', function() {
+          this.style.transform = 'scale(1)';
+          this.style.boxShadow = '0 4px 16px rgba(33,150,243,0.3)';
+        });
+      }
+      
+      // Controlli barra audio
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', function() {
+          if (isPlaying) {
+            speechSynthesis.pause();
+            this.innerHTML = '▶️';
+            stopProgress();
+            isPlaying = false;
+          } else if (speechSynthesis.paused) {
+            speechSynthesis.resume();
+            this.innerHTML = '⏸️';
+            startProgress();
+            isPlaying = true;
+          }
+        });
+      }
+      
+      if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+          speechSynthesis.cancel();
+          resetControls();
+        });
+      }
+      
+      // Click sulla barra di progresso per saltare
+      if (progressBar) {
+        progressBar.addEventListener('click', function(e) {
+          if (totalDuration > 0) {
+            const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            const newTime = percentage * totalDuration;
+            
+            // Riavvia la lettura dal nuovo punto
+            speechSynthesis.cancel();
+            startTime = Date.now() - (newTime * 1000);
+            updateProgress();
+            
+            if (isPlaying) {
+              const content = document.querySelector('.welcome-container');
+              const textToRead = content ? content.innerText : document.body.innerText;
+              currentUtterance = new SpeechSynthesisUtterance(textToRead);
+              currentUtterance.lang = 'it-IT';
+              currentUtterance.rate = 0.9;
+              currentUtterance.pitch = 1;
+              speechSynthesis.speak(currentUtterance);
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

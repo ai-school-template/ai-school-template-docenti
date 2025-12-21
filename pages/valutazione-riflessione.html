@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valutazione - AI School Template</title>
+  <link rel="icon" type="image/png" href="../assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/global-header.css">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+  <div class="layout-wrap">
+    <a id="backToLessonTop" href="../percorso-tematico.html" class="btn" style="margin-bottom: 1rem; display: inline-block;">
+      ← Torna alla home della lezione
+    </a>
+
+    <div id="empty-view" class="card" style="text-align:center; margin-top:2rem;">
+      <h2>⚠️ Valutazione & Riflessione non disponibile</h2>
+      <p>Questa sezione di Valutazione & Riflessione non è ancora stata preparata per questa lezione.</p>
+    </div>
+
+    <div id="evaluation-view" style="display:none">
+      <div class="card">
+        <h2 id="section-title">🧠 Valutazione &amp; Riflessione</h2>
+        <p id="section-subtitle" style="font-size:0.9rem;color:#666;margin-top:.5rem;margin-bottom:0;display:none;"></p>
+      </div>
+      <div class="card" id="quiz-card" style="display:none;">
+        <h2>📝 Quiz di ripasso</h2>
+        <div id="quiz-content"></div>
+      </div>
+      <div class="card" id="self-card" style="display:none;">
+        <h2>📋 Autovalutazione</h2>
+        <div id="self-content"></div>
+      </div>
+      <div class="card" id="refl-card" style="display:none;">
+        <h2>💭 Domande di riflessione</h2>
+        <div id="refl-content"></div>
+      </div>
+      <div id="template-note" style="font-size:0.9rem;color:#666;margin-top:2rem;padding:1rem;background:#f8f9fa;border-radius:8px;text-align:center;display:none;">
+        <strong>Il template non raccoglie risposte; attività e riflessioni vengono riprese in classe.</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function buildScaleOptions(scaleRaw){
+        const labels = [
+          'Per niente preparato',
+          'Poco preparato',
+          'Abbastanza preparato',
+          'Preparato',
+          'Molto preparato'
+        ];
+        const emojis = ['😟','😐','🙂','😀','😃'];
+        // se nel wizard sono state usate faccine
+        if (scaleRaw && emojis.some(e => scaleRaw.includes(e))) {
+          return emojis.map((e, i) => ({
+            value: e,
+            text: `${e} ${labels[i]}`
+          }));
+        }
+        // se nel wizard è stata usata scala numerica
+        if (scaleRaw && scaleRaw.match(/\b1\b.*\b5\b/)) {
+          return ['1','2','3','4','5'].map((n, i) => ({
+            value: n,
+            text: `${n} ${labels[i]}`
+          }));
+        }
+        // fallback
+        return emojis.map((e, i) => ({
+          value: e,
+          text: `${e} ${labels[i]}`
+        }));
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const lessonId = params.get('lesson');
+      const isValidLessonId = lessonId && lessonId !== 'null' && lessonId !== 'undefined' && lessonId.trim() !== '';
+      const student = params.get('student');
+      const ret = params.get('return');
+      const dash = params.get('dashboard');
+      const emptyView = document.getElementById('empty-view');
+      const evalView = document.getElementById('evaluation-view');
+      const backToLesson = document.getElementById('backToLesson');
+      const backToLessonTop = document.getElementById('backToLessonTop');
+
+      if (!lessonId) {
+        if (emptyView) emptyView.style.display = 'block';
+        if (evalView) evalView.style.display = 'none';
+        const templateNote = document.getElementById('template-note');
+        if (templateNote) templateNote.style.display = 'none';
+        return;
+      }
+
+      // Costruisci href per i link "Torna alla lezione"
+      let href;
+      if (isValidLessonId) {
+        href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+        if (student === '1') {
+          href += '&student=1';
+        } else {
+          if (ret) href += `&return=${encodeURIComponent(ret)}`;
+          if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+        }
+      } else {
+        href = student === '1' ? '../student-lessons.html' : '../teacher-dashboard.html';
+      }
+      if (backToLesson) backToLesson.href = href;
+      if (backToLessonTop) backToLessonTop.href = href;
+
+      // Subtitle: titolo lezione (da lesson_config)
+      try {
+        const cfgRaw = localStorage.getItem('lesson_config_' + lessonId);
+        if (cfgRaw) {
+          const cfg = JSON.parse(cfgRaw);
+          const title = (cfg?.home?.title || cfg?.title || '').trim();
+          const sub = document.getElementById('section-subtitle');
+          if (sub && title) {
+            sub.textContent = title;
+            sub.style.display = 'block';
+          }
+        }
+      } catch (e) {
+        console.warn('Subtitle cfg non leggibile', e);
+      }
+
+      // Leggi dati da localStorage
+      let data = null;
+      try {
+        const raw = localStorage.getItem('lesson_section_' + lessonId + '_4');
+        if (raw) {
+          data = JSON.parse(raw);
+        }
+      } catch (err) {
+        console.error('Errore parsing dati valutazione:', err);
+      }
+
+      // Calcola hasContent
+      let hasContent = false;
+      if (data) {
+        const hasQuiz = (data.quiz || []).some(q => q && q.q && q.q.trim());
+        const hasSelf = (data.self && data.self.topics && Array.isArray(data.self.topics)) 
+          ? data.self.topics.some(t => t && t.trim()) 
+          : false;
+        const hasReflection = (data.reflection && data.reflection.questions && Array.isArray(data.reflection.questions))
+          ? data.reflection.questions.some(q => q && q.trim())
+          : false;
+        hasContent = hasQuiz || hasSelf || hasReflection;
+      }
+
+      // Logica di visualizzazione
+      const templateNote = document.getElementById('template-note');
+      const quizCard = document.getElementById('quiz-card');
+      const quizContent = document.getElementById('quiz-content');
+      const selfCard = document.getElementById('self-card');
+      const selfContent = document.getElementById('self-content');
+      const reflCard = document.getElementById('refl-card');
+      const reflContent = document.getElementById('refl-content');
+      
+      if (hasContent) {
+        if (emptyView) emptyView.style.display = 'none';
+        if (evalView) evalView.style.display = 'block';
+        if (templateNote) templateNote.style.display = 'block';
+
+        // Render quiz
+        if (data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
+          const validQuiz = data.quiz.filter(q => q && q.q && q.q.trim());
+          if (validQuiz.length > 0) {
+            if (quizCard && quizContent) {
+              quizCard.style.display = 'block';
+              quizContent.innerHTML = '';
+              const quizBox = document.createElement('div');
+              validQuiz.forEach((item, qi) => {
+                const itemWrap = document.createElement('div');
+                itemWrap.className = 'quiz-item';
+                const qTitle = document.createElement('div');
+                qTitle.className = 'quiz-q';
+                qTitle.textContent = `${qi+1}. ${item.q || ''}`;
+                itemWrap.appendChild(qTitle);
+                const letters = ['A','B','C','D'];
+                const answers = Array.isArray(item.answers) ? item.answers : [];
+                answers.slice(0,4).forEach((ans, ai) => {
+                  if (ans && ans.trim()) {
+                    const box = document.createElement('div');
+                    box.className = 'desc-box';
+                    box.setAttribute('data-q', String(qi));
+                    box.setAttribute('data-a', String(ai));
+                    const p = document.createElement('p');
+                    p.textContent = `${letters[ai]}) ${ans.trim()}`;
+                    box.appendChild(p);
+                    itemWrap.appendChild(box);
+                  }
+                });
+                quizBox.appendChild(itemWrap);
+              });
+              quizContent.appendChild(quizBox);
+            }
+          }
+        } else {
+          if (quizCard) quizCard.style.display = 'none';
+        }
+
+        // Render self-assessment
+        const topics = data.self?.topics || [];
+        const scaleRaw = (data.self?.scale || '').trim();
+        const hasSelfData = (topics.length > 0 && topics.some(t => t && t.trim())) || scaleRaw;
+        if (hasSelfData) {
+          if (selfCard && selfContent) {
+            selfCard.style.display = 'block';
+            selfContent.innerHTML = '';
+            const selfQ = document.createElement('div');
+            selfQ.className = 'self-q';
+            selfQ.textContent = data.self.prompt || 'Quanto ti senti preparato su questi argomenti?';
+            selfContent.appendChild(selfQ);
+            if (topics.length > 0) {
+              const validTopics = topics.filter(t => t && t.trim());
+              if (validTopics.length > 0) {
+                validTopics.forEach(topic => {
+                  const box = document.createElement('div');
+                  box.className = 'quiz-question';
+                  const row = document.createElement('div');
+                  row.className = 'row-split';
+                  const left = document.createElement('div');
+                  left.className = 'row-left';
+                  left.textContent = topic.trim();
+                  const right = document.createElement('div');
+                  right.className = 'row-right';
+                  const select = document.createElement('select');
+                  const placeholder = document.createElement('option');
+                  placeholder.value = '';
+                  placeholder.textContent = 'Seleziona...';
+                  select.appendChild(placeholder);
+                  const scaleOptions = [
+                    { value: '1', text: '😟 Per niente preparato' },
+                    { value: '2', text: '😐 Poco preparato' },
+                    { value: '3', text: '🙂 Abbastanza preparato' },
+                    { value: '4', text: '😄 Preparato' },
+                    { value: '5', text: '🤩 Molto preparato' }
+                  ];
+                  scaleOptions.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.value;
+                    opt.textContent = o.text;
+                    select.appendChild(opt);
+                  });
+                  right.appendChild(select);
+                  row.appendChild(left);
+                  row.appendChild(right);
+                  box.appendChild(row);
+                  selfContent.appendChild(box);
+                });
+                const selfLegend = document.createElement('p');
+                selfLegend.className = 'self-legend';
+                selfLegend.textContent = '😟 Per niente | 😐 Poco | 🙂 Abbastanza | 😄 Preparato | 🤩 Molto';
+                selfContent.appendChild(selfLegend);
+              }
+            }
+          }
+        } else {
+          if (selfCard) selfCard.style.display = 'none';
+        }
+
+        // Render reflection
+        if (data.reflection && data.reflection.questions && Array.isArray(data.reflection.questions) && data.reflection.questions.length > 0) {
+          const validQuestions = data.reflection.questions.filter(q => q && q.trim());
+          if (validQuestions.length > 0) {
+            if (reflCard && reflContent) {
+              reflCard.style.display = 'block';
+              reflContent.innerHTML = '';
+              validQuestions.forEach(question => {
+                const descBox = document.createElement('div');
+                descBox.className = 'desc-box';
+                const p = document.createElement('p');
+                p.textContent = question.trim();
+                descBox.appendChild(p);
+                reflContent.appendChild(descBox);
+              });
+            }
+          }
+        } else {
+          if (reflCard) reflCard.style.display = 'none';
+        }
+      } else {
+        if (emptyView) emptyView.style.display = 'block';
+        if (evalView) evalView.style.display = 'none';
+        if (templateNote) templateNote.style.display = 'none';
+        if (quizCard) quizCard.style.display = 'none';
+        if (selfCard) selfCard.style.display = 'none';
+        if (reflCard) reflCard.style.display = 'none';
+      }
+
+      // Click handler per selezione opzioni quiz
+      document.addEventListener('click', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLElement)) return;
+        const descBox = t.closest('.desc-box');
+        if (!descBox || !descBox.classList.contains('desc-box')) return;
+        const q = descBox.getAttribute('data-q');
+        if (!q) return;
+        // deseleziona le altre opzioni della stessa domanda
+        document.querySelectorAll(`.desc-box[data-q="${q}"]`)
+          .forEach(el => el.classList.remove('selected'));
+        // seleziona questa
+        descBox.classList.add('selected');
+      });
+    })();
+  </script>
+  
+  <script src="../assets/js/global-header.js"></script>
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="../assets/js/voice-reader.js"></script>
+</body>
+</html>
+

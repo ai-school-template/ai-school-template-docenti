@@ -1,0 +1,111 @@
+/* Header globale fisso con logo per tutte le pagine */
+.global-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #085078;
+  color: #fff;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+
+.global-header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.global-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+}
+
+.global-logo img {
+  height: 50px;
+  width: auto;
+  max-width: 280px;
+  object-fit: contain;
+}
+
+.global-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.global-nav a {
+  color: #F1F1F1;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.global-nav a:hover {
+  color: white;
+  background: rgba(255,255,255,0.1);
+  text-decoration: none;
+}
+
+.global-nav a.active {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-weight: 600;
+}
+
+/* Padding top per compensare header fisso */
+body.with-global-header {
+  padding-top: 70px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .global-header {
+    padding: 0.6rem 1rem;
+    min-height: 60px;
+  }
+  
+  .global-logo img {
+    height: 40px;
+    max-width: 180px;
+  }
+  
+  .global-nav {
+    gap: 0.5rem;
+  }
+  
+  .global-nav a {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  body.with-global-header {
+    padding-top: 60px;
+  }
+}
+/* FIX wizard: forza stile link header (non toccare) */
+.global-header .global-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+/* FIX wizard: forza stile link header anche contro reset globali */
+.global-header .global-nav a,
+.global-header .global-nav a:visited {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+

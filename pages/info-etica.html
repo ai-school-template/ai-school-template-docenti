@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="it">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Info &amp; Etica</title>
+  <link rel="icon" type="image/png" href="../assets/brand/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/global-header.css">
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+
+</head>
+
+
+
+<body>
+
+  <div class="layout-wrap">
+
+    <a id="backToLessonTop" href="../percorso-tematico.html" class="btn" style="margin-bottom: 1rem; display: inline-block;">
+      ← Torna alla home della lezione
+    </a>
+
+    <div id="empty-view" class="card" style="text-align:center; margin-top:2rem;">
+
+      <h2>⚠️ Info &amp; Etica non disponibile</h2>
+
+      <p>Questa sezione di Info &amp; Etica non è ancora stata preparata per questa lezione.</p>
+
+    </div>
+
+
+
+    <div id="info-view" style="display:none">
+
+      <!-- Contenuti Info & Etica verranno aggiunti dal docente -->
+
+    </div>
+
+  </div>
+
+
+
+  <script src="../assets/js/global-header.js"></script>
+
+
+
+  <script>
+
+    (function () {
+
+      const params = new URLSearchParams(window.location.search);
+
+      const lessonId = params.get('lesson');
+      const isValidLessonId = lessonId && lessonId !== 'null' && lessonId !== 'undefined' && lessonId.trim() !== '';
+
+      const isStudent = params.get('student') === '1';
+
+      const ret = params.get('return');
+
+      const dash = params.get('dashboard');
+
+      const emptyView = document.getElementById('empty-view');
+
+      const infoView = document.getElementById('info-view');
+
+      const backToLesson = document.getElementById('backToLesson');
+
+      const backToLessonTop = document.getElementById('backToLessonTop');
+
+
+
+      if (!lessonId) {
+
+        if (emptyView) emptyView.style.display = 'block';
+
+        if (infoView) infoView.style.display = 'none';
+
+        return;
+
+      }
+
+
+
+      let href;
+      if (isValidLessonId) {
+        href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+        if (isStudent) {
+          href += '&student=1';
+        } else {
+          if (ret) href += `&return=${encodeURIComponent(ret)}`;
+          if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+        }
+      } else {
+        href = isStudent ? '../student-lessons.html' : '../teacher-dashboard.html';
+      }
+
+      if (backToLesson) backToLesson.href = href;
+
+      if (backToLessonTop) backToLessonTop.href = href;
+
+
+
+      // Leggi dati da localStorage
+
+      let data = null;
+
+      try {
+
+        const raw = localStorage.getItem('lesson_section_' + lessonId + '_5');
+
+        if (raw) {
+
+          data = JSON.parse(raw);
+
+        }
+
+      } catch (err) {
+
+        console.error('Errore parsing dati info-etica:', err);
+
+      }
+
+
+
+      // Calcola hasContent
+
+      let hasContent = false;
+
+      if (data) {
+
+        hasContent = data.aiUsed === true ||
+
+          !!(data.aiUsageDesc && data.aiUsageDesc.trim()) ||
+
+          !!(data.aiTools && data.aiTools.trim()) ||
+
+          !!(data.sourcesText && data.sourcesText.trim());
+
+      }
+
+
+
+      // Leggi titolo lezione
+
+      let lessonTitle = '';
+
+      try {
+
+        const cfgRaw = localStorage.getItem('lesson_config_' + lessonId);
+
+        if (cfgRaw) {
+
+          const cfg = JSON.parse(cfgRaw) || {};
+
+          lessonTitle = (cfg.home && cfg.home.title) || cfg.title || '';
+
+          if (lessonTitle) lessonTitle = lessonTitle.trim();
+
+        }
+
+      } catch(e) {}
+
+
+
+      // Logica visibilità e rendering
+
+      if (hasContent) {
+
+        if (emptyView) emptyView.style.display = 'none';
+
+        if (infoView) {
+
+          infoView.style.display = 'block';
+
+          infoView.innerHTML = '';
+
+
+
+          // Testata sezione
+
+          const headerCard = document.createElement('div');
+
+          headerCard.className = 'card';
+
+          const header = document.createElement('div');
+
+          header.className = 'section-header';
+
+          const title = document.createElement('h2');
+
+          title.textContent = 'ℹ️ Info & Etica';
+
+          header.appendChild(title);
+
+          if (lessonTitle) {
+
+            const subtitle = document.createElement('p');
+
+            subtitle.className = 'section-subtitle';
+
+            subtitle.textContent = lessonTitle;
+
+            header.appendChild(subtitle);
+
+          }
+
+          headerCard.appendChild(header);
+
+          infoView.appendChild(headerCard);
+
+
+
+          // Blocco Uso dell'IA
+
+          if (data.aiUsed === true) {
+
+            const card = document.createElement('div');
+
+            card.className = 'card';
+
+            const title = document.createElement('h3');
+
+            title.textContent = 'Uso dell\'IA';
+
+            title.style.marginTop = '0';
+
+            card.appendChild(title);
+
+            const box1 = document.createElement('div');
+
+            box1.className = 'desc-box';
+
+            const p1 = document.createElement('p');
+
+            p1.textContent = 'In questa lezione è stata utilizzata l\'intelligenza artificiale.';
+
+            box1.appendChild(p1);
+
+            card.appendChild(box1);
+
+            if (data.aiUsageDesc && data.aiUsageDesc.trim()) {
+
+              const subtitle = document.createElement('h4');
+
+              subtitle.textContent = 'Com\'è stata utilizzata l\'IA';
+
+              subtitle.style.marginTop = '1rem';
+
+              subtitle.style.marginBottom = '0.5rem';
+
+              card.appendChild(subtitle);
+
+              const descBox = document.createElement('div');
+
+              descBox.className = 'desc-box';
+
+              descBox.textContent = data.aiUsageDesc.trim();
+
+              card.appendChild(descBox);
+
+            }
+
+            if (data.aiTools && data.aiTools.trim()) {
+
+              const toolsTitle = document.createElement('h4');
+
+              toolsTitle.textContent = 'Strumenti di IA usati';
+
+              toolsTitle.style.marginTop = '1rem';
+
+              toolsTitle.style.marginBottom = '0.5rem';
+
+              card.appendChild(toolsTitle);
+
+              const toolsBox = document.createElement('div');
+
+              toolsBox.className = 'desc-box';
+
+              toolsBox.textContent = data.aiTools.trim();
+
+              card.appendChild(toolsBox);
+
+            }
+
+            const controlTitle = document.createElement('h4');
+
+            controlTitle.textContent = 'Controllo umano';
+
+            controlTitle.style.marginTop = '1rem';
+
+            controlTitle.style.marginBottom = '0.5rem';
+
+            card.appendChild(controlTitle);
+
+            const controlBox = document.createElement('div');
+
+            controlBox.className = 'desc-box';
+
+            const controlP = document.createElement('p');
+
+            controlP.textContent = 'Tutti i contenuti sono stati revisionati dal docente prima della pubblicazione.';
+
+            controlBox.appendChild(controlP);
+
+            card.appendChild(controlBox);
+
+            const noteBox = document.createElement('div');
+
+            noteBox.className = 'desc-box';
+
+            const noteP = document.createElement('p');
+
+            noteP.textContent = 'ℹ️ In questa lezione l\'Intelligenza Artificiale è stata utilizzata come strumento di supporto dal docente. I contenuti sono stati controllati, adattati e validati prima della pubblicazione.';
+
+            noteP.style.fontStyle = 'italic';
+
+            noteBox.appendChild(noteP);
+
+            card.appendChild(noteBox);
+
+            infoView.appendChild(card);
+
+          }
+
+
+
+          // Blocco Privacy e dati personali
+          const privacyCard = document.createElement('div');
+          privacyCard.className = 'card';
+          const privacyTitle = document.createElement('h3');
+          privacyTitle.textContent = 'Privacy e dati personali';
+          privacyTitle.style.marginTop = '0';
+          privacyCard.appendChild(privacyTitle);
+          const privacyBox = document.createElement('div');
+          privacyBox.className = 'desc-box';
+          const privacyP = document.createElement('p');
+          privacyP.textContent = '🔒 Questa lezione non raccoglie dati personali, non prevede login, profilazione o valutazione automatizzata.';
+          privacyBox.appendChild(privacyP);
+          privacyCard.appendChild(privacyBox);
+          infoView.appendChild(privacyCard);
+
+
+
+          // Blocco Fonti e riferimenti
+
+          if (data.sourcesText && data.sourcesText.trim()) {
+
+            const card = document.createElement('div');
+
+            card.className = 'card';
+
+            const title = document.createElement('h3');
+
+            title.textContent = 'Fonti e riferimenti';
+
+            title.style.marginTop = '0';
+
+            card.appendChild(title);
+
+            const descBox = document.createElement('div');
+
+            descBox.className = 'desc-box';
+
+            descBox.style.whiteSpace = 'pre-line';
+
+            descBox.textContent = data.sourcesText.trim();
+
+            card.appendChild(descBox);
+
+            infoView.appendChild(card);
+
+          }
+
+        }
+
+      } else {
+
+        if (emptyView) emptyView.style.display = 'block';
+
+        if (infoView) infoView.style.display = 'none';
+
+      }
+
+    })();
+
+  </script>
+
+
+
+  <script src="../assets/js/voice-reader.js"></script>
+
+</body>
+
+</html>
+

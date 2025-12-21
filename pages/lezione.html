@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lezione</title>
+  <link rel="icon" type="image/png" href="../assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    #lesson-view details summary {
+      list-style: none;
+    }
+    #lesson-view details summary::-webkit-details-marker {
+      display: none;
+    }
+    #lesson-cards > * + * {
+      margin-top: 16px;
+    }
+    /* Normalizza la spaziatura tra le card dentro #lesson-media (Video + Immagini) */
+    #lesson-media > .card {
+      margin: 0 !important;
+    }
+    #lesson-media > .card + .card {
+      margin-top: 16px !important;
+    }
+  </style>
+</head>
+<body class="fix-global-header">
+  <main class="layout-wrap">
+    <a id="backToLessonTop" href="../percorso-tematico.html" class="btn" style="margin-bottom: 1rem; display: inline-block;">← Torna alla home della lezione</a>
+    <div id="empty-view" class="card" style="text-align:center; margin-top:2rem;">
+      <h2>⚠️ Lezione non disponibile</h2>
+      <p>Questa lezione non è ancora stata preparata per questa sezione.</p>
+    </div>
+
+    <div id="lesson-view" style="display:none">
+      <div id="lesson-cards">
+        <div class="card">
+          <h2 id="lessonTitle">📖 Lezione</h2>
+          <p id="lessonSubtitle" style="font-weight: 600; color: #1E1E1E; margin-top: 0.5rem; margin-bottom: 0; display: none;"></p>
+        </div>
+
+        <div id="lesson-objectives-card" class="card" style="display: none;">
+          <h2>Obiettivi</h2>
+          <div class="desc-box">
+            <p id="lesson-objectives-text" style="margin: 0;"></p>
+          </div>
+        </div>
+
+        <div id="lesson-text"></div>
+        <div id="lesson-glossary"></div>
+        <div id="lesson-media"></div>
+        <div id="lesson-concept"></div>
+        <div id="lesson-curipod"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/global-header.js"></script>
+  <script src="../assets/js/lesson/LessonTextIA.js"></script>
+  <script src="../assets/js/lesson/LessonVideo.js"></script>
+  <script src="../assets/js/lesson/LessonImage.js"></script>
+  <script src="../assets/js/lesson/LessonGlossary.js"></script>
+  <script src="../assets/js/lesson/CuripodEmbed.js"></script>
+  <script src="../assets/js/lesson/LessonChecklist.js"></script>
+  
+  <script>
+    // Carica la lezione principale salvata
+    (function () {
+      // Controlla se è modalità anteprima
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPreview = urlParams.get('preview') === 'true';
+      const lessonId = urlParams.get('lesson');
+      const isValidLessonId = lessonId && lessonId !== 'null' && lessonId !== 'undefined' && lessonId.trim() !== '';
+      const isStudent = urlParams.get('student') === '1';
+      const ret = urlParams.get('return');
+      const dash = urlParams.get('dashboard');
+      const emptyView = document.getElementById('empty-view');
+      const backToLessonTop = document.getElementById('backToLessonTop');
+      
+      // Imposta href per backToLessonTop con fallback se lessonId non valido
+      if (backToLessonTop) {
+        if (isValidLessonId) {
+          let href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+          if (isStudent) {
+            href += '&student=1';
+          } else {
+            if (ret) href += `&return=${encodeURIComponent(ret)}`;
+            if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+          }
+          backToLessonTop.href = href;
+        } else {
+          backToLessonTop.href = isStudent ? '../student-lessons.html' : '../teacher-dashboard.html';
+        }
+      }
+      const lessonView = document.getElementById('lesson-view');
+
+      // REGOLA UNICA: senza lessonId -> mostra solo empty-view e stop
+      if (!lessonId) {
+        if (lessonView) lessonView.style.display = 'none';
+        if (emptyView) {
+          emptyView.style.display = 'block';
+          const h2 = emptyView.querySelector('h2');
+          if (h2) h2.textContent = '⚠️ Lezione non disponibile';
+          const p = emptyView.querySelector('p');
+          // non aggiungere testi nuovi se non necessario
+        }
+        return;
+      }
+      
+      // Leggi Wizard Step 1
+      let step1 = null;
+      if (lessonId) {
+        try {
+          const step1Raw = localStorage.getItem('lesson_section_' + lessonId + '_1');
+          if (step1Raw) {
+            step1 = JSON.parse(step1Raw);
+          }
+        } catch (e) {}
+      }
+      
+      let lessonData = null;
+      
+      if (isPreview) {
+        // Modalità anteprima: carica da sessionStorage
+        const previewData = sessionStorage.getItem('section_preview');
+        if (previewData) {
+          const preview = JSON.parse(previewData);
+          
+          // Costruisci struttura dati compatibile
+          lessonData = JSON.stringify({
+            meta: {
+              title: "🔍 ANTEPRIMA - Lezione",
+              subtitle: "Questa è un'anteprima di come apparirà la tua lezione agli studenti"
+            },
+            textIA: {
+              enabled: !!preview.text,
+              etichettaIA: false,
+              titolo: "Contenuto della Lezione",
+              paragrafi: preview.text ? [preview.text] : [],
+              fonti: [],
+              registroIA: {}
+            },
+            media: {
+              video: {
+                enabled: !!preview.videoUrl,
+                title: "Video della Lezione",
+                source: preview.videoUrl,
+                caption: "",
+                transcript: preview.videoTranscript,
+                transcriptSummary: preview.videoSummary,
+                etichettaIA: false
+              }
+            },
+            glossary: { enabled: false },
+            curipod: { enabled: false },
+            checklist: {
+              altTextOk: true,
+              videoTranscriptOk: !!preview.videoTranscript,
+              videoSummaryOk: !!preview.videoSummary,
+              iaLabelOk: true,
+              copyrightOk: true,
+              privacyOk: true,
+              biasOk: true
+            }
+          });
+        }
+      } else {
+        if (lessonId) {
+          const cfgRaw = localStorage.getItem('lesson_config_'+lessonId);
+          if (!cfgRaw) {
+            if (lessonView) lessonView.style.display = 'none';
+            if (emptyView) {
+              emptyView.style.display = 'block';
+              const h2 = emptyView.querySelector('h2');
+              if (h2) h2.textContent = '⚠️ Lezione non disponibile';
+            }
+            return;
+          }
+          if (cfgRaw) {
+            try {
+              const cfg = JSON.parse(cfgRaw) || {};
+              const dataObj = {
+                meta: cfg.meta || {},
+                home: cfg.home || {},
+                glossary: cfg.glossary,
+                curipod: cfg.curipod,
+                checklist: cfg.checklist,
+                media: cfg.media || {}
+              };
+              
+              // Adapter: mappa step1 → dataObj
+              if (step1) {
+                // 2.1 Testo
+                if (step1.text && step1.text.trim()) {
+                  dataObj.textIA = {
+                    enabled: true,
+                    etichettaIA: false,
+                    titolo: "Contenuto della lezione",
+                    paragrafi: [step1.text],
+                    fonti: [],
+                    registroIA: {}
+                  };
+                }
+                
+                // 2.2 Video
+                if (Array.isArray(step1.videos) && step1.videos.some(v => v && v.url)) {
+                  dataObj.media.video = step1.videos
+                    .filter(v => v && v.url)
+                    .map(v => ({
+                      enabled: true,
+                      source: v.url,
+                      transcript: v.transcript || "",
+                      transcriptSummary: v.summary || ""
+                    }));
+                }
+                
+                // 2.3 Immagini
+                if (Array.isArray(step1.images)) {
+                  if (!dataObj.media.images || !Array.isArray(dataObj.media.images) || dataObj.media.images.length === 0) {
+                    const step1Images = step1.images.filter(i => i.url).map(i => ({
+                      src: i.url,
+                      alt: i.alt || "",
+                      credit: "",
+                      etichettaIA: false
+                    }));
+                    dataObj.media.images = step1Images;
+                  }
+                }
+                
+                // 2.4 Glossario
+                if (Array.isArray(step1.glossary) && step1.glossary.some(g => g.term)) {
+                  dataObj.glossary = {
+                    enabled: true,
+                    entries: step1.glossary.filter(g => g.term).map(g => ({
+                      it: g.term,
+                      def_it: g.explain || "",
+                      tr: "",
+                      example_it: ""
+                    }))
+                  };
+                }
+              }
+              
+              const contentRaw = localStorage.getItem(`lesson_${lessonId}_content`);
+              if (contentRaw) {
+                try {
+                  const content = JSON.parse(contentRaw);
+                  const home = dataObj.home || {};
+                  dataObj.meta = dataObj.meta || {};
+                  dataObj.meta.title = dataObj.meta.title || home.title || "";
+                  dataObj.meta.subtitle = dataObj.meta.subtitle || home.subtitle || "";
+                  if (content && typeof content.text === 'string' && content.text.trim()) {
+                    dataObj.textIA = {
+                      enabled: true,
+                      etichettaIA: false,
+                      titolo: "Contenuto della Lezione",
+                      paragrafi: [content.text],
+                      fonti: [],
+                      registroIA: {}
+                    };
+                  }
+                } catch (e) {}
+              }
+              
+              const hasText = !!(dataObj.textIA && dataObj.textIA.enabled);
+              const hasVideo = !!(dataObj.media && dataObj.media.video && dataObj.media.video.enabled);
+              const hasImages = !!(dataObj.media && Array.isArray(dataObj.media.images) && dataObj.media.images.length);
+              const hasGlossary = !!(dataObj.glossary && dataObj.glossary.enabled && Array.isArray(dataObj.glossary.entries) && dataObj.glossary.entries.length);
+              const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim())));
+              if (!hasText && !hasVideo && !hasImages && !hasGlossary && !hasConcept) {
+                if (lessonView) lessonView.style.display = 'none';
+                if (emptyView) {
+                  emptyView.style.display = 'block';
+                  const h2 = emptyView.querySelector('h2');
+                  if (h2) h2.textContent = '⚠️ Lezione non disponibile';
+                }
+                return;
+              }
+              
+              // Mostra lesson-view e nascondi empty-view se c'è contenuto
+              if (lessonView) lessonView.style.display = 'block';
+              if (emptyView) emptyView.style.display = 'none';
+              
+              // Costruisci href per "Torna alla lezione"
+              let backHref = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+              if (isStudent) backHref += '&student=1';
+              else {
+                if (ret) backHref += `&return=${encodeURIComponent(ret)}`;
+                if (dash) backHref += `&dashboard=${encodeURIComponent(dash)}`;
+              }
+              if (backToLessonTop) backToLessonTop.href = backHref;
+              lessonData = JSON.stringify(dataObj);
+            } catch (e) {
+              if (lessonView) lessonView.style.display = 'none';
+              if (emptyView) {
+                emptyView.style.display = 'block';
+                const h2 = emptyView.querySelector('h2');
+                if (h2) h2.textContent = '⚠️ Lezione non disponibile';
+              }
+              return;
+            }
+          }
+        
+        }
+      }
+      
+      if (!lessonData) {
+        // Nessuna lezione → mostra vista vuota
+        document.getElementById('empty-view').style.display = 'block';
+        console.log('ℹ️ Nessuna lezione salvata. Crea la tua prima lezione!');
+        return;
+      }
+
+      // Lezione trovata → mostra vista lezione
+      try {
+        const data = JSON.parse(lessonData);
+        // Verifica hasContent (già calcolato sopra nel blocco if (cfgRaw))
+        const hasText = !!(data.textIA && data.textIA.enabled);
+        const hasVideo = !!(data.media && data.media.video && data.media.video.enabled);
+        const hasImages = !!(data.media && Array.isArray(data.media.images) && data.media.images.length);
+        const hasGlossary = !!(data.glossary && data.glossary.enabled && Array.isArray(data.glossary.entries) && data.glossary.entries.length);
+        const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim())));
+        
+        if (hasText || hasVideo || hasImages || hasGlossary || hasConcept) {
+          if (lessonView) lessonView.style.display = 'block';
+          if (emptyView) emptyView.style.display = 'none';
+          renderLesson(data, isPreview, step1);
+          console.log('✅ Lezione caricata con successo!');
+        } else {
+          if (lessonView) lessonView.style.display = 'none';
+          if (emptyView) emptyView.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('❌ Errore caricamento lezione:', err);
+        if (lessonView) lessonView.style.display = 'none';
+        if (emptyView) emptyView.style.display = 'block';
+      }
+
+      function renderLesson(data, isPreview = false, step1 = null) {
+        const el = {
+          title: document.getElementById("lessonTitle"),
+          subtitle: document.getElementById("lessonSubtitle"),
+          text: document.getElementById("lesson-text"),
+          media: document.getElementById("lesson-media"),
+          glossary: document.getElementById("lesson-glossary"),
+          concept: document.getElementById("lesson-concept"),
+          curipod: document.getElementById("lesson-curipod")
+        };
+
+        // Titolo sezione (sempre "📖 Lezione")
+        if (el.title) {
+          el.title.textContent = '📖 Lezione';
+        }
+        
+        // Sottotitolo (titolo lezione)
+        const lessonTitle = data.meta?.title || (step1 && step1.title && step1.title.trim() ? step1.title : '');
+        if (el.subtitle && lessonTitle) {
+          el.subtitle.textContent = lessonTitle;
+          el.subtitle.style.display = 'block';
+        } else if (el.subtitle) {
+          el.subtitle.style.display = 'none';
+        }
+        
+        // Card Obiettivi (solo se presenti)
+        const objectivesCard = document.getElementById('lesson-objectives-card');
+        const objectivesText = document.getElementById('lesson-objectives-text');
+        if (step1 && step1.objectives && step1.objectives.trim()) {
+          if (objectivesCard) objectivesCard.style.display = 'block';
+          if (objectivesText) objectivesText.textContent = step1.objectives.trim();
+        } else {
+          if (objectivesCard) objectivesCard.style.display = 'none';
+        }
+        
+        // Se è anteprima, aggiungi badge
+        if (isPreview) {
+          const previewBadge = document.createElement('span');
+          previewBadge.style.cssText = 'background: #ffc107; color: #000; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; margin-left: 1rem;';
+          previewBadge.textContent = '👁️ ANTEPRIMA';
+          el.title.appendChild(previewBadge);
+        }
+
+        // Blocchi
+        if (data.textIA?.enabled) window.LessonTextIA.render(el.text, data.textIA);
+        if (data.glossary?.enabled) window.LessonGlossary.render(el.glossary, data.glossary);
+        window.LessonImage.render(el.media, data.media?.images || []);
+        window.LessonVideo.render(el.media, data.media?.video);
+        
+        // 2.5 Mappa concettuale (solo se c'è contenuto)
+        if (step1 && step1.concept) {
+          const concept = step1.concept;
+          const hasConceptContent = (concept.imageUrl && concept.imageUrl.trim()) || (concept.url && concept.url.trim());
+          if (hasConceptContent) {
+            el.concept.innerHTML = '';
+            const conceptSection = document.createElement('div');
+            conceptSection.className = 'card';
+            conceptSection.innerHTML = '<h2>🗺️ Mappa concettuale</h2>';
+            
+            const descBox = document.createElement('div');
+            descBox.className = 'desc-box';
+            
+            if (concept.url && concept.url.trim()) {
+              const link = document.createElement('a');
+              link.href = concept.url;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              link.textContent = 'Apri mappa concettuale';
+              link.className = 'btn';
+              descBox.appendChild(link);
+            } else if (concept.imageUrl && concept.imageUrl.trim()) {
+              const link = document.createElement('a');
+              link.href = concept.imageUrl.trim();
+              link.target = '_blank';
+              link.rel = 'noopener';
+              
+              const img = document.createElement('img');
+              img.src = concept.imageUrl;
+              img.alt = concept.imageAlt || '';
+              img.style.cssText = 'display: block; margin: 0 auto 0.75rem; width: 100%; max-width: 520px; border-radius: 8px; cursor: zoom-in;';
+              link.appendChild(img);
+              descBox.appendChild(link);
+              
+              const noteP = document.createElement('p');
+              noteP.textContent = 'Clicca sulla mappa per ingrandire.';
+              noteP.style.margin = '0 0 0.5rem 0';
+              noteP.style.fontSize = '0.9rem';
+              noteP.style.fontStyle = 'italic';
+              noteP.style.textAlign = 'center';
+              descBox.appendChild(noteP);
+              
+              if (concept.imageAlt && concept.imageAlt.trim()) {
+                const descP = document.createElement('p');
+                descP.style.margin = '0';
+                descP.innerHTML = '<strong>Descrizione:</strong> ' + concept.imageAlt.trim();
+                descBox.appendChild(descP);
+              }
+            }
+            
+            conceptSection.appendChild(descBox);
+            el.concept.appendChild(conceptSection);
+          } else {
+            el.concept.innerHTML = '';
+          }
+        } else {
+          el.concept.innerHTML = '';
+        }
+        
+        if (data.curipod?.enabled) window.CuripodEmbed.render(el.curipod, data.curipod);
+        
+        // Nascondi sezioni vuote
+        [el.text, el.media, el.glossary, el.concept, el.curipod].forEach(container => {
+          if (container) {
+            if (!container.children.length || container.innerHTML.trim() === '') {
+              container.style.display = 'none';
+            } else {
+              container.style.display = 'block';
+            }
+          }
+        });
+      }
+    })();
+  </script>
+  
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="../assets/js/voice-reader.js"></script>
+</body>
+</html>

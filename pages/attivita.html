@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attività - AI School Template</title>
+  <link rel="icon" type="image/png" href="../assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/global-header.css">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+  <main class="layout-wrap">
+    <a id="backToLessonTop" href="../percorso-tematico.html" class="btn" style="margin-bottom: 1rem; display: inline-block;">← Torna alla home della lezione</a>
+    <div id="empty-view" class="card" style="display:none; text-align:center; margin-top:2rem;">
+      <h2>⚠️ Attività non disponibile</h2>
+      <p>Questa attività non è ancora stata preparata per questa lezione.</p>
+    </div>
+
+    <div id="activity-view" style="display:none">
+    <div class="card">
+      <h2 id="activity-title">🧩 Attività</h2>
+      <p id="activity-subtitle" style="font-size: 0.9rem; color: #666; margin-top: 0.5rem; margin-bottom: 0;"></p>
+    </div>
+
+    <div id="comprehension-section" style="display:none">
+      <div class="card">
+        <h2>📝 Domande di Comprensione</h2>
+        <div id="comprehension-questions"></div>
+      </div>
+    </div>
+
+    <div id="creative-section" style="display:none">
+      <div class="card">
+        <h2>🎨 Attività Creativa</h2>
+        <div id="creative-content"></div>
+      </div>
+    </div>
+
+    <div id="realtask-section" style="display:none">
+      <div class="card">
+        <h2>🔍 Compito di Realtà</h2>
+        <div id="realtask-content"></div>
+      </div>
+    </div>
+
+    <div id="extquiz-section" style="display:none">
+      <div class="card">
+        <h2>🌐 Attività Online Esterne</h2>
+        <p class="section-note">Link a quiz, esercizi, giochi e simulazioni utili per allenarsi.</p>
+        <div id="extquiz-content"></div>
+      </div>
+    </div>
+
+    <div id="activity-note" style="font-size: 0.9rem; color: #666; margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; display:none; text-align: center;">
+      <strong>Il template non raccoglie risposte; attività e riflessioni vengono riprese in classe.</strong>
+    </div>
+    </div><!-- chiude #activity-view -->
+  </main>
+
+  <script>
+    function showAnswer(element, isCorrect) {
+      // Rimuovi evidenziazione precedente
+      const allOptions = element.parentElement.querySelectorAll('li');
+      allOptions.forEach(opt => {
+        opt.style.background = 'white';
+        opt.style.border = 'none';
+      });
+      
+      // Evidenzia la risposta selezionata
+      if (isCorrect) {
+        element.style.background = '#d4edda';
+        element.style.border = '2px solid #28a745';
+        element.innerHTML += ' ✅';
+      } else {
+        element.style.background = '#f8d7da';
+        element.style.border = '2px solid #dc3545';
+        element.innerHTML += ' ❌';
+      }
+      
+      // Disabilita altre opzioni
+      allOptions.forEach(opt => {
+        opt.style.cursor = 'not-allowed';
+        opt.onclick = null;
+      });
+    }
+
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const lessonId = params.get('lesson');
+      const isValidLessonId = lessonId && lessonId !== 'null' && lessonId !== 'undefined' && lessonId.trim() !== '';
+      const isStudent = params.get('student') === '1';
+      const ret = params.get('return');
+      const dash = params.get('dashboard');
+      const emptyView = document.getElementById('empty-view');
+      const activityView = document.getElementById('activity-view');
+      const backToLesson = document.getElementById('backToLesson');
+
+      if (!lessonId) {
+        if (activityView) activityView.style.display = 'none';
+        if (emptyView) emptyView.style.display = 'block';
+        return;
+      }
+
+      if (backToLesson && lessonId) {
+        let href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+        if (isStudent) {
+          href += '&student=1';
+        } else {
+          if (ret)  href += `&return=${encodeURIComponent(ret)}`;
+          if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+        }
+        backToLesson.href = href;
+      }
+
+      // Pulsante "Torna alla lezione" sopra il primo riquadro
+      const backToLessonTop = document.getElementById('backToLessonTop');
+      if (backToLessonTop) {
+        if (isValidLessonId) {
+          let href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+          if (isStudent) {
+            href += '&student=1';
+          } else {
+            if (ret)  href += `&return=${encodeURIComponent(ret)}`;
+            if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+          }
+          backToLessonTop.href = href;
+        } else {
+          backToLessonTop.href = isStudent ? '../student-lessons.html' : '../teacher-dashboard.html';
+        }
+      }
+
+      if (activityView) activityView.style.display = 'none';
+      if (emptyView) emptyView.style.display = 'block';
+
+      // Leggi dati step 2 dal wizard
+      let sectionRaw = null;
+      try {
+        sectionRaw = localStorage.getItem('lesson_section_' + lessonId + '_2');
+      } catch (e) {}
+      
+      let data = null;
+      if (sectionRaw) {
+        try {
+          data = JSON.parse(sectionRaw);
+        } catch (e) {
+          data = null;
+        }
+      }
+
+      // Verifica se ci sono dati reali
+      const hasComprehension = data && data.comprehensionQuestions && 
+        Array.isArray(data.comprehensionQuestions) && 
+        data.comprehensionQuestions.some(q => q && q.question && q.question.trim());
+      const hasCreative = data && data.creativeActivity && data.creativeActivity.trim();
+      const hasRealTask = data && data.realTask && 
+        (data.realTask.title && data.realTask.title.trim() || 
+         data.realTask.desc && data.realTask.desc.trim() || 
+         data.realTask.eval && data.realTask.eval.trim());
+      const hasExtQuiz = data && data.extQuiz && 
+        Array.isArray(data.extQuiz) && 
+        data.extQuiz.some(q => q && q.url && q.url.trim());
+
+      const hasContent = hasComprehension || hasCreative || hasRealTask || hasExtQuiz;
+
+      if (!hasContent) {
+        // Nessun contenuto reale, mostra empty-view
+        return;
+      }
+
+      // Mostra contenuti reali
+      if (emptyView) emptyView.style.display = 'none';
+      if (activityView) activityView.style.display = 'block';
+
+      // Carica titolo lezione per sottotitolo
+      let cfgRaw = null;
+      try {
+        cfgRaw = localStorage.getItem('lesson_config_' + lessonId);
+      } catch (e) {}
+      
+      let cfg = null;
+      if (cfgRaw) {
+        try {
+          cfg = JSON.parse(cfgRaw) || {};
+        } catch (e) {}
+      }
+
+      // Modifica titolo sezione
+      const titleEl = document.getElementById('activity-title');
+      const subtitleEl = document.getElementById('activity-subtitle');
+      if (titleEl) {
+        titleEl.textContent = '🧩 Attività';
+        if (cfg && subtitleEl) {
+          const baseTitle = (cfg.home && cfg.home.title) || cfg.title || '';
+          if (baseTitle) {
+            subtitleEl.textContent = baseTitle;
+          } else {
+            subtitleEl.style.display = 'none';
+          }
+        } else if (subtitleEl) {
+          subtitleEl.style.display = 'none';
+        }
+      }
+
+      // Render domande di comprensione
+      if (hasComprehension) {
+        const compSection = document.getElementById('comprehension-section');
+        const compContainer = document.getElementById('comprehension-questions');
+        if (compSection && compContainer) {
+          compSection.style.display = 'block';
+          const questions = data.comprehensionQuestions.filter(q => q && q.question && q.question.trim()).slice(0, 3);
+          questions.forEach((q, idx) => {
+            const div = document.createElement('div');
+            div.className = 'quiz-container';
+            div.innerHTML = `
+              <div class="quiz-question">${idx + 1}. ${q.question.trim()}</div>
+            `;
+            compContainer.appendChild(div);
+          });
+        }
+      }
+
+      // Render attività creativa
+      if (hasCreative) {
+        const creativeSection = document.getElementById('creative-section');
+        const creativeContent = document.getElementById('creative-content');
+        if (creativeSection && creativeContent) {
+          creativeSection.style.display = 'block';
+          const descBox = document.createElement('div');
+          descBox.className = 'desc-box';
+          const p = document.createElement('p');
+          p.textContent = data.creativeActivity.trim();
+          descBox.appendChild(p);
+          creativeContent.appendChild(descBox);
+        }
+      }
+
+      // Render compito di realtà
+      if (hasRealTask) {
+        const realtaskSection = document.getElementById('realtask-section');
+        const realtaskContent = document.getElementById('realtask-content');
+        if (realtaskSection && realtaskContent) {
+          realtaskSection.style.display = 'block';
+          const div = document.createElement('div');
+          div.className = 'activity';
+          let html = '';
+          if (data.realTask.title && data.realTask.title.trim()) {
+            html += `<div class="desc-box"><div style="font-weight:600;margin:0 0 6px 0;">Titolo</div><div style="margin:0;">${data.realTask.title.trim()}</div></div>`;
+          }
+          if (data.realTask.desc && data.realTask.desc.trim()) {
+            html += `<div class="desc-box"><div style="font-weight:600;margin:0 0 6px 0;">Descrizione</div><div style="margin:0;white-space:pre-wrap;">${data.realTask.desc.trim()}</div></div>`;
+          }
+          if (data.realTask.eval && data.realTask.eval.trim()) {
+            html += `<div class="desc-box"><div style="font-weight:600;margin:0 0 2px 0;">Cosa è importante in questa attività</div><em style="display:block;margin:0 0 10px 0;font-size:0.85rem;color:#6b7280;text-align:left;">Queste indicazioni ti aiutano a capire cosa è importante mentre lavori.</em><div style="margin:0;white-space:pre-wrap;">${data.realTask.eval.trim()}</div></div>`;
+          }
+          div.innerHTML = html;
+          realtaskContent.appendChild(div);
+        }
+      }
+
+      // Render attività online esterne
+      if (hasExtQuiz) {
+        const extquizSection = document.getElementById('extquiz-section');
+        const extquizContent = document.getElementById('extquiz-content');
+        if (extquizSection && extquizContent) {
+          extquizSection.style.display = 'block';
+          const validQuizzes = data.extQuiz.filter(q => q && q.url && q.url.trim());
+          validQuizzes.forEach(q => {
+            const div = document.createElement('div');
+            div.className = 'resource-item';
+            if (q.title && q.title.trim()) {
+              const h3 = document.createElement('h3');
+              h3.textContent = q.title.trim();
+              div.appendChild(h3);
+            }
+            const btn = document.createElement('a');
+            btn.href = q.url.trim();
+            btn.target = '_blank';
+            btn.rel = 'noopener';
+            btn.className = 'btn';
+            btn.textContent = '🔗 Apri attività';
+            div.appendChild(btn);
+            if (q.note && q.note.trim()) {
+              const metaDiv = document.createElement('div');
+              metaDiv.className = 'resource-meta';
+              const descP = document.createElement('p');
+              const strong = document.createElement('strong');
+              strong.textContent = 'Descrizione: ';
+              descP.appendChild(strong);
+              descP.appendChild(document.createTextNode(q.note.trim()));
+              metaDiv.appendChild(descP);
+              div.appendChild(metaDiv);
+            }
+            extquizContent.appendChild(div);
+          });
+        }
+      }
+
+      // Mostra nota fissa se ci sono contenuti reali
+      const activityNote = document.getElementById('activity-note');
+      if (activityNote && hasContent) {
+        activityNote.style.display = 'block';
+      }
+    })();
+  </script>
+  
+  <script src="../assets/js/global-header.js"></script>
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="../assets/js/voice-reader.js"></script>
+</body>
+</html>
+

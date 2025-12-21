@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Docente - AI School</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/global-header.css">
+  
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --card-pad: 1rem; /* unica misura: esterni e spazio in mezzo */
+    }
+    body {
+      font-family: "Raleway", system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #E6E6E6;
+    }
+    /* FIX: larghezza coerente con resto template */
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .dashboard-header {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .dashboard-header h1 {
+      color: #085078;
+      margin: 0 0 0.5rem;
+      font-size: 2.5rem;
+    }
+    .dashboard-header p {
+      color: #666;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .create-lesson-btn {
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      padding: 1.25rem 2.5rem;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 16px rgba(40,167,69,0.3);
+      transition: all 0.3s;
+    }
+    .create-lesson-btn:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(40,167,69,0.4);
+    }
+    .lessons-section {
+      margin-top: 2rem;
+    }
+    .section-title {
+      color: #085078;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 2rem 0 1.5rem;
+    }
+    .lessons-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .lesson-item {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .lesson-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .lesson-header .avatar-badge {
+      flex: 0 0 auto;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .lesson-header .lesson-info {
+      min-width: 0;
+    }
+    .lesson-header h3,
+    .lesson-header p {
+      margin: 0;
+    }
+    .lesson-header h3 {
+      color: #085078;
+      margin: 0 0 0.5rem;
+      font-size: 1.3rem;
+    }
+    .avatar-badge {
+      overflow: hidden;
+      border-radius: 50%;
+    }
+    .avatar-badge img,
+    .avatar-badge video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .avatar-badge .avatar-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .lesson-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #085078;
+    }
+    .lesson-avatar video { width: 100%; height: 100%; object-fit: cover; display:block; }
+    .lesson-info h3 {
+      color: #085078;
+      margin: 0 0 0.5rem;
+      font-size: 1.3rem;
+    }
+    .lesson-info p {
+      color: #666;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .lesson-meta {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 0.5rem;
+    }
+    .lesson-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-edit {
+      background: #085078;
+      color: #F1F1F1;
+    }
+    .btn-edit:hover {
+      background: #003B5C;
+    }
+    .btn-duplicate {
+      background: #085078;
+      color: #F1F1F1;
+    }
+    .btn-duplicate:hover {
+      background: #003B5C;
+    }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #c82333;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .empty-state h3 {
+      color: #085078;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .empty-state p {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    /* FIX: spacing tra card */
+    #draftsContainer,
+    #lessonsContainer {
+      display: grid;
+      gap: 1.25rem;
+    }
+    /* ===== FIX DASHBOARD CARDS: desktop 2 colonne (contenuto | azioni) ===== */
+    /* Base: contenuto centrato (titolo+badge+avatar come blocco unico) */
+    .lesson-item {
+      position: relative;
+    }
+    /* Assicura che header (titolo+badge) e avatar stiano in asse verticale */
+    .lesson-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    /* Se esiste un wrapper testo dentro header, centrato */
+    .lesson-header .lesson-info,
+    .lesson-header .lesson-meta,
+    .lesson-header .lesson-text {
+      text-align: center;
+    }
+    /* titolo sempre leggibile */
+    .lesson-header h3,
+    .lesson-title {
+      text-align: center;
+      margin: 0;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+    /* data in basso, piccola e in corsivo */
+    .lesson-date {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      font-style: italic;
+      opacity: 0.7;
+    }
+    /* Blocca "fluttuare" dei pulsanti: li rendiamo un gruppo */
+    .lesson-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.6rem;
+    }
+    /* Tutti i bottoni nella card stessa larghezza */
+    .lesson-actions .btn,
+    .lesson-actions button,
+    .lesson-actions a {
+      width: 100%;
+    }
+    /* FIX: uniforma colori pulsanti nelle card (tutti blu tranne elimina) */
+    .lesson-actions .btn-edit,
+    .lesson-actions .btn-duplicate,
+    .lesson-actions a.btn {
+      background: #085078 !important;
+      color: #F1F1F1 !important;
+    }
+    .lesson-actions .btn-edit:hover,
+    .lesson-actions .btn-duplicate:hover,
+    .lesson-actions a.btn:hover {
+      background: #003B5C !important;
+      color: #F1F1F1 !important;
+    }
+    /* Escludi esplicitamente il pulsante elimina */
+    .lesson-actions .btn-delete {
+      background: #dc3545 !important;
+      color: white !important;
+    }
+    .lesson-actions .btn-delete:hover {
+      background: #c82333 !important;
+      color: white !important;
+    }
+    /* =========================
+       FIX UI CARDS DASHBOARD
+       - cards più compatte (meno altezza)
+       - titolo + avatar più grandi e vicini
+       - testo pulsanti sempre centrato
+       ========================= */
+    /* 1) Card più basse: meno padding e meno gap */
+    .lesson-item {
+      padding: 1rem !important;
+      gap: 1rem !important;
+    }
+    /* 2) Header: rende titolo+avatar un blocco più compatto */
+    .lesson-header {
+      gap: 12px !important;
+      align-items: center !important;
+    }
+    /* Titolo più leggibile (un po' più grande) */
+    .lesson-title,
+    .lesson-header h3,
+    .lesson-header h4 {
+      font-size: 1.25rem !important;
+      line-height: 1.2 !important;
+      margin: 0 !important;
+    }
+    /* Se c'è un contenitore testo sotto al titolo, togli aria extra */
+    .lesson-meta,
+    .lesson-subtitle,
+    .lesson-desc {
+      margin-top: 0.25rem !important;
+    }
+    /* Avatar un filo più grande (se è un img dentro lesson-header) */
+    .lesson-header img,
+    .lesson-header .avatar,
+    .lesson-header .lesson-avatar {
+      width: 64px !important;
+      height: 64px !important;
+    }
+    /* 3) Pulsanti: testo sempre centrato (tutti) */
+    .lesson-actions a,
+    .lesson-actions button {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      gap: 0.5rem !important;
+      white-space: nowrap;
+    }
+    /* Se esiste una classe specifica dei bottoni, rinforza */
+    .action-btn,
+    .btn,
+    .lesson-actions .btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+    /* Riduci l'altezza percepita dei bottoni (più "snelli") */
+    .lesson-actions a,
+    .lesson-actions button,
+    .action-btn,
+    .btn {
+      padding: 0.65rem 0.9rem !important;
+      line-height: 1.1 !important;
+    }
+    /* FIX: card più bassa + layout pulito */
+    .lesson-item {
+      padding: 1rem;
+      border-radius: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    /* i due riquadri interni */
+    .lesson-item .card-box {
+      border-radius: 14px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    /* box sinistro: tutto centrato */
+    .lesson-item .card-box.left {
+      text-align: center;
+    }
+    /* box destro: pulsanti centrati e distanziati */
+    .lesson-item .card-box.right {
+      gap: 0.75rem;
+    }
+    .lesson-item .card-box.right .lesson-actions {
+      width: 100%;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .lesson-item .card-box.right .lesson-actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+    /* FIX: riquadri interni bozze (giallino leggermente più scuro) */
+    .lesson-item.is-draft .card-box {
+      background: rgba(255, 204, 0, 0.10);
+      border: 1px solid rgba(255, 204, 0, 0.18);
+    }
+    /* FIX: riquadri interni lezioni definitive */
+    .lesson-item:not(.is-draft) .card-box {
+      background: #f5f6f7;
+      border: 1px solid #e5e7eb;
+    }
+    /* Titolo blu, badge BOZZA sotto titolo */
+    .lesson-item .lesson-title {
+      color: #085078;
+      font-weight: 800;
+      margin: 0;
+    }
+    /* badge bozza sotto titolo */
+    .lesson-item .draft-badge {
+      margin-top: 0.35rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+      background: #f4b400;
+      color: #111;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+    }
+    /* Avatar più grande e centrato */
+    .lesson-item .lesson-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 0.75rem;
+    }
+    /* Data in basso, corsivo, piccola */
+    .lesson-item .lesson-date {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      font-style: italic;
+      opacity: 0.75;
+      text-align: center;
+    }
+    /* FIX: bottoni coerenti */
+    .lesson-item .btn {
+      background: #085078 !important;
+      color: #F1F1F1 !important;
+      border: 0 !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* SOLO eliminazione resta rossa */
+    .lesson-item .btn-danger,
+    .lesson-item .btn-delete {
+      background: #d9534f !important;
+      color: #fff !important;
+    }
+    .lesson-item .btn-success {
+      background: #085078 !important;
+      color: #F1F1F1 !important;
+    }
+    /* Rimuovere bordino giallo scuro a sinistra (bozze) */
+    .lesson-item.is-draft {
+      border-left: none !important;
+    }
+    /* Mobile: layout a colonna */
+    @media (max-width: 1100px){
+      .dashboard-actions-row{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .lesson-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .dashboard-actions-row{ grid-template-columns:1fr; }
+    }
+    /* FIX UI: pulsanti secondari dashboard uniformi (NO toccare "Crea Nuova Lezione") */
+    .dash-action {
+      background: #085078 !important;
+      color: #F1F1F1 !important;
+      border: 0 !important;
+      width: 100%;
+      min-width: 0;
+      height: 56px;
+      padding: 0 20px !important;
+      border-radius: 14px !important;
+      font-weight: 800;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px;
+      text-decoration: none !important;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      text-align: center;
+      white-space: nowrap;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    /* Hover coerente */
+    .dash-action:hover {
+      filter: brightness(0.92);
+    }
+    /* Focus accessibile */
+    .dash-action:focus-visible {
+      outline: 3px solid rgba(8,80,120,0.35);
+      outline-offset: 3px;
+    }
+    /* Mantiene i 3 pulsanti ordinati e centrati */
+    .dashboard-actions-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 1rem;
+      justify-items: stretch;
+      align-items: stretch;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>🧑‍💻 Dashboard Docente</h1>
+      <p>Gestisci le tue lezioni e crea nuovi contenuti</p>
+      
+      <!-- FIX: forza nuova bozza azzerando l'ID della bozza corrente -->
+<a
+  href="create-lesson-wizard.html"
+  class="create-lesson-btn"
+  onclick="try { sessionStorage.removeItem('currentDraftId'); } catch (e) { console.warn('Impossibile pulire currentDraftId', e); }"
+>
+  ➕ Crea Nuova Lezione
+</a>
+
+      
+      <div class="dashboard-actions-row">
+        <button onclick="exportLessons()" class="dash-action" title="Backup/trasferimento: salva un file con TUTTE le lezioni (anche bozze) per usarle su un altro PC o conservarle.">
+          ⬇️ Backup lezioni
+        </button>
+        <button onclick="document.getElementById('importFile').click()" class="dash-action">
+          📤 Importa Lezioni
+        </button>
+        <button onclick="publishLessonsJson()" class="dash-action" title="Per studenti/preview: crea lessons.json con sole lezioni definitive (no bozze). Da caricare nel repo studenti (root).">
+          🚀 Genera lessons.json
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importLessons(event)">
+      </div>
+    </div>
+
+    <div class="lessons-section">
+      <h2 class="section-title">📝 Bozze in Lavorazione</h2>
+      
+      <div id="draftsContainer"></div>
+      
+      <div id="emptyDrafts" class="empty-state" style="display: none;">
+        <h3>📝 Nessuna Bozza</h3>
+        <p>Le bozze salvate durante la creazione appariranno qui.</p>
+      </div>
+    </div>
+
+    <div class="lessons-section">
+      <h2 class="section-title">📚 Le Mie Lezioni</h2>
+      <p style="font-size: 0.9rem; font-style: italic; color: #666; margin-top: 0.5rem; margin-bottom: 1.5rem;">Nota: cliccando su Modifica, la lezione verrà riportata nello stato di bozza.</p>
+      
+      <div id="lessonsContainer"></div>
+      
+      <div id="emptyState" class="empty-state" style="display: none;">
+  <h3>📚 Nessuna lezione definitiva</h3>
+</div>
+
+    </div>
+  </div>
+
+  <script src="assets/js/global-header.js"></script>
+  <script src="assets/js/session-src.js"></script>
+  <script>
+    // Carica e mostra tutte le lezioni create e le bozze
+    function loadLessons() {
+      const lessonsContainer = document.getElementById('lessonsContainer');
+      const draftsContainer = document.getElementById('draftsContainer');
+      const emptyState = document.getElementById('emptyState');
+      const emptyDrafts = document.getElementById('emptyDrafts');
+      let hasLessons = false;
+      let hasDrafts = false;
+      
+      // Cerca tutte le lezioni in localStorage
+           for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        if (key.startsWith('lesson_config_')) {
+          try {
+            const lesson = JSON.parse(localStorage.getItem(key));
+            const lessonId = key.replace('lesson_config_', '');
+            
+            // Separa bozze da lezioni complete
+            if (lesson && lesson.isDraft) {
+              hasDrafts = true;
+              const draftCard = createDraftCard(lessonId, lesson);
+              draftsContainer.appendChild(draftCard);
+            } else if (lesson) {
+              hasLessons = true;
+              const lessonCard = createLessonCard(lessonId, lesson);
+              lessonsContainer.appendChild(lessonCard);
+            }
+          } catch (e) {
+            console.error('Errore caricamento lezione', key, e);
+          }
+        }
+      }
+
+      
+      // Mostra empty state se non ci sono lezioni/bozze
+      if (!hasLessons) {
+        emptyState.style.display = 'block';
+      }
+      if (!hasDrafts) {
+        emptyDrafts.style.display = 'block';
+      }
+    }
+    
+    // IndexedDB helpers per video avatar
+    async function idbOpen(){
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('ai_school_template', 1);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if(!db.objectStoreNames.contains('blobs')){
+            db.createObjectStore('blobs', {keyPath: 'key'});
+          }
+        };
+      });
+    }
+    async function idbGetBlob(key){
+      try {
+        const db = await idbOpen();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('blobs', 'readonly');
+          const store = tx.objectStore('blobs');
+          const req = store.get(key);
+          req.onsuccess = () => resolve(req.result?.blob || null);
+          req.onerror = () => reject(req.error);
+        });
+      }catch(e){ return null; }
+    }
+    async function idbPutBlob(key, blob){
+      try {
+        const db = await idbOpen();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('blobs', 'readwrite');
+          const store = tx.objectStore('blobs');
+          const req = store.put({ key, blob });
+          req.onsuccess = () => resolve();
+          req.onerror = () => reject(req.error);
+        });
+      }catch(e){ return null; }
+    }
+    async function blobToDataUrl(blob){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+    }
+    function dataUrlToBlob(dataUrl){
+      const arr = dataUrl.split(',');
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type: mime});
+    }
+    function setVideoPreviewFromBlob(videoEl, blob, label){
+      if(!videoEl || !blob) return;
+      try{
+        let v = videoEl;
+        if(!(v instanceof HTMLVideoElement)){
+          v = v.querySelector?.('video') || v;
+          if(!(v instanceof HTMLVideoElement)) return;
+        }
+        v.pause();
+        v.removeAttribute('src');
+        v.load();
+        v.onloadedmetadata = null;
+        v.onloadeddata = null;
+        v.onerror = null;
+        const url = URL.createObjectURL(blob);
+        if(v.dataset.prevUrl) URL.revokeObjectURL(v.dataset.prevUrl);
+        v.dataset.prevUrl = url;
+        v.preload = 'auto';
+        v.muted = true;
+        v.playsInline = true;
+        v.src = url;
+        v.load();
+        v.onloadeddata = () => {
+          v.style.width = '100%';
+          v.style.height = '100%';
+          v.style.objectFit = 'cover';
+          v.hidden = false;
+          v.style.display = 'block';
+          try { v.currentTime = 0.01; } catch(e){}
+          try { v.play().catch(()=>{}); } catch(e){}
+        };
+        v.onerror = () => {
+          URL.revokeObjectURL(url);
+          delete v.dataset.prevUrl;
+          v.hidden = true;
+        };
+      }catch(_){}
+    }
+
+    async function makeVideoThumbnailFromBlob(blob){
+      return new Promise((resolve) => {
+        try{
+          const v = document.createElement('video');
+          v.style.position = 'fixed';
+          v.style.left = '-9999px';
+          v.style.width = '1px';
+          v.style.height = '1px';
+          v.muted = true;
+          v.playsInline = true;
+          v.preload = 'auto';
+          const url = URL.createObjectURL(blob);
+          v.src = url;
+          v.onloadeddata = () => {
+            try{
+              v.currentTime = 0.10;
+            }catch(e){
+              v.currentTime = 0.01;
+            }
+          };
+          v.onseeked = () => {
+            try{
+              const canvas = document.createElement('canvas');
+              canvas.width = v.videoWidth || 320;
+              canvas.height = v.videoHeight || 240;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(v, 0, 0);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+              URL.revokeObjectURL(url);
+              document.body.removeChild(v);
+              resolve(dataUrl);
+            }catch(e){
+              URL.revokeObjectURL(url);
+              try{ document.body.removeChild(v); }catch(_){}
+              resolve(null);
+            }
+          };
+          v.onerror = () => {
+            URL.revokeObjectURL(url);
+            try{ document.body.removeChild(v); }catch(_){}
+            resolve(null);
+          };
+          document.body.appendChild(v);
+          v.load();
+        }catch(e){
+          resolve(null);
+        }
+      });
+    }
+
+    async function makeVideoThumbnailFromUrl(url){
+      return new Promise((resolve) => {
+        try{
+          const v = document.createElement('video');
+          v.style.position = 'fixed';
+          v.style.left = '-9999px';
+          v.style.width = '1px';
+          v.style.height = '1px';
+          v.muted = true;
+          v.playsInline = true;
+          v.preload = 'auto';
+          if(url.startsWith('http://') || url.startsWith('https://')){
+            v.crossOrigin = 'anonymous';
+          }
+          v.src = url;
+          v.onloadeddata = () => {
+            try{
+              v.currentTime = 0.10;
+            }catch(e){
+              v.currentTime = 0.01;
+            }
+          };
+          v.onseeked = () => {
+            try{
+              const canvas = document.createElement('canvas');
+              canvas.width = v.videoWidth || 320;
+              canvas.height = v.videoHeight || 240;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(v, 0, 0);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+              document.body.removeChild(v);
+              resolve(dataUrl);
+            }catch(e){
+              try{ document.body.removeChild(v); }catch(_){}
+              resolve(null);
+            }
+          };
+          v.onerror = () => {
+            try{ document.body.removeChild(v); }catch(_){}
+            resolve(null);
+          };
+          document.body.appendChild(v);
+          v.load();
+        }catch(e){
+          resolve(null);
+        }
+      });
+    }
+
+    const __thumbCache = new Map();
+
+    async function loadAvatarThumbFromSources(cardEl){
+      try{
+        if(!cardEl) return;
+        
+        // Gestione video da IDB (locale)
+        const imgBlob = cardEl.querySelector?.('img.avatar-thumb[data-avatar-blob-key]');
+        if(imgBlob){
+          const key = imgBlob.getAttribute('data-avatar-blob-key');
+          if(key){
+            const cacheKey = "idb:"+key;
+            if(__thumbCache.has(cacheKey)){
+              imgBlob.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const blob = await idbGetBlob(key);
+            if(blob){
+              const dataUrl = await makeVideoThumbnailFromBlob(blob);
+              if(dataUrl){
+                __thumbCache.set(cacheKey, dataUrl);
+                imgBlob.src = dataUrl;
+                return;
+              }
+            }
+          }
+          // Fallback se fallisce
+          imgBlob.src = "assets/brand/logo_edubot_icon.png";
+        }
+        
+        // Gestione video da URL
+        const imgUrl = cardEl.querySelector?.('img.avatar-thumb[data-video-src]');
+        if(imgUrl){
+          const src = imgUrl.getAttribute('data-video-src');
+          if(src){
+            const cacheKey = "url:"+src;
+            if(__thumbCache.has(cacheKey)){
+              imgUrl.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const dataUrl = await makeVideoThumbnailFromUrl(src);
+            if(dataUrl){
+              __thumbCache.set(cacheKey, dataUrl);
+              imgUrl.src = dataUrl;
+              return;
+            }
+          }
+          // Fallback se fallisce
+          imgUrl.src = "assets/brand/logo_edubot_icon.png";
+        }
+        
+        // Gestione immagine da IDB (locale)
+        const imgImgBlob = cardEl.querySelector?.('img.lesson-avatar[data-avatar-img-blob-key]');
+        if(imgImgBlob){
+          const key = imgImgBlob.getAttribute('data-avatar-img-blob-key');
+          if(key){
+            const cacheKey = "imgidb:"+key;
+            if(__thumbCache.has(cacheKey)){
+              imgImgBlob.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const blob = await idbGetBlob(key);
+            if(blob){
+              const url = URL.createObjectURL(blob);
+              __thumbCache.set(cacheKey, url);
+              imgImgBlob.src = url;
+              return;
+            }
+          }
+          // Fallback se fallisce
+          imgImgBlob.src = "assets/brand/logo_edubot_icon.png";
+        }
+      }catch(e){
+        // non bloccare la dashboard
+        try{ console.warn('[VIDEO] dashboard loadAvatarThumbFromSources failed', e); }catch(_){}
+      }
+    }
+
+    // FIX: teacher-dashboard.html | buildAvatarHTML – gestisce logo/img/video + cache-busting forte + IDB
+    function buildAvatarHTML(lesson){
+      const bust = (u)=>{
+        if(!u || typeof u !== 'string') return u;
+        if(u.startsWith('data:')) return u;
+        const sep = u.includes('?') ? '&' : '?';
+        const verBase = (lesson.updatedAt || lesson.meta?.updatedAt || '').toString();
+        const verAvatar = (lesson.meta?.avatarVersion != null) ? String(lesson.meta.avatarVersion) : '';
+        const ver = [verBase, verAvatar].filter(Boolean).join('-');
+        return ver ? (u + sep + 'v=' + encodeURIComponent(ver)) : u;
+      };
+
+      const mode = (lesson.avatarMode || 'logo');
+      const lessonKey = lesson.id || lesson.meta?.id;
+      const srcRaw = lesson.avatarSrc || lesson.avatar || 'assets/brand/logo_edubot_icon.png';
+      const src = resolveSessionSrc(srcRaw, lessonKey);
+
+      const VIDEO_PRESET_POSTER = {
+        'vid-f-default': 'assets/video/poster_f.png',
+        'vid-m-default': 'assets/video/poster_m.png'
+      };
+
+      if (lesson.avatarPicked && VIDEO_PRESET_POSTER[lesson.avatarPicked]) {
+        return `
+          <figure class="avatar-badge">
+            <img class="lesson-avatar"
+                 src="${bust(VIDEO_PRESET_POSTER[lesson.avatarPicked])}"
+                 alt="Avatar video" />
+          </figure>
+        `;
+      }
+
+      const isYouTube = (u)=>/youtube\.com|youtu\.be/.test(u||'');
+      const thumbYT = (u)=> {
+        const m = (u||'').match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/);
+        return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : null;
+      };
+
+      // Video da IDB (locale) - restituisce placeholder img con data-attribute
+      if((mode.startsWith('vid') || mode === 'vid_custom') && lesson.avatarBlobKey){
+        return `<figure class="avatar-badge"><img class="lesson-avatar avatar-thumb" alt="Avatar video" data-avatar-blob-key="${lesson.avatarBlobKey.replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+
+      if (mode.startsWith('vid') || mode === 'vid_custom') {
+        if (isYouTube(src)) {
+          const t = thumbYT(src);
+          return `<figure class="avatar-badge"><img class="lesson-avatar" src="${bust(t||'assets/brand/logo_edubot_icon.png')}" alt="Avatar video" /></figure>`;
+        }
+        return `<figure class="avatar-badge"><img class="lesson-avatar avatar-thumb" alt="Avatar video" data-video-src="${bust(src).replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+      // Immagine da IDB (locale) - restituisce placeholder img con data-attribute
+      if(mode === 'image' && lesson.avatarImageBlobKey){
+        return `<figure class="avatar-badge"><img class="lesson-avatar" alt="Avatar" data-avatar-img-blob-key="${lesson.avatarImageBlobKey.replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+      return `<figure class="avatar-badge"><img class="lesson-avatar" src="${bust(src)}" alt="Avatar" /></figure>`;
+    }
+
+    function createDraftCard(id, lesson) {
+      const card = document.createElement('div');
+      card.className = 'lesson-item is-draft';
+      card.style.background = '#fff9e6'; // Sfondo leggermente giallo per le bozze
+      
+      const avatarHtml = buildAvatarHTML(lesson);
+      const title = lesson.title || lesson.home?.title || 'Bozza senza titolo';
+      const updatedDate = lesson.updatedAt ? new Date(lesson.updatedAt).toLocaleDateString('it-IT') : '';
+      
+      card.innerHTML = `
+        <div class="card-box left">
+          <h3 class="lesson-title">${title}</h3>
+          <span class="draft-badge">📝 BOZZA</span>
+          ${avatarHtml}
+          <div class="lesson-date">Ultimo salvataggio: ${updatedDate || 'Data non disponibile'}</div>
+        </div>
+        <div class="card-box right">
+          <div class="lesson-actions">
+            <a href="create-lesson-wizard.html?edit=${id}" class="btn btn-edit">
+              ✏️ Completa la Lezione
+            </a>
+            <button onclick="finalizeDraft('${id}')" class="btn btn-duplicate" title="Rendi definitiva questa bozza (visibile solo in dashboard finché non pubblichi)">
+              ✅ Rendi bozza definitiva
+            </button>
+            <button onclick="exportSingleLesson('${id}')" class="btn btn-duplicate" title="Crea una copia di lavoro di questa bozza per continuare a modificarla o spostarla su un altro computer. Solo uso docente.">
+              ⬇️ Backup bozza
+            </button>
+            <button onclick="deleteLesson('${id}')" class="btn btn-delete">🗑️ Elimina</button>
+          </div>
+        </div>
+      `;
+      
+      // Carica thumbnail video se presente
+      loadAvatarThumbFromSources(card);
+      
+      return card;
+    }
+    
+    function createLessonCard(id, lesson) {
+      const card = document.createElement('div');
+      card.className = 'lesson-item';
+      
+      const avatarHtml = buildAvatarHTML(lesson);
+      const title = lesson.title || lesson.home?.title || 'Lezione senza titolo';
+      const subtitle = lesson.subtitle || lesson.home?.description || lesson.home?.subtitle || '';
+      
+      const exportLabel = lesson.isDraft ? '⬇️ Esporta bozza' : '⬇️ Backup lezione';
+      const exportTitle = lesson.isDraft
+        ? "Esporta questa bozza (backup) per continuare su un altro PC"
+        : "Backup della singola lezione per continuare a lavorarci o condividerla tra docenti. Non è il file per gli studenti.";
+      
+      // Data pubblicazione con fallback robusto
+      const getPublishedDate = () => {
+        const dateVal = lesson.publishedAt || lesson.updatedAt || lesson.createdAt;
+        if (dateVal) {
+          try {
+            const date = new Date(dateVal);
+            if (!isNaN(date.getTime())) {
+              return date.toLocaleDateString('it-IT');
+            }
+          } catch(e) {}
+        }
+        return 'Data non disponibile';
+      };
+      const publishedDate = getPublishedDate();
+      
+      card.innerHTML = `
+        <div class="card-box left">
+          <h3 class="lesson-title">${title}</h3>
+          ${avatarHtml}
+          <div class="lesson-date">Pubblicata: ${publishedDate}</div>
+        </div>
+        <div class="card-box right">
+          <div class="lesson-actions">
+            <a href="create-lesson-wizard.html?edit=${id}" class="btn btn-edit">✏️ Modifica</a>
+            <button onclick="exportSingleLesson('${id}')" class="btn btn-duplicate" title="${exportTitle}">${exportLabel}</button>
+            <button onclick="publishSingleLessonJson('${id}')" class="btn btn-duplicate" title="Genera lessons.json per gli studenti con SOLO questa lezione (deve essere definitiva).">🚀 lessons.json (solo questa)</button>
+            <button onclick="duplicateLesson('${id}')" class="btn btn-duplicate">📋 Duplica</button>
+            <button onclick="deleteLesson('${id}')" class="btn btn-delete">🗑️ Elimina</button>
+          </div>
+        </div>
+      `;
+      
+      // Carica thumbnail video se presente
+      loadAvatarThumbFromSources(card);
+      
+      return card;
+    }
+    
+    function duplicateLesson(id) {
+      if (confirm('Vuoi creare una copia di questa lezione?\n\nPotrai modificarla liberamente.')) {
+        const originalLesson = localStorage.getItem(`lesson_config_${id}`);
+        if (originalLesson) {
+          const lesson = JSON.parse(originalLesson);
+          
+          // Crea nuovo ID
+          const newId = `${id}_copy_${Date.now()}`;
+          
+          // Modifica titolo
+          lesson.title = `${lesson.title} (Copia)`;
+          lesson.createdAt = new Date().toISOString();
+          
+          // Salva la copia
+          localStorage.setItem(`lesson_config_${newId}`, JSON.stringify(lesson));
+          
+          // Duplica anche i contenuti delle sezioni se esistono
+          duplicateLessonContent(id, newId);
+          
+          alert('✅ Lezione duplicata con successo!\n\nPuoi modificarla dalla dashboard.');
+          location.reload();
+        }
+      }
+    }
+    
+    function duplicateLessonContent(oldId, newId) {
+      // Duplica tutti i contenuti associati alla lezione
+      const keys = ['content', 'info_ethics', 'textIA', 'media', 'glossary', 'activities', 'resources', 'evaluation'];
+      
+      keys.forEach(key => {
+        const content = localStorage.getItem(`lesson_${oldId}_${key}`);
+        if (content) {
+          localStorage.setItem(`lesson_${newId}_${key}`, content);
+        }
+      });
+    }
+    
+    function deleteLesson(id) {
+      const lesson = JSON.parse(localStorage.getItem(`lesson_config_${id}`));
+      const title = lesson?.title || 'questa lezione';
+      
+      if (confirm(`⚠️ Sei sicuro di voler eliminare "${title}"?\n\nQuesta azione NON può essere annullata!`)) {
+        // Elimina configurazione
+        localStorage.removeItem(`lesson_config_${id}`);
+        
+        // Elimina tutti i contenuti associati
+        const keys = ['content', 'info_ethics', 'textIA', 'media', 'glossary', 'activities', 'resources', 'evaluation'];
+        keys.forEach(key => {
+          localStorage.removeItem(`lesson_${id}_${key}`);
+        });
+        
+        alert('✅ Lezione eliminata con successo!');
+        location.reload();
+      }
+    }
+    
+    // 📥 ESPORTA tutte le lezioni in un file JSON
+    async function exportLessons() {
+      const lessons = [];
+      
+      // Raccogli tutte le lezioni da localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        if (key.startsWith('lesson_config_')) {
+          const lessonId = key.replace('lesson_config_', '');
+          const config = JSON.parse(localStorage.getItem(key));
+          
+          // Raccogli anche i contenuti
+          const content = localStorage.getItem(`lesson_${lessonId}_content`);
+          const infoEthics = localStorage.getItem(`lesson_${lessonId}_info_ethics`);
+          
+          // Esporta blob avatar se presenti
+          const blobs = {};
+          if(config.avatarBlobKey){
+            const b = await idbGetBlob(config.avatarBlobKey);
+            if(b) blobs[config.avatarBlobKey] = await blobToDataUrl(b);
+          }
+          if(config.avatarImageBlobKey){
+            const b = await idbGetBlob(config.avatarImageBlobKey);
+            if(b) blobs[config.avatarImageBlobKey] = await blobToDataUrl(b);
+          }
+          
+          const lessonObj = {
+            id: lessonId,
+            config: config,
+            content: content ? JSON.parse(content) : null,
+            info_ethics: infoEthics ? JSON.parse(infoEthics) : null
+          };
+          if(Object.keys(blobs).length > 0){
+            lessonObj.blobs = blobs;
+          }
+          lessons.push(lessonObj);
+        }
+      }
+      
+      if (lessons.length === 0) {
+        alert('❌ Nessuna lezione da esportare!\n\nCrea prima almeno una lezione.');
+        return;
+      }
+      
+      // Crea il file JSON
+      const dataStr = JSON.stringify({ lessons: lessons }, null, 2);
+      const suggestedName = `lezioni-${new Date().toISOString().split('T')[0]}.json`;
+      
+      // Usa File System Access API se disponibile
+      if (window.showSaveFilePicker) {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: suggestedName,
+            types: [{
+              description: 'JSON file',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await fileHandle.createWritable();
+          await writable.write(dataStr);
+          await writable.close();
+          alert(`✅ Esportate ${lessons.length} lezioni!\n\nFile salvato con successo.`);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error('Errore salvataggio file', err);
+            alert('❌ Errore durante il salvataggio.');
+          }
+        }
+      } else {
+        // Fallback: download automatico
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(dataBlob);
+        link.download = suggestedName;
+      link.click();
+        alert(`✅ Esportate ${lessons.length} lezioni!\n\nFile generato. La posizione dipende dalle impostazioni del browser.`);
+      }
+    }
+
+    function sanitizeFilename(name) {
+      return String(name || '')
+        .trim()
+        .replace(/[\/\\:*?"<>|]+/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^\-+|\-+$/g, '')
+        .slice(0, 80) || 'lezione';
+    }
+
+    // ⬇️ ESPORTA singola lezione
+    async function exportSingleLesson(id) {
+      try {
+        const configKey = `lesson_config_${id}`;
+        const configRaw = localStorage.getItem(configKey);
+        if (!configRaw) {
+          alert('Lezione non trovata.');
+          return;
+        }
+        const config = JSON.parse(configRaw);
+        
+        const title = config.title || config.lessonTitle || config.home?.title || 'lezione';
+        const safeTitle = sanitizeFilename(title);
+        const isDraft = !!config.isDraft;
+        const filename = `${isDraft ? 'bozza-' : ''}${safeTitle}.json`;
+        
+        const contentRaw = localStorage.getItem(`lesson_${id}_content`);
+        const content = contentRaw ? JSON.parse(contentRaw) : null;
+        
+        const infoEthicsRaw = localStorage.getItem(`lesson_${id}_info_ethics`);
+        const infoEthics = infoEthicsRaw ? JSON.parse(infoEthicsRaw) : null;
+        
+        // Esporta blob avatar se presenti
+        const blobs = {};
+        if(config.avatarBlobKey){
+          const b = await idbGetBlob(config.avatarBlobKey);
+          if(b) blobs[config.avatarBlobKey] = await blobToDataUrl(b);
+        }
+        if(config.avatarImageBlobKey){
+          const b = await idbGetBlob(config.avatarImageBlobKey);
+          if(b) blobs[config.avatarImageBlobKey] = await blobToDataUrl(b);
+        }
+        
+        const lessonObj = { id, config, content, info_ethics: infoEthics };
+        if(Object.keys(blobs).length > 0){
+          lessonObj.blobs = blobs;
+        }
+        const payload = { lessons: [lessonObj] };
+        const dataStr = JSON.stringify(payload, null, 2);
+        
+        // Usa File System Access API se disponibile
+        if (window.showSaveFilePicker) {
+          try {
+            const fileHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [{
+                description: 'JSON file',
+                accept: { 'application/json': ['.json'] }
+              }]
+            });
+            const writable = await fileHandle.createWritable();
+            await writable.write(dataStr);
+            await writable.close();
+            alert('✅ Lezione salvata con successo!');
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              console.error('Errore salvataggio file', err);
+              alert('❌ Errore durante il salvataggio.');
+            }
+          }
+        } else {
+          // Fallback: download automatico
+          const dataBlob = new Blob([dataStr], { type: 'application/json' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(dataBlob);
+          link.download = filename;
+          link.click();
+          alert('✅ Lezione esportata. Il browser potrebbe salvarlo in Download.');
+        }
+      } catch (e) {
+        console.error('Errore esportazione lezione', e);
+        alert('❌ Errore durante l\'esportazione.');
+      }
+    }
+    
+    // 📤 IMPORTA lezioni da file JSON
+    function importLessons(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          
+          if (!data.lessons || !Array.isArray(data.lessons)) {
+            alert('❌ File non valido!\n\nIl file JSON non contiene lezioni.');
+            return;
+          }
+          
+          const confirmMsg = `📤 Trovate ${data.lessons.length} lezioni nel file.\n\n⚠️ ATTENZIONE: Le lezioni con lo stesso ID verranno sovrascritte!\n\nVuoi procedere?`;
+          
+          if (!confirm(confirmMsg)) {
+            return;
+          }
+          
+          // Importa tutte le lezioni
+          for (const lesson of data.lessons) {
+            // Ripristina blob avatar se presenti
+            if(lesson.blobs && typeof lesson.blobs === 'object'){
+              for(const [key, dataUrl] of Object.entries(lesson.blobs)){
+                if(typeof dataUrl === 'string' && dataUrl.startsWith('data:')){
+                  const blob = dataUrlToBlob(dataUrl);
+                  await idbPutBlob(key, blob);
+                }
+              }
+            }
+            
+            // Sanificazione avatar: rimuove riferimenti non importabili
+            const cfg = lesson.config || {};
+            const PRESET = new Set(['vid-f-default','vid-m-default']);
+            if (typeof cfg.avatarSrc === 'string' && cfg.avatarSrc.startsWith('session://')) {
+              delete cfg.avatarSrc;
+            }
+            // Elimina blob keys solo se non sono stati ripristinati
+            if(!lesson.blobs || !lesson.blobs[cfg.avatarBlobKey]){
+              delete cfg.avatarBlobKey;
+            }
+            if(!lesson.blobs || !lesson.blobs[cfg.avatarImageBlobKey]){
+              delete cfg.avatarImageBlobKey;
+            }
+            if (cfg.avatarPicked && !PRESET.has(cfg.avatarPicked)) {
+              delete cfg.avatarPicked;
+            }
+            let forcedToLogo = false;
+            if (cfg.avatarMode === 'vid_custom') {
+              if (!cfg.avatarSrc && !cfg.avatarPicked && !cfg.avatarBlobKey) {
+                cfg.avatarMode = 'logo';
+                forcedToLogo = true;
+              }
+            }
+            if (cfg.avatarMode && cfg.avatarMode.startsWith('vid')) {
+              if (!cfg.avatarSrc && !cfg.avatarPicked && !cfg.avatarBlobKey) {
+                cfg.avatarMode = 'logo';
+                forcedToLogo = true;
+              }
+            }
+            if (cfg.avatarMode === 'image' && !cfg.avatarSrc && !cfg.avatarImageBlobKey) {
+              cfg.avatarMode = 'logo';
+              forcedToLogo = true;
+            }
+            if (!cfg.avatarMode) {
+              cfg.avatarMode = 'logo';
+              forcedToLogo = true;
+            }
+            if (forcedToLogo) {
+              delete cfg.avatarPicked;
+              cfg.avatarSrc = 'assets/brand/logo_edubot_icon.png';
+            } else if (!cfg.avatarSrc && !cfg.avatarPicked) {
+              cfg.avatarSrc = 'assets/brand/logo_edubot_icon.png';
+            }
+            lesson.config = cfg;
+            // Salva configurazione
+            localStorage.setItem(`lesson_config_${lesson.id}`, JSON.stringify(lesson.config));
+            
+            // Salva contenuti
+            if (lesson.content) {
+              localStorage.setItem(`lesson_${lesson.id}_content`, JSON.stringify(lesson.content));
+            }
+            
+            // Salva info & etica
+            if (lesson.info_ethics) {
+              localStorage.setItem(`lesson_${lesson.id}_info_ethics`, JSON.stringify(lesson.info_ethics));
+            }
+          }
+          
+          alert(`✅ Importate ${data.lessons.length} lezioni con successo!\n\nLa pagina verrà ricaricata.`);
+          location.reload();
+          
+        } catch (err) {
+          alert('❌ Errore durante l\'importazione!\n\n' + err.message);
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+    
+    loadLessons();       // Carica tutte le lezioni create/importate dal docente
+
+
+    // Pubblica lezioni definitive in un file lessons.json (scarica il file)
+    async function publishLessonsJson() {
+      const published = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('lesson_config_')) {
+          try {
+            const id = key.replace('lesson_config_', '');
+            const config = JSON.parse(localStorage.getItem(key));
+            if (config && config.isDraft) continue; // salta bozze
+            const content = localStorage.getItem(`lesson_${id}_content`);
+            published.push({ id, config, content: content ? JSON.parse(content) : null });
+          } catch (e) { console.error('Errore serializzazione lezione', key, e); }
+        }
+      }
+      if (published.length === 0) {
+        alert('Nessuna lezione definitiva da pubblicare. Completa almeno una lezione.');
+        return;
+      }
+      const dataStr = JSON.stringify({ lessons: published }, null, 2);
+      
+      // Usa File System Access API se disponibile
+      if (window.showSaveFilePicker) {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: 'lessons.json',
+            types: [{
+              description: 'JSON file',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await fileHandle.createWritable();
+          await writable.write(dataStr);
+          await writable.close();
+          alert('✅ lessons.json generato e salvato. Caricalo nel repo studenti (root) per pubblicare.');
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error('Errore salvataggio file', err);
+            alert('❌ Errore durante il salvataggio.');
+          }
+        }
+      } else {
+        // Fallback: download automatico
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'lessons.json';
+      link.click();
+        alert('✅ lessons.json generato. La posizione dipende dalle impostazioni del browser. Caricalo nel repo studenti (root) per pubblicare.');
+      }
+    }
+
+    // Genera lessons.json per UNA sola lezione definitiva (file per studenti)
+    async function publishSingleLessonJson(id) {
+      try {
+        const key = `lesson_config_${id}`;
+        const raw = localStorage.getItem(key);
+        if (!raw) {
+          alert('Lezione non trovata.');
+          return;
+        }
+        const config = JSON.parse(raw);
+        if (config && config.isDraft) {
+          alert('Questa è una bozza: rendila definitiva prima di generare lessons.json per gli studenti.');
+          return;
+        }
+
+        const contentRaw = localStorage.getItem(`lesson_${id}_content`);
+        const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+        const payload = { lessons: [{ id, config, content }] };
+        const dataStr = JSON.stringify(payload, null, 2);
+
+        // Salva come lessons.json
+        if (window.showSaveFilePicker) {
+          try {
+            const fileHandle = await window.showSaveFilePicker({
+              suggestedName: 'lessons.json',
+              types: [{
+                description: 'JSON file',
+                accept: { 'application/json': ['.json'] }
+              }]
+            });
+            const writable = await fileHandle.createWritable();
+            await writable.write(dataStr);
+            await writable.close();
+            alert('✅ lessons.json (1 lezione) generato e salvato. Caricalo nel repo studenti (root) per pubblicare.');
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              console.error('Errore salvataggio file', err);
+              alert('❌ Errore durante il salvataggio.');
+            }
+          }
+        } else {
+          const blob = new Blob([dataStr], { type: 'application/json' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'lessons.json';
+          link.click();
+          alert('✅ lessons.json (1 lezione) generato. Caricalo nel repo studenti (root) per pubblicare.');
+        }
+      } catch (e) {
+        console.error('Errore generazione lessons.json singolo', e);
+        alert('❌ Errore durante la generazione.');
+      }
+    }
+
+    // Rende definitiva una bozza: imposta isDraft=false e aggiorna updatedAt
+    function finalizeDraft(id) {
+      try {
+        const key = `lesson_config_${id}`;
+        const raw = localStorage.getItem(key);
+        if (!raw) {
+          alert('Bozza non trovata.');
+          return;
+        }
+        const config = JSON.parse(raw);
+        config.isDraft = false;
+        config.publishedAt = new Date().toISOString();
+        config.updatedAt = new Date().toISOString();
+        localStorage.setItem(key, JSON.stringify(config));
+        alert('✅ Bozza resa definitiva! Ora appare in "Le mie lezioni". Per renderla visibile agli studenti, usa "Pubblica lezioni (lessons.json)".');
+        location.reload();
+      } catch (e) {
+        console.error('Errore nel rendere definitiva la bozza', e);
+        alert('❌ Errore durante l\'operazione.');
+      }
+    }
+  </script>
+</body>
+</html>
+

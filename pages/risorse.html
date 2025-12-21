@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risorse - AI School Template</title>
+  <link rel="icon" type="image/png" href="../assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/global-header.css">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+  <div class="layout-wrap">
+    <a id="backToLessonTop" href="../percorso-tematico.html" class="btn" style="margin-bottom: 1rem; display: inline-block;">← Torna alla home della lezione</a>
+    <div id="empty-view" class="card" style="display:none; text-align:center; margin-top:2rem;">
+      <h2>⚠️ Risorse non disponibili</h2>
+      <p>Questa sezione non è ancora stata preparata per questa lezione.</p>
+    </div>
+
+    <div id="resources-view" style="display:none">
+    <div class="card">
+      <h2 id="resources-title">📚 Risorse</h2>
+      <p id="resources-subtitle" style="font-size: 0.9rem; color: #666; margin-top: 0.5rem; margin-bottom: 0;"></p>
+    </div>
+
+    <div id="links-section" style="display:none">
+      <div class="card">
+        <h2>🔗 Link Utili</h2>
+        <div id="links-content"></div>
+      </div>
+    </div>
+
+    <div id="docs-section" style="display:none">
+      <div class="card">
+        <h2>📄 Documenti</h2>
+        <div id="docs-content"></div>
+      </div>
+    </div>
+
+    <div id="media-section" style="display:none">
+      <div class="card">
+        <h2>🎥 Video e Media</h2>
+        <div id="media-content"></div>
+      </div>
+    </div>
+
+    <div id="notes-section" style="display:none">
+      <div class="card">
+        <h2>📝 Indicazioni per l'approfondimento</h2>
+        <div id="notes-content"></div>
+      </div>
+    </div>
+
+    </div><!-- chiude #resources-view -->
+  </div>
+  
+  <script src="../assets/js/global-header.js"></script>
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="../assets/js/voice-reader.js"></script>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const lessonId = params.get('lesson');
+      const isValidLessonId = lessonId && lessonId !== 'null' && lessonId !== 'undefined' && lessonId.trim() !== '';
+      const emptyView = document.getElementById('empty-view');
+      const resourcesView = document.getElementById('resources-view');
+      const backToLesson = document.getElementById('backToLesson');
+
+      if (!lessonId) {
+        if (resourcesView) resourcesView.style.display = 'none';
+        if (emptyView) emptyView.style.display = 'block';
+        return;
+      }
+
+      const isStudent = params.get('student') === '1';
+      const ret = params.get('return');
+      const dash = params.get('dashboard');
+
+      if (backToLesson && lessonId) {
+        let href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+        if (isStudent) {
+          href += '&student=1';
+        } else {
+          if (ret)  href += `&return=${encodeURIComponent(ret)}`;
+          if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+        }
+        backToLesson.href = href;
+      }
+
+      // Pulsante "Torna alla lezione" sopra il primo riquadro
+      const backToLessonTop = document.getElementById('backToLessonTop');
+      if (backToLessonTop) {
+        if (isValidLessonId) {
+          let href = `../percorso-tematico.html?lesson=${encodeURIComponent(lessonId)}`;
+          if (isStudent) {
+            href += '&student=1';
+          } else {
+            if (ret)  href += `&return=${encodeURIComponent(ret)}`;
+            if (dash) href += `&dashboard=${encodeURIComponent(dash)}`;
+          }
+          backToLessonTop.href = href;
+        } else {
+          backToLessonTop.href = isStudent ? '../student-lessons.html' : '../teacher-dashboard.html';
+        }
+      }
+
+      if (resourcesView) resourcesView.style.display = 'none';
+      if (emptyView) emptyView.style.display = 'block';
+
+      // Leggi dati step 3 dal wizard
+      let sectionRaw = null;
+      try {
+        sectionRaw = localStorage.getItem('lesson_section_' + lessonId + '_3');
+      } catch (e) {}
+      
+      let data = null;
+      if (sectionRaw) {
+        try {
+          data = JSON.parse(sectionRaw);
+        } catch (e) {
+          data = null;
+        }
+      }
+
+      // Verifica se ci sono dati reali
+      const hasLinks = data && data.links && 
+        Array.isArray(data.links) && 
+        data.links.some(l => l && l.url && l.url.trim());
+      const hasDocs = data && data.docs && 
+        Array.isArray(data.docs) && 
+        data.docs.some(d => d && ((d.fileName && d.fileName.trim()) || (d.blobKey && d.blobKey.trim())));
+      const hasMedia = data && data.media && 
+        Array.isArray(data.media) && 
+        data.media.some(m => m && m.url && m.url.trim());
+      const hasNotes = data && data.notes && data.notes.trim();
+
+      const hasContent = hasLinks || hasDocs || hasMedia || hasNotes;
+
+      if (!hasContent) {
+        // Nessun contenuto reale, mostra empty-view
+        return;
+      }
+
+      // Carica titolo lezione per header
+      let cfgRaw = null;
+      try {
+        cfgRaw = localStorage.getItem('lesson_config_' + lessonId);
+      } catch (e) {}
+      
+      let cfg = null;
+      if (cfgRaw) {
+        try {
+          cfg = JSON.parse(cfgRaw) || {};
+        } catch (e) {}
+      }
+
+      // Modifica titolo sezione
+      const titleEl = document.getElementById('resources-title');
+      const subtitleEl = document.getElementById('resources-subtitle');
+      if (titleEl) {
+        titleEl.textContent = '📚 Risorse';
+        if (cfg && subtitleEl) {
+          const baseTitle = (cfg.home && cfg.home.title) || cfg.title || '';
+          if (baseTitle) {
+            subtitleEl.textContent = baseTitle;
+          } else {
+            subtitleEl.style.display = 'none';
+          }
+        }
+      }
+
+      // Mostra contenuti reali
+      if (emptyView) emptyView.style.display = 'none';
+      if (resourcesView) resourcesView.style.display = 'block';
+
+      // Render links
+      if (hasLinks) {
+        const linksSection = document.getElementById('links-section');
+        const linksContent = document.getElementById('links-content');
+        if (linksSection && linksContent) {
+          linksSection.style.display = 'block';
+          const validLinks = data.links.filter(l => l && l.url && l.url.trim());
+          validLinks.forEach(link => {
+            const div = document.createElement('div');
+            div.className = 'resource-item';
+            if (link.title && link.title.trim()) {
+              const h3 = document.createElement('h3');
+              h3.textContent = link.title.trim();
+              div.appendChild(h3);
+            }
+            const btn = document.createElement('a');
+            btn.href = link.url.trim();
+            btn.target = '_blank';
+            btn.rel = 'noopener';
+            btn.className = 'btn btn-external';
+            btn.textContent = '🔗 Apri link';
+            div.appendChild(btn);
+            if (link.desc && link.desc.trim()) {
+              const metaDiv = document.createElement('div');
+              metaDiv.className = 'resource-meta';
+              const descP = document.createElement('p');
+              const strong = document.createElement('strong');
+              strong.textContent = 'Descrizione: ';
+              descP.appendChild(strong);
+              descP.appendChild(document.createTextNode(link.desc.trim()));
+              metaDiv.appendChild(descP);
+              div.appendChild(metaDiv);
+            }
+            linksContent.appendChild(div);
+          });
+        }
+      }
+
+      // Render docs
+      if (hasDocs) {
+        const docsSection = document.getElementById('docs-section');
+        const docsContent = document.getElementById('docs-content');
+        if (docsSection && docsContent) {
+          docsSection.style.display = 'block';
+          const validDocs = data.docs.filter(d => d && ((d.fileName && d.fileName.trim()) || (d.blobKey && d.blobKey.trim())));
+          validDocs.forEach(doc => {
+            const div = document.createElement('div');
+            div.className = 'resource-item';
+            if (doc.title && doc.title.trim()) {
+              const h3 = document.createElement('h3');
+              h3.textContent = doc.title.trim();
+              div.appendChild(h3);
+            }
+            if (doc.blobKey && doc.blobKey.trim()){
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'btn';
+              btn.textContent = '⬇️ Scarica';
+              btn.setAttribute('data-blobkey', doc.blobKey.trim());
+              btn.setAttribute('data-filename', doc.fileName.trim());
+              div.appendChild(btn);
+            }
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'resource-meta';
+            if (doc.fileName && doc.fileName.trim()) {
+              const fileP = document.createElement('p');
+              const strong = document.createElement('strong');
+              strong.textContent = 'File: ';
+              fileP.appendChild(strong);
+              fileP.appendChild(document.createTextNode(doc.fileName.trim()));
+              metaDiv.appendChild(fileP);
+            }
+            if (doc.desc && doc.desc.trim()) {
+              const descP = document.createElement('p');
+              const strong = document.createElement('strong');
+              strong.textContent = 'Descrizione: ';
+              descP.appendChild(strong);
+              descP.appendChild(document.createTextNode(doc.desc.trim()));
+              metaDiv.appendChild(descP);
+            }
+            if (metaDiv.children.length > 0) {
+              div.appendChild(metaDiv);
+            }
+            docsContent.appendChild(div);
+          });
+        }
+      }
+
+      // Render media
+      if (hasMedia) {
+        const mediaSection = document.getElementById('media-section');
+        const mediaContent = document.getElementById('media-content');
+        if (mediaSection && mediaContent) {
+          mediaSection.style.display = 'block';
+          const validMedia = data.media.filter(m => m && m.url && m.url.trim());
+          validMedia.forEach(media => {
+            const div = document.createElement('div');
+            div.className = 'resource-item';
+            if (media.title && media.title.trim()) {
+              const h3 = document.createElement('h3');
+              h3.textContent = media.title.trim();
+              div.appendChild(h3);
+            }
+            const btn = document.createElement('a');
+            btn.href = media.url.trim();
+            btn.target = '_blank';
+            btn.rel = 'noopener';
+            btn.className = 'btn btn-external';
+            btn.textContent = '🎬 Apri media';
+            div.appendChild(btn);
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'resource-meta';
+            if (media.summary && media.summary.trim()) {
+              const summaryP = document.createElement('p');
+              const strong = document.createElement('strong');
+              strong.textContent = 'Riassunto: ';
+              summaryP.appendChild(strong);
+              summaryP.appendChild(document.createTextNode(media.summary.trim()));
+              metaDiv.appendChild(summaryP);
+            }
+            if (media.transcript && media.transcript.trim()) {
+              const toggle = document.createElement('div');
+              toggle.className = 'transcript-toggle';
+              toggle.textContent = '📝 ▸ Trascrizione';
+              const transcriptBody = document.createElement('div');
+              transcriptBody.className = 'transcript-body';
+              transcriptBody.textContent = media.transcript.trim();
+              transcriptBody.style.display = 'none';
+              toggle.addEventListener('click', () => {
+                if (transcriptBody.style.display === 'none' || !transcriptBody.style.display) {
+                  transcriptBody.style.display = 'block';
+                  toggle.textContent = '📝 ▾ Trascrizione';
+                } else {
+                  transcriptBody.style.display = 'none';
+                  toggle.textContent = '📝 ▸ Trascrizione';
+                }
+              });
+              metaDiv.appendChild(toggle);
+              metaDiv.appendChild(transcriptBody);
+            }
+            if (metaDiv.children.length > 0) {
+              div.appendChild(metaDiv);
+            }
+            mediaContent.appendChild(div);
+          });
+        }
+      }
+
+      // Render notes
+      if (hasNotes) {
+        const notesSection = document.getElementById('notes-section');
+        const notesContent = document.getElementById('notes-content');
+        if (notesSection && notesContent) {
+          notesSection.style.display = 'block';
+          const descBox = document.createElement('div');
+          descBox.className = 'desc-box';
+          const p = document.createElement('p');
+          p.textContent = data.notes.trim();
+          descBox.appendChild(p);
+          notesContent.appendChild(descBox);
+        }
+      }
+
+    })();
+
+    // IndexedDB helpers per documenti
+    async function idbOpen(){
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('ai_school_template', 1);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if(!db.objectStoreNames.contains('blobs')){
+            db.createObjectStore('blobs', {keyPath: 'key'});
+          }
+        };
+      });
+    }
+
+    async function idbGetBlob(key){
+      const db = await idbOpen();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('blobs', 'readonly');
+        const store = tx.objectStore('blobs');
+        const req = store.get(key);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+      });
+    }
+
+    document.addEventListener('click', async (e)=>{
+      const t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      if (t.tagName !== 'BUTTON') return;
+      if (!t.hasAttribute('data-blobkey')) return;
+
+      const blobKey = t.getAttribute('data-blobkey');
+      if (!blobKey) return;
+
+      try{
+        const blob = await idbGetBlob(blobKey);
+        if (!blob){
+          alert('File non disponibile');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const fileName = t.getAttribute('data-filename') || 'documento';
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }catch(err){
+        console.error('Download fallito', err);
+        alert('File non disponibile');
+      }
+    });
+  </script>
+</body>
+</html>
+

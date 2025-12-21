@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI School Template - INIZIA QUI</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/global-header.css">
+  
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Raleway", system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #085078 0%, #003B5C 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .welcome-container {
+      max-width: 900px;
+      margin: 2rem;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .logo-section {
+      margin-bottom: 2rem;
+    }
+    
+    .logo-section img {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      background: #085078;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(8,80,120,0.4);
+      border: 2px solid #003B5C;
+    }
+    
+    h1 {
+      color: #085078;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 1.2rem;
+      margin: 0 0 2rem;
+      line-height: 1.6;
+    }
+    
+    .info-box {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: left;
+      margin: 2rem 0;
+    }
+    
+    .info-box h3 {
+      color: #085078;
+      margin: 0 0 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .info-box p {
+      color: #555;
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2.5rem 0;
+    }
+    
+    .action-card {
+      background: linear-gradient(135deg, #085078 0%, #003B5C 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(8,80,120,0.3);
+    }
+    
+    .action-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(8,80,120,0.4);
+    }
+    
+    .action-card.student {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    }
+    
+    .action-card.create {
+      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      color: #000;
+    }
+    
+    .action-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    
+    .action-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    
+    .action-description {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    footer {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      color: #999;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .welcome-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="logo-section">
+      <img src="assets/brand/logo_edubot_icon.png" alt="AI School Logo">
+      <h1>AI School Template</h1>
+      <p class="subtitle">
+        Crea e prepara lezioni interattive per gli studenti
+      </p>
+    </div>
+    
+    <div class="info-box">
+      <h3>👋 Benvenuto!</h3>
+      <p>
+        Questo template permette di creare e preparare <strong>lezioni interattive</strong> per gli studenti.
+      </p>
+      <p>
+        Per progettare lezioni accessibili e inclusive, con un uso consapevole dell’intelligenza artificiale.
+      </p>
+    </div>
+    
+    <div class="actions-grid">
+      <a id="goDashboardBtn" href="#" class="action-card create" aria-label="Vai alla dashboard docenti" style="grid-column: 1 / -1;">
+        <span class="action-icon">📊</span>
+        <h2 class="action-title">Dashboard docenti</h2>
+        <p class="action-description">
+          Crea, completa e prepara le lezioni
+        </p>
+      </a>
+    </div>
+    
+    
+    
+    <footer>
+      <p>
+        <strong>AI School Template</strong><br>
+        Template educativo per docenti, realizzato con il supporto dell’intelligenza artificiale e supervisionato dal docente.<br>
+        Licenza Creative Commons CC BY-NC-SA 4.0
+      </p>
+    </footer>
+  </div>
+  
+    <script src="assets/js/global-header.js"></script>
+  <script>
+    // Imposta l'href del bottone Dashboard:
+    // - prova a leggerlo dall'header
+    // - se non lo trova, usa teacher-dashboard.html come fallback
+    document.addEventListener('DOMContentLoaded', function () {
+      var goBtn = document.getElementById('goDashboardBtn');
+      if (!goBtn) return;
+
+      var targetHref = 'teacher-dashboard.html';
+
+      try {
+        var headerNav = document.querySelector('.global-header .global-nav');
+        if (headerNav) {
+          var exact = headerNav.querySelector('a[href$="teacher-dashboard.html"]');
+          if (exact) {
+            targetHref = exact.getAttribute('href');
+          }
+        }
+      } catch (e) {
+        // ignora errori non critici
+      }
+
+      goBtn.href = targetHref;
+    });
+  </script>
+
+  
+  <script>
+    // Se il sito è pubblicato online (GitHub Pages, Netlify, ecc.),
+    // reindirizza automaticamente alla vista studenti
+    if (window.location.hostname !== 'localhost' && 
+        window.location.hostname !== '127.0.0.1' && 
+        !window.location.hostname.includes('192.168') &&
+        window.location.protocol !== 'file:') {
+      // Siamo online → reindirizza a student-home.html
+      window.location.replace('student-home.html');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guida Docenti - AI School Template</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/global-header.css">
+  
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Raleway", system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #E6E6E6;
+    }
+    .guide-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 2rem;
+    }
+    .guide-sidebar {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .guide-sidebar h3 {
+      color: #085078;
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+    }
+    .guide-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .guide-nav li {
+      margin-bottom: 0.5rem;
+    }
+    .guide-nav a {
+      color: #666;
+      text-decoration: none;
+      padding: 0.5rem;
+      display: block;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+    .guide-nav a:hover {
+      background: #e7f3ff;
+      color: #085078;
+    }
+    .guide-nav a.active {
+      background: #085078;
+      color: white;
+      font-weight: 600;
+    }
+    .guide-content {
+      background: transparent;
+      padding: 0;
+    }
+    .guide-section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 100px;
+    }
+    .guide-section h2 {
+      color: #085078;
+      font-size: 2rem;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid #085078;
+    }
+    .guide-section h3 {
+      color: #085078;
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+    }
+    .guide-section h4 {
+      color: #333;
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.75rem;
+    }
+    .guide-section p {
+      line-height: 1.8;
+      color: #444;
+      margin: 0.75rem 0;
+    }
+    .guide-section ul, .guide-section ol {
+      line-height: 1.8;
+      color: #444;
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+    }
+    .guide-section li {
+      margin: 0.5rem 0;
+    }
+    .step-box {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+    .step-box strong {
+      color: #085078;
+      font-size: 1.1rem;
+    }
+    .alert-box {
+      background: #fff3cd;
+      border: 1px solid #e5e7eb;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+    .alert-box strong {
+      color: #856404;
+    }
+    .success-box {
+      background: #d4edda;
+      border: 1px solid #e5e7eb;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+    .code-box {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    @media (max-width: 900px){
+      .guide-container{
+        grid-template-columns: 1fr;
+      }
+      .guide-sidebar{
+        position: static;
+      }
+    }
+    @media (max-width: 768px) {
+      .guide-container {
+        grid-template-columns: 1fr;
+      }
+      .guide-sidebar {
+        position: static;
+      }
+      .guide-content {
+        padding: 1.5rem;
+      }
+    }
+    .guide-hero{
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.1);
+      padding:20px;
+      margin-bottom:2rem;
+      border:1px solid #e5e7eb;
+    }
+    .guide-hero h2{
+      color:#085078;
+      margin:0 0 1rem;
+      font-size:1.6rem;
+    }
+    .guide-hero p{
+      color:#444;
+      line-height:1.8;
+      margin:0;
+    }
+    .guide-hero ul{
+      margin:1rem 0 0 1.5rem;
+      line-height:2;
+      color:#444;
+    }
+    .guide-hero .note{
+      margin:1.2rem 0 0;
+      font-size:.95rem;
+      color:#666;
+    }
+    .guide-section-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 18px 0;
+      border: 1px solid #e5e7eb;
+    }
+    .guide-section-card h2 {
+      color: #085078;
+      margin: 0 0 12px;
+      font-size: 1.5rem;
+    }
+    .content-box {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      color: #444;
+      line-height: 1.7;
+    }
+    .content-box ul, .content-box ol { margin: 0.5rem 0 0 1.2rem; }
+    .content-box p { margin: 0.6rem 0; }
+    .content-box p:first-child { margin-top: 0; }
+    .content-box p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="guide-container">
+    <!-- Sidebar Navigation -->
+    <nav class="guide-sidebar">
+      <h3>Indice</h3>
+      <ul class="guide-nav">
+        <li><a href="#intro" onclick="setActive(this)">Introduzione</a></li>
+        <li><a href="#inizio-rapido" onclick="setActive(this)">Inizio Rapido</a></li>
+        <li><a href="#crea-lezioni" onclick="setActive(this)">Creare Lezioni</a></li>
+        <li><a href="#esporta" onclick="setActive(this)">Esportare</a></li>
+        <li><a href="#pubblica" onclick="setActive(this)">Pubblicare</a></li>
+        <li><a href="#aggiorna" onclick="setActive(this)">Aggiornare</a></li>
+        <li><a href="#problemi" onclick="setActive(this)">Problemi Comuni</a></li>
+        <li><a href="#info-progetto" onclick="setActive(this)">Informazioni sul progetto</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="guide-content">
+      
+      <!-- Info Box Principale -->
+      <div class="guide-hero">
+        <h2>A Cosa Serve Questa Guida</h2>
+        <div class="content-box">
+          <p>
+            Questa guida ti accompagna passo dopo passo nell'uso di AI School Template, aiutandoti a:
+          </p>
+          <ul>
+            <li>creare le tue lezioni attraverso una procedura guidata</li>
+            <li>salvarle come file di backup</li>
+            <li>pubblicarle online gratuitamente con Netlify</li>
+            <li>condividere facilmente un link con i tuoi studenti</li>
+          </ul>
+          <p class="note">
+            Il template è pensato per supportare il lavoro del docente in modo progressivo e consapevole, senza richiedere attività di programmazione o competenze da sviluppatore.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Introduzione -->
+      <section id="intro" class="guide-section-card">
+        <h2>Introduzione</h2>
+        <div class="content-box">
+          <p>Con AI School Template puoi progettare e pubblicare lezioni digitali in modo guidato e strutturato.</p>
+          
+          <h3>Il template ti permette di:</h3>
+          <ul>
+            <li>creare lezioni interattive per i tuoi studenti</li>
+            <li>personalizzare grafica e contenuti</li>
+            <li>pubblicare le lezioni online gratuitamente</li>
+            <li>condividere facilmente un link con gli studenti</li>
+          </ul>
+        </div>
+        
+        <div class="success-box">
+          Tutto avviene attraverso passaggi guidati, senza attività di programmazione, lasciando sempre al docente il controllo sui contenuti e sulle scelte didattiche.
+        </div>
+      </section>
+
+      <!-- Inizio Rapido -->
+      <section id="inizio-rapido" class="guide-section-card">
+        <h2>Inizio Rapido</h2>
+        
+        <div class="step-box">
+          <strong>PASSO 1: Scarica il Template</strong>
+          <ol>
+            <li>Vai su: <code>github.com/giurazzisandra-cloud/AI-School-Template</code></li>
+            <li>Clicca il pulsante verde <strong>"Code"</strong></li>
+            <li>Clicca <strong>"Download ZIP"</strong></li>
+            <li>Estrai lo ZIP sul tuo computer (es: Desktop)</li>
+          </ol>
+        </div>
+
+        <div class="step-box">
+          <strong>PASSO 2: Apri il Template</strong>
+          <ol>
+            <li>Vai nella cartella estratta: <code>AI-School-Template</code></li>
+            <li>Fai <strong>doppio click</strong> su <code>index.html</code></li>
+            <li>Si apre nel browser!</li>
+          </ol>
+        </div>
+
+        <div class="step-box">
+          <strong>PASSO 3: Inizia a Creare</strong>
+          <ol>
+            <li>Clicca <strong>"Dashboard Docente"</strong></li>
+            <li>Clicca <strong>"Crea Nuova Lezione"</strong></li>
+            <li>Compila i campi e salva!</li>
+          </ol>
+        </div>
+
+        <div class="success-box">
+          <strong>Fatto!</strong> Hai creato la tua prima lezione!
+        </div>
+      </section>
+
+      <!-- Creare Lezioni -->
+      <section id="crea-lezioni" class="guide-section-card">
+        <h2>Creare Lezioni</h2>
+        
+        <div class="content-box">
+          <h3>Procedura Guidata per Creare una Lezione</h3>
+          <p>Il sistema ti guida attraverso 6 passaggi:</p>
+          
+          <h4>Step 1: Configurazione</h4>
+          <ul>
+            <li><strong>Titolo:</strong> es. "Il Sistema Solare"</li>
+            <li><strong>Sottotitolo:</strong> breve descrizione</li>
+            <li><strong>Layout:</strong> scegli tra A-F (vedi anteprima)</li>
+            <li><strong>Avatar:</strong> immagine rappresentativa</li>
+            <li><strong>Tema:</strong> colori (Standard/Alto Contrasto/Bassa Luminosità)</li>
+          </ul>
+
+          <h4>Step 2: Contenuto Lezione</h4>
+          <ul>
+            <li>Testo della spiegazione</li>
+            <li>Video (URL YouTube)</li>
+            <li>Trascrizione (per accessibilità)</li>
+            <li>Registro IA (se hai usato intelligenza artificiale)</li>
+          </ul>
+
+          <h4>Step 3-6: Altre Sezioni</h4>
+          <p>Attività, Risorse, Valutazione, Info & Etica IA (da implementare)</p>
+        </div>
+
+        <div class="alert-box">
+          <strong>Suggerimento:</strong> Crea più lezioni prima di pubblicare. Puoi salvarle tutte insieme!
+        </div>
+      </section>
+
+      <!-- Esportare -->
+      <section id="esporta" class="guide-section-card">
+        <h2>Esportare</h2>
+        
+        <div class="content-box">
+          <p>Quando hai finito di creare tutte le lezioni che vuoi pubblicare:</p>
+        </div>
+
+        <div class="step-box">
+          <strong>Procedura di Esportazione</strong>
+          <ol>
+            <li>Vai alla <strong>Dashboard Docente</strong></li>
+            <li>Clicca il pulsante <strong>"Esporta Tutte le Lezioni"</strong></li>
+            <li>Il browser scarica un file: <code>lezioni-YYYY-MM-DD.json</code></li>
+            <li>Il file va nella cartella <strong>Download</strong></li>
+          </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>IMPORTANTE:</strong> Questo file contiene TUTTE le tue lezioni. Conservalo come backup!
+        </div>
+
+        <div class="content-box">
+          <h3>Dove Salvare il File</h3>
+          <ul>
+            <li>Chiavetta USB</li>
+            <li>Google Drive / OneDrive</li>
+            <li>Email a te stesso</li>
+            <li>Cartella dedicata sul PC</li>
+          </ul>
+        </div>
+
+        <div class="success-box">
+          <strong>Suggerimento:</strong> Esporta spesso! Ogni volta che finisci di lavorare, fai un backup.
+        </div>
+      </section>
+
+      <!-- Pubblicare -->
+      <section id="pubblica" class="guide-section-card">
+        <h2>Pubblicare</h2>
+        
+        <div class="success-box">
+          <strong>Netlify Drop è FACILISSIMO!</strong><br>
+          Niente account, niente comandi, niente configurazioni. Solo trascina e pubblicato!
+        </div>
+
+        <div class="content-box">
+          <h3>PASSO 1: Prepara i File</h3>
+        </div>
+        <div class="step-box">
+          <ol>
+            <li>Vai alla <strong>Dashboard Docente</strong></li>
+            <li>Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
+            <li>Vai nella cartella <strong>Download</strong></li>
+            <li><strong>Rinomina</strong> il file da <code>lezioni-2025-XX-XX.json</code> a <code>lessons.json</code></li>
+            <li><strong>Copia</strong> il file <code>lessons.json</code> nella cartella <code>AI-School-Template</code> (quella principale)</li>
+          </ol>
+        </div>
+
+        <div class="content-box">
+          <h3>PASSO 2: Pubblica su Netlify</h3>
+        </div>
+        <div class="step-box">
+          <ol>
+            <li>Apri il browser e vai su: <strong><code>https://app.netlify.com/drop</code></strong></li>
+            <li><strong>Trascina</strong> l'intera cartella <code>AI-School-Template</code> nella finestra</li>
+            <li>Aspetta 10-20 secondi mentre carica...</li>
+            <li><strong>FATTO!</strong> Vedrai il link del tuo sito!</li>
+          </ol>
+        </div>
+
+        <div class="success-box">
+          <strong>Il tuo sito è ONLINE!</strong><br>
+          Link tipo: <code>https://random-name-12345.netlify.app</code><br><br>
+          <strong>Link per gli studenti:</strong><br>
+          <code>https://random-name-12345.netlify.app/student-home.html</code>
+        </div>
+
+        <div class="content-box">
+          <h3>PASSO 3: Personalizza il Nome (Opzionale)</h3>
+          <p>Se vuoi un nome più bello tipo <code>lezioni-prof-rossi.netlify.app</code>:</p>
+        </div>
+        
+        <div class="step-box">
+          <ol>
+            <li>Clicca <strong>"Claim this site"</strong> sulla pagina Netlify</li>
+            <li>Crea account gratuito (email + password)</li>
+            <li>Vai su <strong>"Site settings" → "Change site name"</strong></li>
+            <li>Scrivi il nome che vuoi (es: <code>lezioni-prof-rossi</code>)</li>
+            <li>Salva!</li>
+          </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>Suggerimento:</strong> Salva il link del sito da qualche parte sicura! Serve per condividerlo con gli studenti e per aggiornarlo in futuro.
+        </div>
+      </section>
+
+      <!-- Aggiornare -->
+      <section id="aggiorna" class="guide-section-card">
+        <h2>Aggiornare</h2>
+        
+        <div class="content-box">
+          <p>Hai già pubblicato il sito e vuoi aggiungere/modificare lezioni? Facilissimo!</p>
+        </div>
+
+        <div class="step-box">
+          <strong>Procedura Completa:</strong>
+          <ol>
+            <li>Sul tuo PC, aggiungi o modifica le lezioni</li>
+            <li>Dashboard → Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
+            <li>Rinomina il file in <code>lessons.json</code></li>
+            <li>Copia <code>lessons.json</code> nella cartella <code>AI-School-Template</code></li>
+            <li>Vai su <strong><code>https://app.netlify.com/drop</code></strong></li>
+            <li><strong>Trascina DI NUOVO</strong> tutta la cartella</li>
+            <li><strong>FATTO!</strong> Sito aggiornato in 10 secondi!</li>
+          </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>IMPORTANTE:</strong> Ottieni un nuovo link ogni volta che ricarichi!<br>
+          Per mantenere lo stesso link, devi usare l'account Netlify (opzione "Claim this site").
+        </div>
+
+        <div class="content-box">
+          <h3>Mantenere lo Stesso Link</h3>
+          <p>Se hai creato un account Netlify e "claimed" il sito:</p>
+        </div>
+        
+        <div class="step-box">
+          <ol>
+            <li>Fai login su <strong>netlify.com</strong></li>
+            <li>Vai sui tuoi <strong>"Sites"</strong></li>
+            <li>Clicca sul tuo sito (es: <code>lezioni-prof-rossi</code>)</li>
+            <li>Clicca <strong>"Deploys"</strong> in alto</li>
+            <li><strong>Trascina</strong> la nuova cartella nel box "Drag and drop"</li>
+            <li>Aspetta deploy → <strong>Stesso link, contenuti aggiornati!</strong></li>
+          </ol>
+        </div>
+
+        <div class="content-box">
+          <h3>Recuperare Lezioni (Cambio PC/Browser)</h3>
+        </div>
+        <div class="step-box">
+          <ol>
+            <li>Scarica di nuovo il template</li>
+            <li>Apri <code>index.html</code> → Dashboard</li>
+            <li>Clicca <strong>"Importa Lezioni"</strong></li>
+            <li>Seleziona il file <code>lessons.json</code> salvato</li>
+            <li>Tutte le lezioni tornano!</li>
+          </ol>
+        </div>
+
+        <div class="success-box">
+          <strong>Pro Tip:</strong> Esporta sempre un backup dopo ogni modifica importante!
+        </div>
+      </section>
+
+      <!-- Problemi Comuni -->
+      <section id="problemi" class="guide-section-card">
+        <h2>Problemi Comuni</h2>
+        
+        <div class="content-box">
+          <h3>"Non vedo le mie lezioni sul sito Netlify"</h3>
+          <p><strong>Controlli:</strong></p>
+          <ul>
+            <li>Il file <code>lessons.json</code> è nella cartella principale?</li>
+            <li>Il file si chiama <strong>ESATTAMENTE</strong> <code>lessons.json</code> (no date, no maiuscole)?</li>
+            <li>Stai andando su <code>https://...netlify.app/student-home.html</code>?</li>
+            <li>Hai trascinato la cartella COMPLETA su Netlify?</li>
+          </ul>
+        </div>
+
+        <div class="content-box">
+          <h3>"Ho perso le mie lezioni!"</h3>
+          <p><strong>Soluzioni:</strong></p>
+          <ul>
+            <li>Hai il file <code>lessons.json</code> salvato? → Usa "Importa Lezioni"</li>
+            <li>Controlla nella cartella <strong>Download</strong> del PC</li>
+            <li>Controlla backup su chiavetta USB o cloud</li>
+          </ul>
+        </div>
+
+        <div class="content-box">
+          <h3>"Il link cambia ogni volta"</h3>
+          <p><strong>Problema:</strong> Netlify Drop crea un nuovo link random ogni volta.</p>
+          <p><strong>Soluzione:</strong></p>
+          <ul>
+            <li>Crea un account Netlify gratuito</li>
+            <li>Clicca "Claim this site" dopo il primo upload</li>
+            <li>Personalizza il nome (es: <code>lezioni-prof-rossi.netlify.app</code>)</li>
+            <li>Usa sempre il pannello Netlify per aggiornare → stesso link!</li>
+          </ul>
+        </div>
+
+        <div class="content-box">
+          <h3>"Il sito è lento"</h3>
+          <p>Netlify è velocissimo! Se è lento:</p>
+          <ul>
+            <li>Controlla la tua connessione internet</li>
+            <li>Prova a ricaricare la pagina (F5)</li>
+            <li>Evita di caricare video/immagini troppo pesanti</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Informazioni sul progetto -->
+      <section id="info-progetto" class="guide-section-card">
+        <h2>Informazioni sul progetto</h2>
+
+        <div class="content-box">
+          <p>
+            AI School Template è un progetto indipendente pensato per supportare i docenti
+            nella progettazione di lezioni digitali accessibili, inclusive e replicabili.
+            Il template nasce dall'esperienza didattica sul campo e dall'esigenza di offrire
+            uno strumento semplice e trasparente.
+          </p>
+
+          <p>
+            Il template guida il docente nell'inserimento dei contenuti passo dopo passo,
+            favorendo un controllo umano consapevole su ogni fase del processo di costruzione
+            della lezione, in particolare quando è previsto il supporto dell'intelligenza artificiale.
+          </p>
+
+          <p>
+            L'uso dell'intelligenza artificiale è concepito come supporto al lavoro docente,
+            nel rispetto dei principi di controllo umano, responsabilità, accessibilità
+            e tutela dei dati.
+          </p>
+
+          <p>
+            Il progetto è stato ideato e sviluppato da <strong>Sandra Giurazzi</strong>.
+          </p>
+
+          <p class="muted">
+            Versione 1.0 – 2025<br>
+            Licenza: CC BY-NC-SA 4.0
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="assets/js/global-header.js"></script>
+  <script>
+    // Smooth scroll per link interni
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Gestione active link
+    function setActive(element) {
+      document.querySelectorAll('.guide-nav a').forEach(a => a.classList.remove('active'));
+      element.classList.add('active');
+    }
+
+    // Imposta active al caricamento
+    const hash = window.location.hash || '#intro';
+    const activeLink = document.querySelector(`.guide-nav a[href="${hash}"]`);
+    if (activeLink) activeLink.classList.add('active');
+  </script>
+</body>
+</html>
+

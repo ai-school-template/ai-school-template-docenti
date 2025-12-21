@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anteprima Lezione - AI School Template</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="assets/css/global-header.css"/>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      font-family:"Raleway",system-ui,sans-serif;
+      margin:0;background:#E6E6E6;color:#1b1f23
+    }
+    .container{max-width:1000px;margin:2rem auto;padding:0 1.25rem}
+    /* ===============================
+       STILE UNICO PULSANTI NAVIGAZIONE
+       =============================== */
+    .back-link{
+      display:inline-block;
+      background:#085078;
+      color:#F1F1F1;
+      padding:.7rem 1rem;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:700;
+      margin-bottom:1rem;
+    }
+    .back-link:hover{
+      filter: brightness(0.9);
+    }
+    /* FIX: pulsanti STUDENTE sempre blu con testo bianco (anti-override / anti-flash) */
+    a#studentHomeLink.back-link,
+    a#studentLessonsLink.back-link{
+      background:#085078 !important;
+      color:#F1F1F1 !important;
+      text-decoration:none !important;
+    }
+    a#studentHomeLink.back-link:hover,
+    a#studentLessonsLink.back-link:hover{
+      background:#085078 !important;
+      color:#F1F1F1 !important;
+      filter: brightness(0.9);
+    }
+    .back-link:focus-visible{
+      outline: 3px solid rgba(241,241,241,.6);
+      outline-offset: 2px;
+    }
+    /* FIX: forza stile pulsanti STUDENTE contro override (flash dopo refresh) */
+    body.student-view a#studentHomeLink.back-link,
+    body.student-view a#studentLessonsLink.back-link{
+      background:#085078 !important;
+      color:#F1F1F1 !important;
+      text-decoration:none !important;
+    }
+    body.student-view a#studentHomeLink.back-link:hover,
+    body.student-view a#studentLessonsLink.back-link:hover{
+      background:#085078 !important;
+      color:#F1F1F1 !important;
+      filter: brightness(0.9);
+    }
+
+    .lesson-header{
+      background:#fff;border-radius:20px;padding:1.25rem;
+      box-shadow:0 8px 32px rgba(0,0,0,.1);margin-bottom:1.5rem
+    }
+
+    /* Viewer header centrato */
+    .viewer-header{max-width:980px;margin:24px auto;padding:0 16px;display:flex;flex-direction:column;align-items:center;text-align:center}
+    .title-wrap{width:100%;max-width:100%}
+    .viewer-header h1{margin:0 0 8px;font-size:2rem}
+    .viewer-header h2,.viewer-header h3{margin:0 0 10px}
+    .viewer-header p{margin:0 0 12px;line-height:1.5}
+    .viewer-header .avatar-badge{
+      overflow:hidden;
+      width:144px !important;
+      height:144px !important;
+      border-radius:50%;
+      box-shadow:0 8px 32px rgba(0,0,0,0.08);
+      margin:0 auto 20px;
+      background:#e5e7eb;
+      color:#374151;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+    .viewer-header .avatar-badge:not(.avatar-zoom){
+      font-size: 44px;
+      letter-spacing: 0.5px;
+    }
+    .avatar-badge img,.avatar-badge video,.avatar-badge iframe{width:100%;height:100%;object-fit:cover;display:block;border:0;transition:transform .15s ease}
+    .avatar-badge.avatar-zoom img,
+    .avatar-badge.avatar-zoom video,
+    .avatar-badge.avatar-zoom iframe{transform:scale(1.35);transform-origin:center}
+
+    /* FIX: logo di default sempre intero nel cerchio (no crop) */
+    #avatarBadge.avatar-zoom img[src*="assets/brand/logo_edubot_icon.png"]{
+      object-fit: contain !important;
+      transform: scale(1.28) translateY(-4px) !important;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    /* MINI CONTROLLI avatar nella sola anteprima */
+    .avatar-badge{ position:relative; }
+    .avatar-ctrls{ position:absolute; left:50%; bottom:8px; transform:translateX(-50%); z-index:2; display:flex; gap:6px; background:rgba(0,0,0,.55); padding:4px 6px; border-radius:999px }
+    .avatar-ctrls button{ appearance:none; border:0; background:transparent; color:#fff; cursor:pointer; font-size:.9rem; line-height:1; padding:2px 4px; border-radius:6px }
+    .avatar-ctrls button:hover{ background:rgba(255,255,255,.16) }
+
+    /* HERO (non più usato per media, solo per layout) */
+    .hero{display:none}
+
+
+    /* (opzionale) stile per thumbnail YouTube cliccabile */
+    .yt-card{ position:relative; display:block }
+    .yt-card img{ width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:12px; display:block }
+    .yt-card .yt-play{ position:absolute; right:10px; bottom:10px; background:rgba(0,0,0,.6); color:#fff; padding:.3rem .5rem; border-radius:.5rem; font-weight:700 }
+    .lesson-title{color:#085078;font-size:2rem;font-weight:800;margin:.25rem 0}
+    .lesson-subtitle{color:#445;padding:0;margin:0 0 .35rem 0;opacity:.9}
+    .lead{font-size:1.05rem;margin:.25rem 0 .5rem 0}
+    .goals{margin:.25rem 0 0 1.25rem;list-style:disc}
+    .goals li{margin:.2rem 0}
+    .meta-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+    .chip{background:#eef3f6;border:1px solid #dde6ec;border-radius:999px;padding:.25rem .6rem;font-size:.9rem}
+
+    /* Sections grid (links alle altre sezioni) */
+    .sections-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0;
+      align-items:stretch
+    }
+    @media (max-width:768px){
+      .sections-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:480px){
+      .sections-grid{grid-template-columns:1fr}
+    }
+    .section-card{
+      background:#fff;border-radius:20px;padding:1.25rem;box-shadow:0 8px 32px rgba(0,0,0,.1);
+      transition:.2s ease;text-decoration:none;color:inherit;
+      display:flex;flex-direction:column;height:100%
+    }
+    .section-card:hover{transform:translateY(-6px);box-shadow:0 14px 40px rgba(0,0,0,.18)}
+    .section-card--empty{
+      filter:grayscale(1);
+      opacity:0.65
+    }
+    .section-card--empty:hover{
+      transform:none;
+      box-shadow:0 8px 32px rgba(0,0,0,.08)
+    }
+    .section-card,
+    .section-card:visited,
+    .section-card:hover,
+    .section-card:active,
+    .section-card:focus {
+      text-decoration: none;
+      color: inherit;
+      outline: none;
+    }
+    .section-card:focus-visible {
+      outline: 3px solid rgba(8,80,120,.35);
+      outline-offset: 4px;
+      text-decoration: none;
+    }
+    .section-icon{font-size:2rem;text-align:center;margin-bottom:.5rem}
+    .section-title{font-weight:800;color:#085078;text-align:center;margin:.25rem 0 .25rem 0}
+    .section-description{color:#555;text-align:center;margin-top:.5rem;flex-grow:1}
+
+    /* Transcript/Summary box */
+    .a11y-box{background:#f7fafc;border:1px solid #e5e7eb;border-radius:12px;padding:.75rem;margin-top:.5rem}
+    details summary{cursor:pointer;font-weight:700}
+
+    /* Progress (facoltativo) */
+    .progress-bar{width:100%;height:8px;background:#e9ecef;border-radius:4px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#085078 0%,#003B5C 100%);width:0%}
+
+    body:not(.student-view) .percorso-actions > *:last-child{
+      display: none !important;
+    }
+    body:not(.student-view) #backToTop{
+      display: none !important;
+    }
+    /* ===============================
+       LATO DOCENTE: niente emoji
+       =============================== */
+    body:not(.student-view) #backToDashboard,
+    body:not(.student-view) #backToWizard,
+    body:not(.student-view) #backToTop{
+      font-size:0;
+    }
+    body:not(.student-view) #backToDashboard::after{
+      content:"Torna alla Dashboard";
+      font-size:1rem;
+      color:#F1F1F1;
+    }
+    body:not(.student-view) #backToWizard::after{
+      content:"Torna al Wizard";
+      font-size:1rem;
+      color:#F1F1F1;
+    }
+    body:not(.student-view) #backToTop::after{
+      content:"Home";
+      font-size:1rem;
+      color:#F1F1F1;
+    }
+    /* ===============================
+       LATO STUDENTE: emoji OK + testo bianco
+       =============================== */
+    body.student-view .back-link{
+      color:#F1F1F1;
+    }
+    /* Nascondi elementi non voluti in HOME */
+    #home-context{display:none !important}
+    #home-meta{display:none !important}
+    .lesson-header .hero .hero-text > div:last-of-type{display:none !important}
+    /* Box grigio per descrizione */
+    .desc-box-home{background:#f5f6f7;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;margin-top:10px;text-align:left;width:100%;max-width:100%;box-sizing:border-box}
+    /* Box docente */
+    .docente-box{background:#f5f6f7;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;margin-top:10px;text-align:left;font-size:0.95rem;color:#374151;width:100%;max-width:100%;box-sizing:border-box}
+    /* Card copertina */
+    .cover-card{background:#fff;border-radius:20px;padding:1.25rem;box-shadow:0 8px 32px rgba(0,0,0,.1);margin-bottom:1.5rem;display:none}
+    .cover-box{background:#f5f6f7;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;width:100%;max-width:100%;box-sizing:border-box}
+    .cover-box .a11y-box{background:transparent;border:0;padding:0}
+    /* Copertina – media con larghezza massima standard, no crop */
+    .cover-box img,
+    .cover-box video,
+    .cover-box iframe {
+      max-width: 720px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      max-height: 60vh;
+      background: transparent;
+    }
+    .cover-thumbnail{max-width:100%;border-radius:8px;aspect-ratio:16/9;object-fit:cover;margin-bottom:0.75rem}
+    /* FIX: la thumbnail reale (IMG) non deve essere forzata 16:9 */
+    img.cover-thumbnail{
+      width:100%;
+      max-width:720px;
+      height:auto;
+      max-height:60vh;
+      aspect-ratio:auto !important;
+      object-fit:contain !important;
+      background:transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+       <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:flex-start;margin-bottom1rem">
+      <a href="teacher-dashboard.html" class="back-link" id="backToDashboard">← Torna alla Dashboard</a>
+      <a href="wizard.html" class="back-link" id="backToWizard">← Torna al Wizard</a>
+      <a href="#top" class="back-link" id="backToTop">↑ Home</a>
+      <a href="student-home.html" class="back-link" id="studentHomeLink" style="display:none">🏠 Home</a>
+      <a href="student-lessons.html" class="back-link" id="studentLessonsLink" style="display:none">📚 Le mie lezioni</a>
+    </div>
+
+
+    <!-- HEADER / HERO -->
+    <div class="lesson-header">
+      <header class="viewer-header" role="banner">
+        <div class="title-wrap">
+          <h1 class="lesson-title" id="home-title">Caricamento…</h1>
+          <div class="avatar-badge" id="avatarBadge">AI</div>
+          <div id="home-context" class="meta-chips" style="justify-content:center;margin:.15rem 0 .35rem 0"></div>
+          <div class="desc-box-home" id="home-description-box"></div>
+          <div class="docente-box" id="docente-box"></div>
+        </div>
+      </header>
+    </div>
+
+    <!-- COPERTINA (solo se presente) -->
+    <div class="cover-card" id="cover-card">
+      <div class="cover-box" id="cover-box"></div>
+    </div>
+
+    <!-- LINK SEZIONI -->
+    <div class="sections-grid">
+      <a href="#" id="lessonLink" class="section-card">
+        <div class="section-icon">📖</div>
+        <h2 class="section-title">Lezione</h2>
+        <p class="section-description">Spiegazione con immagini, video e supporti alla comprensione</p>
+      </a>
+
+           <a href="#" id="attivitaLink" class="section-card">
+        <div class="section-icon">🧩</div>
+        <h2 class="section-title">Attività</h2>
+        <p class="section-description">Esercizi e attività pratiche</p>
+      </a>
+
+
+      <a href="#" id="risorseLink" class="section-card">
+        <div class="section-icon">📚</div>
+        <h2 class="section-title">Risorse</h2>
+        <p class="section-description">Materiali, link e approfondimenti</p>
+      </a>
+
+      <a href="#" id="valutazioneLink" class="section-card">
+        <div class="section-icon">🧠</div>
+        <h2 class="section-title">Valutazione &amp; Riflessione</h2>
+        <p class="section-description">Quiz, autovalutazione e riflessione</p>
+      </a>
+
+
+      <a href="#" id="infoEticaLink" class="section-card">
+        <div class="section-icon">ℹ️</div>
+        <h2 class="section-title">Info &amp; Etica</h2>
+        <p class="section-description">Uso dell'IA, privacy e fonti</p>
+      </a>
+
+      <a href="#" id="conclusioneLink" class="section-card">
+        <div class="section-icon">🎯</div>
+        <h2 class="section-title">Conclusione & Feedback</h2>
+        <p class="section-description">Riflessione finale e feedback</p>
+      </a>
+    </div>
+  </div>
+
+  <script src="assets/js/global-header.js"></script>
+  <script src="assets/js/session-src.js"></script>
+  <script>
+    (function(){
+      const $  = (s,c=document)=>c.querySelector(s);
+
+      // Query param
+      const params   = new URLSearchParams(location.search);
+      const lessonId = params.get('lesson');
+      const isStudent = params.get('student') === '1';
+      const ret = params.get('return');
+      const dash = params.get('dashboard');
+      // Link di ritorno (se arriviamo dal wizard con ?return=...&dashboard=...)
+      (function setupReturnLinks(){
+        const bW = document.getElementById('backToWizard');
+        const bD = document.getElementById('backToDashboard');
+        const bT = document.getElementById('backToTop');
+        if (bW) {
+          let defaultWizard = 'create-lesson-wizard.html';
+          if (lessonId && lessonId !== 'preview') {
+            defaultWizard = 'create-lesson-wizard.html?edit=' + encodeURIComponent(lessonId);
+          }
+          let safeRet = null;
+          if (ret) {
+            const trimmed = ret.trim();
+            const upper = trimmed.toUpperCase();
+            if (!trimmed.includes(':/') && !upper.startsWith('C:\\') && !upper.startsWith('/C:/')) {
+              safeRet = trimmed;
+            }
+          }
+          bW.href = safeRet || defaultWizard;
+        }
+        if(bD && dash) bD.href = dash;
+        if (isStudent) {
+          if (bW) bW.style.display = 'none';
+          if (bD) bD.style.display = 'none';
+          if (bT) bT.style.display = 'none';
+          const sH = document.getElementById('studentHomeLink');
+          const sL = document.getElementById('studentLessonsLink');
+          if (sH) sH.style.display = '';
+          if (sL) sL.style.display = '';
+        }
+      })();
+
+
+            // Anteprima normalmente nella stessa scheda: manteniamo sempre i link visibili
+
+
+      // Caricamento dati (supporta NUOVO schema meta+home e VECCHIO schema piatto)
+      function loadData(){
+        if(!lessonId){
+          return { home:{ title:"Lezione non trovata", subtitle:"Nessuna lezione specificata." }, meta:{} };
+        }
+
+        // Anteprima da wizard
+        if(lessonId==='preview'){
+          const preview = sessionStorage.getItem('lesson_preview');
+          if(preview){
+            try{
+              const flat = JSON.parse(preview);      // schema piatto dalla preview del wizard
+              return migrateToNewSchema(flat);
+            }catch(e){ console.warn(e); }
+          }
+        }
+
+        // Storage persistito
+        const raw = localStorage.getItem(`lesson_config_${lessonId}`);
+        if(raw){
+          try{
+            const parsed = JSON.parse(raw);
+            // se già meta+home lo restituiamo; se piatto, migriamo
+            if(parsed.home || parsed.meta){ return parsed; }
+            return migrateToNewSchema(parsed);
+          }catch(e){ console.warn(e); }
+        }
+
+        // Fallback
+        return { home:{ title:`Lezione "${lessonId}" non trovata`, subtitle:"Torna alla dashboard." }, meta:{} };
+      }
+
+      // Migrazione semplice da schema PIATTO (vecchio) a NUOVO (meta+home)
+      function migrateToNewSchema(flat){
+        const meta = {
+          id: flat.id || ('preview-'+Date.now()),
+          author: flat.author || flat.meta?.author || "",
+          updatedAt: flat.updatedAt || flat.meta?.updatedAt || "",
+          duration: flat.duration || flat.meta?.duration || "",
+          cefr: flat.cefr || flat.meta?.cefr || "",
+          pfi: flat.pfi || flat.meta?.pfi || "",
+          state: flat.state || flat.meta?.state || "draft",
+          createdAt: flat.createdAt || flat.meta?.createdAt || ""
+        };
+        const home = {
+          title: flat.title || flat.home?.title || "",
+          subtitle: flat.subtitle || flat.home?.subtitle || "",
+          description: flat.description || flat.home?.description || "",
+          goals: flat.goals || flat.home?.goals || [],
+          avatarMode: flat.avatarMode || flat.home?.avatarMode || "logo",
+          avatar: flat.avatar || flat.home?.avatar || "assets/brand/logo_edubot_icon.png",
+          avatarAudio: flat.avatarAudio ?? flat.home?.avatarAudio ?? false,
+          introType: flat.introType || flat.home?.introType || "none",
+          heroImage: flat.heroImage || flat.home?.heroImage || "",
+          heroImageAlt: flat.heroImageAlt || flat.home?.heroImageAlt || "",
+          heroVideo: flat.heroVideo || flat.home?.heroVideo || "",
+          videoTranscript: flat.videoTranscript || flat.home?.videoTranscript || "",
+          videoSummary: flat.videoSummary || flat.home?.videoSummary || "",
+          tags: flat.tags || flat.home?.tags || []
+        };
+        return { meta, home };
+      }
+
+      const data = loadData();
+      const meta = data.meta || {};
+      const home = data.home || {};
+
+      // FIX: fallback intro dalla bozza salvata se mancano campi
+           (function ensureIntroFromLocal(){
+        const id = meta.id || new URLSearchParams(location.search).get('lesson');
+        try{
+          const raw = localStorage.getItem(`lesson_config_${id}`);
+          if(!raw) return;
+          const cfg = JSON.parse(raw);
+
+          if(!home.introType && cfg.introType) home.introType = cfg.introType;
+
+          if(!home.heroImage && cfg.heroImage) home.heroImage = cfg.heroImage;
+          if(!home.heroImageAlt && cfg.heroImageAlt) home.heroImageAlt = cfg.heroImageAlt;
+
+          if(!home.heroVideo && cfg.heroVideo) home.heroVideo = cfg.heroVideo;
+
+          if(!home.videoTranscript && cfg.videoTranscript) home.videoTranscript = cfg.videoTranscript;
+          if(!home.videoSummary && cfg.videoSummary) home.videoSummary = cfg.videoSummary;
+
+          if(!home.context && cfg.context) home.context = cfg.context;
+        }catch(_){}
+      })();
+
+
+      // AVATAR (badge) — rispetta avatarMode/image/video e personalizzati
+      const badge = $('#avatarBadge');
+      function isYouTubeUrl(u){
+        try{ const url=new URL(u); return /youtube\.com|youtu\.be/.test(url.hostname); }catch(e){ return false; }
+      }
+      function toYouTubeEmbed(u, opts){
+        const params = Object.assign({ autoplay: false, mute: false, loop: true }, opts||{});
+        try{
+          const url = new URL(u);
+          if(url.hostname.includes('youtu.be')){
+            const id = url.pathname.replace('/','');
+            const ap = params.autoplay?1:0; const mt = params.mute?1:0; const lp = params.loop?1:0;
+            return `https://www.youtube.com/embed/${id}?autoplay=${ap}&mute=${mt}&loop=${lp}&playlist=${id}&rel=0&modestbranding=1&playsinline=1`;
+          }
+          if(url.hostname.includes('youtube.com')){
+            const id = url.searchParams.get('v');
+            if(id){
+              const ap = params.autoplay?1:0; const mt = params.mute?1:0; const lp = params.loop?1:0;
+              return `https://www.youtube.com/embed/${id}?autoplay=${ap}&mute=${mt}&loop=${lp}&playlist=${id}&rel=0&modestbranding=1&playsinline=1`;
+            }
+          }
+        }catch(e){}
+        return '';
+      }
+      // IndexedDB helpers per video avatar
+      async function idbOpen(){
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open('ai_school_template', 1);
+          req.onerror = () => reject(req.error);
+          req.onsuccess = () => resolve(req.result);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if(!db.objectStoreNames.contains('blobs')){
+              db.createObjectStore('blobs', {keyPath: 'key'});
+            }
+          };
+        });
+      }
+      async function idbGetBlob(key){
+        try {
+          const db = await idbOpen();
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction('blobs', 'readonly');
+            const store = tx.objectStore('blobs');
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result?.blob || null);
+            req.onerror = () => reject(req.error);
+          });
+        }catch(e){ return null; }
+      }
+      function setVideoPreviewFromBlob(videoEl, blob, label){
+        if(!videoEl || !blob) return;
+        try{
+          let v = videoEl;
+          if(!(v instanceof HTMLVideoElement)){
+            v = v.querySelector?.('video') || v;
+            if(!(v instanceof HTMLVideoElement)) return;
+          }
+          v.pause();
+          v.removeAttribute('src');
+          v.load();
+          v.onloadedmetadata = null;
+          v.onloadeddata = null;
+          v.onerror = null;
+          const url = URL.createObjectURL(blob);
+          if(v.dataset.prevUrl) URL.revokeObjectURL(v.dataset.prevUrl);
+          v.dataset.prevUrl = url;
+          v.preload = 'auto';
+          v.muted = true;
+          v.playsInline = true;
+          v.src = url;
+          v.load();
+          v.style.width = '100%';
+          v.style.height = '100%';
+          v.style.objectFit = 'cover';
+          v.onloadeddata = () => {
+            v.style.width = '100%';
+            v.style.height = '100%';
+            v.style.objectFit = 'cover';
+            v.hidden = false;
+            v.style.display = 'block';
+          };
+          v.onerror = () => {
+            URL.revokeObjectURL(url);
+            delete v.dataset.prevUrl;
+            v.hidden = true;
+          };
+        }catch(_){}
+      }
+
+      async function renderAvatar(){
+        const badge = $('#avatarBadge');
+        badge.innerHTML='AI';
+        const lessonKey = (data?.meta?.id) ? data.meta.id : (params.get('lesson') || sessionStorage.getItem('currentDraftId'));
+        let rawCfg = null; try{ rawCfg = JSON.parse(localStorage.getItem(`lesson_config_${lessonKey}`) || '{}'); }catch(e){ rawCfg = {}; }
+        const mode  = rawCfg.avatarMode ?? home.avatarMode ?? 'logo';
+        const urlRaw = rawCfg.avatarSrc || rawCfg.avatar || home.avatar || '';
+        const audio = !!(rawCfg.avatarAudio ?? home.avatarAudio ?? false);
+        const url = resolveSessionSrc(urlRaw, lessonKey);
+        const avatarBlobKey = rawCfg.avatarBlobKey;
+        const avatarImageBlobKey = rawCfg.avatarImageBlobKey;
+
+        const makeImg = (src)=>{ const img=document.createElement('img'); img.alt='Avatar'; img.src=src; return img; };
+        const makeVid = (src, withAudio)=>{ const v=document.createElement('video'); v.src=src; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); if(withAudio){ v.muted=false; v.autoplay=false; } else { v.muted=true; v.autoplay=true; } return v; };
+        const makeIframe = (src)=>{ const f=document.createElement('iframe'); f.src=src; f.allow='autoplay; encrypted-media; picture-in-picture'; f.loading='lazy'; f.referrerPolicy='no-referrer'; return f; };
+        const isYouTubeUrl = (u)=>{ try{ const _u=new URL(u); return /youtube\.com|youtu\.be/.test(_u.hostname); }catch(e){ return false; } };
+        const toYouTubeEmbed = (u,{autoplay=false,mute=true,loop=true}={})=>{ try{ const url=new URL(u); let id=''; if(url.hostname.includes('youtu.be')){ id=url.pathname.replace('/',''); } else if(url.hostname.includes('youtube.com')){ id=url.searchParams.get('v')||''; } if(!id) return ''; const ap=autoplay?1:0, mt=mute?1:0, lp=loop?1:0; return `https://www.youtube-nocookie.com/embed/${id}?autoplay=${ap}&mute=${mt}&loop=${lp}&playlist=${id}&rel=0&modestbranding=1&playsinline=1`; }catch(e){ return ''; } };
+
+        badge.classList.remove('avatar-zoom');
+        
+        // Video da IDB (locale)
+        if(mode==='video' && avatarBlobKey){
+          const blob = await idbGetBlob(avatarBlobKey);
+          if(blob){
+            const v = makeVid('', audio);
+            v.style.width = '100%';
+            v.style.height = '100%';
+            v.style.objectFit = 'cover';
+            badge.innerHTML=''; badge.classList.add('avatar-zoom'); badge.appendChild(v);
+            setVideoPreviewFromBlob(v, blob, 'preview avatar');
+            const ctrls = document.createElement('div'); ctrls.className='avatar-ctrls';
+            const btnAudio = document.createElement('button'); btnAudio.type='button'; btnAudio.setAttribute('aria-label','Audio');
+            const btnPlay  = document.createElement('button'); btnPlay.type='button'; btnPlay.setAttribute('aria-label','Play/Pausa');
+            const syncBtns = ()=>{ btnAudio.textContent = v.muted ? '🔇' : '🔊'; btnPlay.textContent = v.paused ? '▶' : '⏸'; };
+            btnAudio.onclick = ()=>{ v.muted = !v.muted; if(!v.muted && v.paused) v.play().catch(()=>{}); syncBtns(); };
+            btnPlay.onclick  = ()=>{ if(v.paused) v.play().catch(()=>{}); else v.pause(); syncBtns(); };
+            syncBtns(); badge.appendChild(ctrls); ctrls.append(btnAudio, btnPlay);
+            return;
+          }
+        }
+        
+        if(mode==='video' && url){
+          if(isYouTubeUrl(url)){
+            const embed = toYouTubeEmbed(url,{autoplay:!audio,mute:!audio,loop:true});
+            if(embed){ badge.innerHTML=''; badge.classList.add('avatar-zoom'); badge.appendChild(makeIframe(embed)); return; }
+          }
+          const v = makeVid(url, audio);
+          badge.innerHTML=''; badge.classList.add('avatar-zoom'); badge.appendChild(v);
+          const ctrls = document.createElement('div'); ctrls.className='avatar-ctrls';
+          const btnAudio = document.createElement('button'); btnAudio.type='button'; btnAudio.setAttribute('aria-label','Audio');
+          const btnPlay  = document.createElement('button'); btnPlay.type='button'; btnPlay.setAttribute('aria-label','Play/Pausa');
+          const syncBtns = ()=>{ btnAudio.textContent = v.muted ? '🔇' : '🔊'; btnPlay.textContent = v.paused ? '▶' : '⏸'; };
+          btnAudio.onclick = ()=>{ v.muted = !v.muted; if(!v.muted && v.paused) v.play().catch(()=>{}); syncBtns(); };
+          btnPlay.onclick  = ()=>{ if(v.paused) v.play().catch(()=>{}); else v.pause(); syncBtns(); };
+          syncBtns(); badge.appendChild(ctrls); ctrls.append(btnAudio, btnPlay);
+          const tryPlay = ()=>{ if(v.autoplay && v.muted) v.play().catch(()=>{}); }; v.onloadedmetadata = tryPlay; tryPlay();
+          return;
+        }
+        if(mode==='image' && avatarImageBlobKey){
+          const blob = await idbGetBlob(avatarImageBlobKey);
+          if (blob) {
+            const img = makeImg('');
+            const objUrl = URL.createObjectURL(blob);
+            img.src = objUrl;
+            img.onload = () => { try{ URL.revokeObjectURL(objUrl); }catch(e){} };
+            badge.innerHTML=''; badge.classList.add('avatar-zoom'); badge.appendChild(img);
+            return;
+          }
+        }
+        if((mode==='image' || mode==='logo') && url){ badge.innerHTML=''; badge.classList.add('avatar-zoom'); badge.appendChild(makeImg(url)); return; }
+      }
+      renderAvatar();
+
+      // MEDIA (immagine/video) + accessibilità (transcript/summary)
+      const mediaBox = $('#cover-box');
+      const coverCard = $('#cover-card');
+      // Helpers pointer lettura
+      function ssKey(kind, lessonId){ return `session_blob_${lessonId}_${kind}`; }
+      function fromSessionPointer(ptr, lesson){ if(typeof ptr!=='string' || !ptr.startsWith('session://')) return ptr; const kind=ptr.replace('session://',''); try{ return sessionStorage.getItem(ssKey(kind, lesson))||''; }catch(e){ return ''; } }
+
+      async function renderMedia(){
+        mediaBox.innerHTML = "";
+        if(!home.introType || (home.introType !== 'image' && home.introType !== 'video')){
+          if(coverCard) coverCard.style.display = 'none';
+          return;
+        }
+        const hasImage = home.introType==='image' && !!home.heroImage;
+        const hasVideo = home.introType==='video' && !!home.heroVideo;
+        if(!hasImage && !hasVideo){
+          if(coverCard) coverCard.style.display='none';
+          return;
+        }
+        if(coverCard) coverCard.style.display='block';
+        if(home.introType==='image' && home.heroImage){
+          // Carica cfg per ottenere coverImageBlobKey
+          let rawCfg = null;
+          try{ rawCfg = JSON.parse(localStorage.getItem(`lesson_config_${meta.id||lessonId}`) || '{}'); }catch(e){ rawCfg = {}; }
+          const coverImageBlobKey = rawCfg.coverImageBlobKey;
+          
+          if(home.heroImage === 'session://cover_image' && coverImageBlobKey){
+            // Immagine da IndexedDB
+            const blob = await idbGetBlob(coverImageBlobKey);
+            if(blob){
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(blob);
+            img.alt = (home.heroImageAlt || 'Immagine di copertina').trim();
+            mediaBox.appendChild(img);
+            
+            const altTxt = (home.heroImageAlt || '').trim();
+            if(altTxt){
+              const box = document.createElement('div');
+              box.className = 'a11y-box';
+              box.style.marginTop = '0.75rem';
+              box.innerHTML = `<strong>Descrizione immagine (ALT):</strong> ${altTxt}`;
+              mediaBox.appendChild(box);
+            }
+            } else {
+              const msg = document.createElement('div');
+              msg.className = 'a11y-box';
+              msg.textContent = '⚠️ Copertina: file non disponibile (ri-seleziona nel Wizard).';
+              mediaBox.appendChild(msg);
+            }
+          } else {
+            // URL esterno o fallback
+            const img = document.createElement('img');
+            img.src = fromSessionPointer(home.heroImage, (meta.id||lessonId)) || home.heroImage;
+            img.alt = (home.heroImageAlt || 'Immagine di copertina').trim();
+            mediaBox.appendChild(img);
+
+            const altTxt = (home.heroImageAlt || '').trim();
+            if(altTxt){
+              const box = document.createElement('div');
+              box.className = 'a11y-box';
+              box.style.marginTop = '0.75rem';
+              box.innerHTML = `<strong>Descrizione immagine (ALT):</strong> ${altTxt}`;
+              mediaBox.appendChild(box);
+            }
+          }
+
+        // FIX: renderMedia – YouTube nocookie robusto + fallback
+        } else if(home.introType==='video' && home.heroVideo){
+          // Carica cfg per ottenere coverVideoBlobKey
+          let rawCfg = null;
+          try{ rawCfg = JSON.parse(localStorage.getItem(`lesson_config_${meta.id||lessonId}`) || '{}'); }catch(e){ rawCfg = {}; }
+          const coverVideoBlobKey = rawCfg.coverVideoBlobKey;
+          
+          const transcriptTxt = String(home.videoTranscript || rawCfg.introVideoTranscript || '').trim();
+          const summaryTxt = String(home.videoSummary || rawCfg.introVideoSummary || '').trim();
+          
+          const appendA11yVideoText = () => {
+            if (summaryTxt) {
+              const box = document.createElement('div');
+              box.className = 'a11y-box';
+              box.innerHTML = `<strong>Riassunto:</strong> ${summaryTxt}`;
+              mediaBox.appendChild(box);
+            }
+
+            if (transcriptTxt) {
+              const det = document.createElement('details');
+              det.className = 'a11y-box';
+              det.innerHTML = `<summary>📝 <strong>Trascrizione</strong></summary><div style="margin-top:0.5rem; white-space:pre-wrap;">${transcriptTxt}</div>`;
+              mediaBox.appendChild(det);
+            }
+          };
+          
+          const url = fromSessionPointer(home.heroVideo, (meta.id||lessonId)) || home.heroVideo;
+          const isYT = /(?:youtu\.be|youtube\.com)/.test(url||'');
+          
+          let videoUrl = url;
+          let thumbnailUrl = '';
+          
+          // Priorità 1: thumbnail salvata nel config
+          const savedThumb = (home.heroVideoThumb || '').trim();
+          if (savedThumb){
+            thumbnailUrl = savedThumb;
+          } else if (isYT){
+            const extractId = (u)=>{
+              try{
+                const U = new URL(u);
+                const h = (U.hostname||'').replace(/^www\./,'').toLowerCase();
+                if (h === 'youtu.be'){
+                  const m = U.pathname.match(/\/([A-Za-z0-9_-]{11})/);
+                  return m ? m[1] : null;
+                }
+                if (h.endsWith('youtube.com')){
+                  if (U.searchParams.get('v')) return (U.searchParams.get('v')||'').trim().slice(0,11);
+                  const em = U.pathname.match(/\/embed\/([A-Za-z0-9_-]{11})/);
+                  if (em) return em[1];
+                  const sh = U.pathname.match(/\/shorts\/([A-Za-z0-9_-]{11})/);
+                  if (sh) return sh[1];
+                }
+              }catch(e){
+                const m = (u||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+                return m ? m[1] : null;
+              }
+              return null;
+            };
+            const vid = extractId(url);
+            if (vid){
+              videoUrl = `https://www.youtube.com/watch?v=${vid}`;
+              thumbnailUrl = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
+            }
+          }
+          
+          if(home.heroVideo === 'session://cover_video' && coverVideoBlobKey){
+            const blob = await idbGetBlob(coverVideoBlobKey);
+            if(blob){
+              const v = document.createElement('video');
+              v.controls = true;
+              v.src = URL.createObjectURL(blob);
+              mediaBox.appendChild(v);
+              if (summaryTxt || transcriptTxt) {
+                appendA11yVideoText();
+              }
+            } else {
+              const msg = document.createElement('div');
+              msg.className = 'a11y-box';
+              msg.style.marginTop = '0.75rem';
+              msg.textContent = '⚠️ Copertina: file non disponibile (ri-seleziona nel Wizard).';
+              mediaBox.appendChild(msg);
+            }
+            return;
+          }
+          
+          // Per tutti i video URL: mostra thumbnail + pulsante (mai incorporare)
+          if(thumbnailUrl){
+            const img = document.createElement('img');
+            img.src = thumbnailUrl;
+            img.alt = 'Anteprima video';
+            img.className = 'cover-thumbnail';
+            mediaBox.appendChild(img);
+          } else if(videoUrl && !isYT){
+            const placeholder = document.createElement('div');
+            placeholder.className = 'cover-thumbnail';
+            placeholder.style.background = '#0b1220';
+            placeholder.style.display = 'flex';
+            placeholder.style.alignItems = 'center';
+            placeholder.style.justifyContent = 'center';
+            placeholder.style.color = '#fff';
+            placeholder.style.fontSize = '3rem';
+            placeholder.textContent = '🎬';
+            mediaBox.appendChild(placeholder);
+          }
+          
+          if(location.protocol === 'file:'){
+            const msg = document.createElement('div');
+            msg.className = 'a11y-box';
+            msg.style.marginTop = '0.75rem';
+            msg.style.fontSize = '0.85rem';
+            msg.style.fontStyle = 'italic';
+            msg.textContent = '⚠️ Anteprima non disponibile in modalità offline. Apri il video in una nuova scheda.';
+            mediaBox.appendChild(msg);
+          }
+          
+          const btn = document.createElement('a');
+          btn.href = videoUrl;
+          btn.target = '_blank';
+          btn.rel = 'noopener';
+          btn.className = 'btn';
+          btn.style.marginTop = '0.75rem';
+          btn.textContent = '🎬 Apri video';
+          mediaBox.appendChild(btn);
+          
+          if (summaryTxt || transcriptTxt) {
+            appendA11yVideoText();
+          }
+        }
+      }
+      renderMedia();
+
+      // TESTI (FIX: evita crash se elemento non esiste)
+      const homeTitleEl = $('#home-title');
+      if (homeTitleEl) homeTitleEl.textContent = home.title || '—';
+      const descBox = $('#home-description-box');
+      if(descBox && home.description){
+        descBox.textContent = home.description;
+      } else if(descBox){
+        descBox.style.display = 'none';
+      }
+      
+      // Box docente
+      const docenteBox = $('#docente-box');
+      if(docenteBox && meta.author){
+        docenteBox.textContent = `👩‍💻 Docente: ${meta.author}`;
+      } else if(docenteBox){
+        docenteBox.style.display = 'none';
+      }
+
+      // GOALS (FIX: evita crash se elemento non esiste)
+      const goalsUl = $('#home-goals');
+      if (goalsUl) {
+        goalsUl.innerHTML = '';
+        (home.goals||[]).forEach(g=>{
+          const li = document.createElement('li');
+          li.textContent = g;
+          goalsUl.appendChild(li);
+        });
+        goalsUl.style.display = (home.goals && home.goals.length) ? '' : 'none';
+      }
+
+      // META CHIPS (FIX: evita crash se elemento non esiste)
+      const metaBox = $('#home-meta');
+      if (metaBox) metaBox.innerHTML = '';
+      function chip(txt){ const s=document.createElement('span'); s.className='chip'; s.textContent=txt; return s; }
+      if(metaBox && meta.duration) metaBox.appendChild(chip(`⏱️ ${meta.duration}`));
+      if(metaBox && meta.cefr)     metaBox.appendChild(chip(`🎯 CEFR ${meta.cefr}`));
+      if(metaBox && meta.author)   metaBox.appendChild(chip(`👤 ${meta.author}`));
+      // Non mostrare data/ora nell'anteprima
+      if(metaBox && meta.pfi)      metaBox.appendChild(chip(`📌 ${meta.pfi}`));
+
+      // LINK SEZIONI
+      // FIX: evita crash se meta è null/undefined e evita lesson=null/undefined negli URL
+      const isValidId = (v) => typeof v === 'string' && v.trim() !== '' && v !== 'null' && v !== 'undefined';
+      const rawId = (lessonId === 'preview')
+        ? 'preview'
+        : ((meta && isValidId(meta.id)) ? meta.id : lessonId);
+      const linkId = isValidId(rawId) ? rawId : null;
+      let ctxQS = '';
+      if (isStudent) {
+        ctxQS = '&student=1';
+      } else {
+        if (ret)  ctxQS += `&return=${encodeURIComponent(ret)}`;
+        if (dash) ctxQS += `&dashboard=${encodeURIComponent(dash)}`;
+      }
+      const fallbackHref = isStudent ? 'student-lessons.html' : 'teacher-dashboard.html';
+      const lessonLink = $('#lessonLink'); if (lessonLink) lessonLink.href = linkId ? `pages/lezione.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+      const attivitaLink = $('#attivitaLink'); if (attivitaLink) attivitaLink.href = linkId ? `pages/attivita.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+      const risorseLink = $('#risorseLink'); if (risorseLink) risorseLink.href = linkId ? `pages/risorse.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+      const valutazioneLink = $('#valutazioneLink'); if (valutazioneLink) valutazioneLink.href = linkId ? `pages/valutazione-riflessione.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+      const infoEticaLink = $('#infoEticaLink'); if (infoEticaLink) infoEticaLink.href = linkId ? `pages/info-etica.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+      const conclusioneLink = $('#conclusioneLink'); if (conclusioneLink) conclusioneLink.href = linkId ? `pages/conclusione-feedback.html?lesson=${encodeURIComponent(linkId)}${ctxQS}` : fallbackHref;
+
+      // Verifica sezione compilata
+      const defaultTemplatePhrases = [
+        "Quanto ti senti preparato su questi argomenti?"
+      ];
+      function hasMeaningfulValue(x){
+        if(x === null || x === undefined) return false;
+        if(typeof x === 'string'){
+          const trimmed = x.trim();
+          if(trimmed === '') return false;
+          if(defaultTemplatePhrases.includes(trimmed)) return false;
+          return true;
+        }
+        if(typeof x === 'number') return false;
+        if(typeof x === 'boolean') return false;
+        if(Array.isArray(x)){
+          if(x.length === 0) return false;
+          return x.some(item => hasMeaningfulValue(item));
+        }
+        if(typeof x === 'object'){
+          const keys = Object.keys(x);
+          if(keys.length === 0) return false;
+          return keys.some(key => hasMeaningfulValue(x[key]));
+        }
+        return false;
+      }
+      function hasSectionContent(lessonId, step){
+        const raw = localStorage.getItem(`lesson_section_${lessonId}_${step}`);
+        if(!raw) return false;
+        const trimmed = raw.trim();
+        if(trimmed === '' || trimmed === '{}' || trimmed === '[]') return false;
+        try{
+          const parsed = JSON.parse(trimmed);
+          return hasMeaningfulValue(parsed);
+        }catch(e){
+          return true;
+        }
+      }
+      // Applica classe empty alle card vuote
+      if(!hasSectionContent(linkId, 1)) $('#lessonLink').classList.add('section-card--empty');
+      if(!hasSectionContent(linkId, 2)) $('#attivitaLink').classList.add('section-card--empty');
+      if(!hasSectionContent(linkId, 3)) $('#risorseLink').classList.add('section-card--empty');
+      if(!hasSectionContent(linkId, 4)) $('#valutazioneLink').classList.add('section-card--empty');
+      if(!hasSectionContent(linkId, 5)) $('#infoEticaLink').classList.add('section-card--empty');
+      if(!hasSectionContent(linkId, 6)) $('#conclusioneLink').classList.add('section-card--empty');
+
+      // PROGRESS (semplice: usa currentStep salvato nel payload o key dedicata)
+      function updateProgress(){
+        // 7 step totali (0..6): convertiamo in %
+        let step = 0;
+        const stored = localStorage.getItem(`lesson_config_${meta.id || lessonId}`);
+        if(stored){
+          try{
+            const obj = JSON.parse(stored);
+            // compat: se payload dev contiene currentStep
+            if(typeof obj.currentStep === 'number'){ step = obj.currentStep; }
+          }catch(e){}
+        }
+        // oppure usa contatore custom se presente
+        const custom = localStorage.getItem(`lesson_${lessonId}_completed`);
+        if(custom){ step = Math.max(step, parseInt(custom)||0); }
+
+        const pct = Math.max(0, Math.min(100, Math.round((step/6)*100))); // 0..6
+        $('#progressFill').style.width = pct + '%';
+        $('#progressText').textContent = pct + '%';
+      }
+      updateProgress();
+
+    })();
+  </script>
+
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="assets/js/voice-reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home Corso - AI School Template</title>
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/lesson.css">
+  <link rel="stylesheet" href="assets/css/global-header.css">
+  <script src="assets/js/session-src.js"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Stili specifici per la vista studenti */
+    .student-home {
+      background: linear-gradient(135deg, #085078 0%, #003B5C 100%);
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+    
+    .student-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    .student-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .student-btn {
+      background: white;
+      color: #085078;
+      padding: 2rem;
+      border-radius: 20px;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .student-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      background: #f8f9fa;
+    }
+    
+    .student-btn-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .student-btn-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #085078;
+    }
+    
+    .student-btn-desc {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.4;
+    }
+    
+    .student-footer {
+      text-align: center;
+      color: white;
+      margin-top: 3rem;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+    
+    footer {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      color: #999;
+      font-size: 0.9rem;
+    }
+    
+    .lessons-section {
+      margin-top: 3rem;
+    }
+    
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .lesson-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+    }
+
+    .lesson-card{ position: relative; }
+    .avatar-badge{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      overflow:hidden;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 4px 12px rgba(0,0,0,.12);
+      z-index:2;
+    }
+    .avatar-badge .lesson-avatar{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .avatar-badge .lesson-avatar,
+    .avatar-badge .avatar-thumb{
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      position: absolute !important;
+      inset: 0 !important;
+    }
+    
+    .lesson-card:hover:not(.placeholder) {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    }
+    
+    .lesson-card.placeholder {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .lesson-image {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, #085078 0%, #003B5C 100%);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .lesson-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.9);
+      color: #085078;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    
+    .lesson-card.placeholder .lesson-badge {
+      background: #ffc107;
+      color: #856404;
+    }
+    
+    .lesson-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #085078;
+      margin: 0 0 0.5rem;
+    }
+    
+    .lesson-subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    
+    .lesson-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #999;
+    }
+    
+    .lesson-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #28a745;
+    }
+    
+    @media (max-width: 768px) {
+      .student-title {
+        font-size: 2rem;
+      }
+      
+      .lessons-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .lesson-card {
+        padding: 1.5rem;
+      }
+      
+      .lesson-image {
+        height: 100px;
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="student-home">
+  <!-- Skip link per accessibilità -->
+  <a href="#contenuto" class="skip">Salta al contenuto</a>
+
+  <!-- Contenuto principale -->
+  <main id="contenuto" class="student-container" role="main">
+    
+    <!-- Lista Lezioni -->
+    <div class="lessons-section">
+      <h2 style="color: white; text-align: center; margin-bottom: 2rem; font-size: 1.8rem;">Scegli una Lezione</h2>
+      
+      <div class="lessons-grid">
+        
+        <!-- Lezione 1: Placeholder per la lezione principale del docente -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>📖</span>
+          </div>
+          <h3 class="lesson-title">Lezione 1</h3>
+          <p class="lesson-subtitle">Prima lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Scienze • Base</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #dc3545;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lezione 3: Placeholder -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>🔬</span>
+          </div>
+          <h3 class="lesson-title">Lezione 3</h3>
+          <p class="lesson-subtitle">Terza lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Scienze • Intermedio</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #ffc107;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lezione 3: Placeholder -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>🌍</span>
+          </div>
+          <h3 class="lesson-title">Lezione 4</h3>
+          <p class="lesson-subtitle">Quarta lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Scienze • Avanzato</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #ffc107;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lezione 4: Placeholder -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>⚡</span>
+          </div>
+          <h3 class="lesson-title">Lezione 5</h3>
+          <p class="lesson-subtitle">Quinta lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Tecnologia • Base</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #ffc107;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lezione 5: Placeholder -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>🧬</span>
+          </div>
+          <h3 class="lesson-title">Lezione 6</h3>
+          <p class="lesson-subtitle">Sesta lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Biologia • Base</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #ffc107;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lezione 6: Placeholder -->
+        <div class="lesson-card placeholder">
+          <div class="lesson-image">
+            <span>🌱</span>
+          </div>
+          <h3 class="lesson-title">Lezione 7</h3>
+          <p class="lesson-subtitle">Settima lezione del corso</p>
+          <div class="lesson-meta">
+            <span>Ecologia • Intermedio</span>
+            <div class="lesson-status">
+              <span class="status-dot" style="background: #ffc107;"></span>
+              <span>Non disponibile</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer class="student-footer">
+    <p>
+      <strong>AI School Template</strong><br>
+      Ambiente educativo digitale per studenti, progettato dai docenti con il supporto dell'intelligenza artificiale.<br>
+      Licenza Creative Commons CC BY-NC-SA 4.0
+    </p>
+  </footer>
+
+  <script src="assets/js/global-header.js"></script>
+  <script>
+    // IndexedDB helpers per video avatar (subset per vista studenti)
+    async function idbOpen(){
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('ai_school_template', 1);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if(!db.objectStoreNames.contains('blobs')){
+            db.createObjectStore('blobs', {keyPath: 'key'});
+          }
+        };
+      });
+    }
+    async function idbGetBlob(key){
+      try {
+        const db = await idbOpen();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('blobs', 'readonly');
+          const store = tx.objectStore('blobs');
+          const req = store.get(key);
+          req.onsuccess = () => resolve(req.result?.blob || null);
+          req.onerror = () => reject(req.error);
+        });
+      }catch(e){ return null; }
+    }
+
+    async function makeVideoThumbnailFromBlob(blob){
+      return new Promise((resolve) => {
+        try{
+          const v = document.createElement('video');
+          v.style.position = 'fixed';
+          v.style.left = '-9999px';
+          v.style.width = '1px';
+          v.style.height = '1px';
+          v.muted = true;
+          v.playsInline = true;
+          v.preload = 'auto';
+          const url = URL.createObjectURL(blob);
+          v.src = url;
+          v.onloadeddata = () => {
+            try{
+              v.currentTime = 0.10;
+            }catch(e){
+              v.currentTime = 0.01;
+            }
+          };
+          v.onseeked = () => {
+            try{
+              const canvas = document.createElement('canvas');
+              canvas.width = v.videoWidth || 320;
+              canvas.height = v.videoHeight || 240;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(v, 0, 0);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+              URL.revokeObjectURL(url);
+              document.body.removeChild(v);
+              resolve(dataUrl);
+            }catch(e){
+              URL.revokeObjectURL(url);
+              try{ document.body.removeChild(v); }catch(_){}
+              resolve(null);
+            }
+          };
+          v.onerror = () => {
+            URL.revokeObjectURL(url);
+            try{ document.body.removeChild(v); }catch(_){}
+            resolve(null);
+          };
+          document.body.appendChild(v);
+          v.load();
+        }catch(e){
+          resolve(null);
+        }
+      });
+    }
+
+    async function makeVideoThumbnailFromUrl(url){
+      return new Promise((resolve) => {
+        try{
+          const v = document.createElement('video');
+          v.style.position = 'fixed';
+          v.style.left = '-9999px';
+          v.style.width = '1px';
+          v.style.height = '1px';
+          v.muted = true;
+          v.playsInline = true;
+          v.preload = 'auto';
+          if(url.startsWith('http://') || url.startsWith('https://')){
+            v.crossOrigin = 'anonymous';
+          }
+          v.src = url;
+          v.onloadeddata = () => {
+            try{
+              v.currentTime = 0.10;
+            }catch(e){
+              v.currentTime = 0.01;
+            }
+          };
+          v.onseeked = () => {
+            try{
+              const canvas = document.createElement('canvas');
+              canvas.width = v.videoWidth || 320;
+              canvas.height = v.videoHeight || 240;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(v, 0, 0);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+              document.body.removeChild(v);
+              resolve(dataUrl);
+            }catch(e){
+              try{ document.body.removeChild(v); }catch(_){}
+              resolve(null);
+            }
+          };
+          v.onerror = () => {
+            try{ document.body.removeChild(v); }catch(_){}
+            resolve(null);
+          };
+          document.body.appendChild(v);
+          v.load();
+        }catch(e){
+          resolve(null);
+        }
+      });
+    }
+
+    const __thumbCache = new Map();
+
+    async function loadAvatarThumbFromSources(cardEl){
+      try{
+        if(!cardEl) return;
+
+        // Gestione video da IDB (locale)
+        const imgBlob = cardEl.querySelector?.('img.avatar-thumb[data-avatar-blob-key]');
+        if(imgBlob){
+          const key = imgBlob.getAttribute('data-avatar-blob-key');
+          if(key){
+            const cacheKey = "idb:"+key;
+            if(__thumbCache.has(cacheKey)){
+              imgBlob.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const blob = await idbGetBlob(key);
+            if(blob){
+              const dataUrl = await makeVideoThumbnailFromBlob(blob);
+              if(dataUrl){
+                __thumbCache.set(cacheKey, dataUrl);
+                imgBlob.src = dataUrl;
+                return;
+              }
+            }
+          }
+          // Fallback se fallisce
+          imgBlob.src = "assets/brand/logo_edubot_icon.png";
+        }
+
+        // Gestione video da URL
+        const imgUrl = cardEl.querySelector?.('img.avatar-thumb[data-video-src]');
+        if(imgUrl){
+          const src = imgUrl.getAttribute('data-video-src');
+          if(src){
+            const cacheKey = "url:"+src;
+            if(__thumbCache.has(cacheKey)){
+              imgUrl.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const dataUrl = await makeVideoThumbnailFromUrl(src);
+            if(dataUrl){
+              __thumbCache.set(cacheKey, dataUrl);
+              imgUrl.src = dataUrl;
+              return;
+            }
+          }
+          // Fallback se fallisce
+          imgUrl.src = "assets/brand/logo_edubot_icon.png";
+        }
+
+        // Gestione immagine da IDB (locale)
+        const imgImgBlob = cardEl.querySelector?.('img.lesson-avatar[data-avatar-img-blob-key]');
+        if(imgImgBlob){
+          const key = imgImgBlob.getAttribute('data-avatar-img-blob-key');
+          if(key){
+            const cacheKey = "imgidb:"+key;
+            if(__thumbCache.has(cacheKey)){
+              imgImgBlob.src = __thumbCache.get(cacheKey);
+              return;
+            }
+            const blob = await idbGetBlob(key);
+            if(blob){
+              const url = URL.createObjectURL(blob);
+              __thumbCache.set(cacheKey, url);
+              imgImgBlob.src = url;
+              return;
+            }
+          }
+          // Fallback se fallisce
+          imgImgBlob.src = "assets/brand/logo_edubot_icon.png";
+        }
+      }catch(e){
+        // non bloccare la vista studenti
+        try{ console.warn('[VIDEO] student loadAvatarThumbFromSources failed', e); }catch(_){}
+      }
+    }
+
+    // buildAvatarHTML – stessa logica della dashboard docenti
+    function buildAvatarHTML(lesson){
+      const bust = (u)=>{
+        if(!u || typeof u !== 'string') return u;
+        if(u.startsWith('data:')) return u;
+        const sep = u.includes('?') ? '&' : '?';
+        const verBase = (lesson.updatedAt || lesson.meta?.updatedAt || '').toString();
+        const verAvatar = (lesson.meta?.avatarVersion != null) ? String(lesson.meta.avatarVersion) : '';
+        const ver = [verBase, verAvatar].filter(Boolean).join('-');
+        return ver ? (u + sep + 'v=' + encodeURIComponent(ver)) : u;
+      };
+
+      const mode = (lesson.avatarMode || 'logo');
+      const lessonKey = lesson.id || lesson.meta?.id;
+      const srcRaw = lesson.avatarSrc || lesson.avatar || 'assets/brand/logo_edubot_icon.png';
+      const src = resolveSessionSrc(srcRaw, lessonKey);
+
+      const VIDEO_PRESET_POSTER = {
+        'vid-f-default': 'assets/video/poster_f.png',
+        'vid-m-default': 'assets/video/poster_m.png'
+      };
+
+      if (lesson.avatarPicked && VIDEO_PRESET_POSTER[lesson.avatarPicked]) {
+        return `
+          <figure class="avatar-badge">
+            <img class="lesson-avatar"
+                 src="${bust(VIDEO_PRESET_POSTER[lesson.avatarPicked])}"
+                 alt="Avatar video" />
+          </figure>
+        `;
+      }
+
+      const isYouTube = (u)=>/youtube\.com|youtu\.be/.test(u||'');
+      const thumbYT = (u)=> {
+        const m = (u||'').match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/);
+        return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : null;
+      };
+
+      // Video da IDB (locale) - restituisce placeholder img con data-attribute
+      if((mode.startsWith('vid') || mode === 'vid_custom') && lesson.avatarBlobKey){
+        return `<figure class="avatar-badge"><img class="lesson-avatar avatar-thumb" alt="Avatar video" data-avatar-blob-key="${lesson.avatarBlobKey.replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+
+      if (mode.startsWith('vid') || mode === 'vid_custom') {
+        if (isYouTube(src)) {
+          const t = thumbYT(src);
+          return `<figure class="avatar-badge"><img class="lesson-avatar" src="${bust(t||'assets/brand/logo_edubot_icon.png')}" alt="Avatar video" /></figure>`;
+        }
+        return `<figure class="avatar-badge"><img class="lesson-avatar avatar-thumb" alt="Avatar video" data-video-src="${bust(src).replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+      // Immagine da IDB (locale) - restituisce placeholder img con data-attribute
+      if(mode === 'image' && lesson.avatarImageBlobKey){
+        return `<figure class="avatar-badge"><img class="lesson-avatar" alt="Avatar" data-avatar-img-blob-key="${lesson.avatarImageBlobKey.replace(/"/g, '&quot;')}" src="assets/brand/logo_edubot_icon.png" /></figure>`;
+      }
+      return `<figure class="avatar-badge"><img class="lesson-avatar" src="${bust(src)}" alt="Avatar" /></figure>`;
+    }
+  </script>
+  <script>
+    // Carica dinamicamente tutte le lezioni
+    (async function() {
+      
+      const lessonsGrid = document.querySelector('.lessons-grid');
+      
+      // Svuota griglia esistente
+      lessonsGrid.innerHTML = '';
+      
+      let lessons = [];
+      
+      // 🔄 PROVA PRIMA A CARICARE DA FILE lessons.json (se pubblicato online)
+      if (location.protocol !== 'file:') {
+        try {
+          const response = await fetch('lessons.json');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.lessons && Array.isArray(data.lessons)) {
+              console.log('✅ Lezioni caricate da lessons.json');
+              lessons = data.lessons.map(l => ({
+                id: l.id,
+                ...l.config
+              }));
+              
+              // Salva anche in localStorage per compatibility
+              lessons.forEach(lesson => {
+                localStorage.setItem(`lesson_config_${lesson.id}`, JSON.stringify(lesson));
+              });
+            }
+          }
+        } catch (err) {
+          console.log('📦 lessons.json non trovato, uso localStorage');
+        }
+      }
+      
+      // 📦 SE NON C'È lessons.json, USA localStorage
+      if (lessons.length === 0) {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          
+          if (key.startsWith('lesson_config_')) {
+            try {
+              const lesson = JSON.parse(localStorage.getItem(key));
+              const lessonId = key.replace('lesson_config_', '');
+              if (lesson && lesson.isDraft !== true) {
+                lessons.push({ id: lessonId, ...lesson });
+              }
+            } catch (e) {
+              console.error('Errore caricamento lezione', key, e);
+            }
+          }
+        }
+      }
+      
+      // 🎨 MOSTRA LE LEZIONI
+      if (lessons.length > 0) {
+        lessons.forEach(lesson => {
+          const lessonCard = document.createElement('a');
+          lessonCard.href = `percorso-tematico.html?lesson=${lesson.id}&student=1`;
+          lessonCard.className = 'lesson-card';
+          
+          const title = lesson.title || lesson.home?.title || 'Lezione senza titolo';
+          const subtitle = lesson.subtitle || lesson.home?.subtitle || lesson.home?.description || '';
+          
+          lessonCard.innerHTML = `
+            <div class="lesson-image">
+              ${buildAvatarHTML(lesson)}
+            </div>
+            <h3 class="lesson-title">${title}</h3>
+            <p class="lesson-subtitle">${subtitle}</p>
+          `;
+          
+          lessonsGrid.appendChild(lessonCard);
+
+          loadAvatarThumbFromSources(lessonCard);
+        });
+      } else {
+        // Nessuna lezione trovata
+        lessonsGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: white;">
+            <h3>📚 Nessuna Lezione Disponibile</h3>
+            <p style="opacity: 0.9;">Il docente sta preparando i contenuti. Torna presto!</p>
+          </div>
+        `;
+      }
+      
+      function getIconForLesson(title) {
+        // Estrae un'emoji appropriata dal titolo
+        const titleLower = (title || '').toString().toLowerCase();
+        if (titleLower.includes('acqua')) return '💧';
+        if (titleLower.includes('fotosintesi')) return '🔬';
+        if (titleLower.includes('clima')) return '🌍';
+        if (titleLower.includes('energia')) return '⚡';
+        if (titleLower.includes('cellule')) return '🧬';
+        if (titleLower.includes('ecosistemi')) return '🌱';
+        return '📖';
+      }
+    })();
+  </script>
+  
+  <!-- Lettore Vocale per Accessibilità -->
+  <script src="assets/js/voice-reader.js"></script>
+  
+  <noscript>Attiva JavaScript per visualizzare la Home studenti.</noscript>
+</body>
+</html>
