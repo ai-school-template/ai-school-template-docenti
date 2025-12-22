@@ -301,7 +301,7 @@
                 } catch (e) {}
               }
               
-              const hasText = !!(dataObj.textIA && dataObj.textIA.enabled);
+              const hasText = !!(dataObj.textIA && dataObj.textIA.enabled) || !!(step1 && step1.text && step1.text.trim());
               const hasVideo = !!(dataObj.media && dataObj.media.video && dataObj.media.video.enabled) || !!(step1 && Array.isArray(step1.videos) && step1.videos.some(v => v && ((v.url && v.url.trim()) || (v.blobKey && v.blobKey.trim()))));
               const hasImages = !!(dataObj.media && Array.isArray(dataObj.media.images) && dataObj.media.images.length) || !!(step1 && Array.isArray(step1.images) && step1.images.some(i => i && (i.url || i.blobKey)));
               const hasGlossary = !!(dataObj.glossary && dataObj.glossary.enabled && Array.isArray(dataObj.glossary.entries) && dataObj.glossary.entries.length);
@@ -354,7 +354,7 @@
       try {
         const data = JSON.parse(lessonData);
         // Verifica hasContent (già calcolato sopra nel blocco if (cfgRaw))
-        const hasText = !!(data.textIA && data.textIA.enabled);
+        const hasText = !!(data.textIA && data.textIA.enabled) || !!(step1 && step1.text && step1.text.trim());
         const hasVideo = !!(data.media && data.media.video && data.media.video.enabled) || !!(step1 && Array.isArray(step1.videos) && step1.videos.some(v => v && ((v.url && v.url.trim()) || (v.blobKey && v.blobKey.trim()))));
         const hasImages = !!(data.media && Array.isArray(data.media.images) && data.media.images.length) || !!(step1 && Array.isArray(step1.images) && step1.images.some(i => i && (i.url || i.blobKey)));
         const hasGlossary = !!(data.glossary && data.glossary.enabled && Array.isArray(data.glossary.entries) && data.glossary.entries.length);
