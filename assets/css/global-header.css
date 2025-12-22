@@ -85,12 +85,21 @@ body.with-global-header {
   }
   
   .global-nav {
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    max-width: 100%;
+    row-gap: 0.25rem;
+    column-gap: 0.75rem;
+    overflow: visible;
   }
   
   .global-nav a {
     font-size: 0.8rem;
-    padding: 0.4rem 0.6rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    line-height: 1.25;
+    white-space: nowrap;
   }
   
   body.with-global-header {
