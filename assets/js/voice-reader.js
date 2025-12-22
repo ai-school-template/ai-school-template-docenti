@@ -170,6 +170,34 @@
             
             utterance.voice = pickedVoice;
             
+            // FIX MINIMO MOBILE: warm-up speechSynthesis (alcuni smartphone restano muti senza sblocco)
+            if (!window.__VR_SPEECH_WARMED__) {
+              window.__VR_SPEECH_WARMED__ = true;
+
+              const warm = new SpeechSynthesisUtterance('...');
+              warm.lang = utterance.lang || 'it-IT';
+              // usa la stessa voce se già selezionata
+              if (utterance.voice) warm.voice = utterance.voice;
+              warm.rate = 1;
+              warm.pitch = 1;
+              warm.volume = 0.01; // quasi muto, ma "sblocca" la sintesi su mobile
+
+              warm.onend = function() {
+                // ora avvia la lettura vera
+                window.speechSynthesis.cancel();
+                synthesis.speak(utterance);
+              };
+              warm.onerror = function() {
+                // fallback: prova comunque la lettura vera
+                window.speechSynthesis.cancel();
+                synthesis.speak(utterance);
+              };
+
+              window.speechSynthesis.cancel();
+              synthesis.speak(warm);
+              return; // IMPORTANTISSIMO: evita speak doppio
+            }
+            
             utterance.onend = function() {
               if (runId !== voiceRunId) return;  // controllo runId in onend
               isReading = false;
