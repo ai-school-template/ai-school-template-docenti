@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/global-header.css">
   <style>
     #lesson-view details summary {
       list-style: none;
@@ -71,6 +72,36 @@
   <script src="../assets/js/lesson/LessonChecklist.js"></script>
   
   <script>
+    // IndexedDB helpers per blob
+    async function idbOpen(){
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('ai_school_template', 1);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if(!db.objectStoreNames.contains('blobs')){
+            db.createObjectStore('blobs', {keyPath: 'key'});
+          }
+        };
+      });
+    }
+
+    async function idbGetBlob(key){
+      try {
+        const db = await idbOpen();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('blobs', 'readonly');
+          const store = tx.objectStore('blobs');
+          const req = store.get(key);
+          req.onerror = () => reject(req.error);
+          req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+        });
+      } catch(e) {
+        return null;
+      }
+    }
+
     // Carica la lezione principale salvata
     (function () {
       // Controlla se è modalità anteprima
@@ -224,11 +255,12 @@
                 // 2.3 Immagini
                 if (Array.isArray(step1.images)) {
                   if (!dataObj.media.images || !Array.isArray(dataObj.media.images) || dataObj.media.images.length === 0) {
-                    const step1Images = step1.images.filter(i => i.url).map(i => ({
-                      src: i.url,
+                    const step1Images = step1.images.filter(i => i.url || i.blobKey).map(i => ({
+                      src: i.url || '',
                       alt: i.alt || "",
                       credit: "",
-                      etichettaIA: false
+                      etichettaIA: false,
+                      blobKey: i.blobKey || ''
                     }));
                     dataObj.media.images = step1Images;
                   }
@@ -270,10 +302,10 @@
               }
               
               const hasText = !!(dataObj.textIA && dataObj.textIA.enabled);
-              const hasVideo = !!(dataObj.media && dataObj.media.video && dataObj.media.video.enabled);
-              const hasImages = !!(dataObj.media && Array.isArray(dataObj.media.images) && dataObj.media.images.length);
+              const hasVideo = !!(dataObj.media && dataObj.media.video && dataObj.media.video.enabled) || !!(step1 && Array.isArray(step1.videos) && step1.videos.some(v => v && ((v.url && v.url.trim()) || (v.blobKey && v.blobKey.trim()))));
+              const hasImages = !!(dataObj.media && Array.isArray(dataObj.media.images) && dataObj.media.images.length) || !!(step1 && Array.isArray(step1.images) && step1.images.some(i => i && (i.url || i.blobKey)));
               const hasGlossary = !!(dataObj.glossary && dataObj.glossary.enabled && Array.isArray(dataObj.glossary.entries) && dataObj.glossary.entries.length);
-              const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim())));
+              const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim()) || (step1.concept.blobKey && step1.concept.blobKey.trim())));
               if (!hasText && !hasVideo && !hasImages && !hasGlossary && !hasConcept) {
                 if (lessonView) lessonView.style.display = 'none';
                 if (emptyView) {
@@ -323,10 +355,10 @@
         const data = JSON.parse(lessonData);
         // Verifica hasContent (già calcolato sopra nel blocco if (cfgRaw))
         const hasText = !!(data.textIA && data.textIA.enabled);
-        const hasVideo = !!(data.media && data.media.video && data.media.video.enabled);
-        const hasImages = !!(data.media && Array.isArray(data.media.images) && data.media.images.length);
+        const hasVideo = !!(data.media && data.media.video && data.media.video.enabled) || !!(step1 && Array.isArray(step1.videos) && step1.videos.some(v => v && ((v.url && v.url.trim()) || (v.blobKey && v.blobKey.trim()))));
+        const hasImages = !!(data.media && Array.isArray(data.media.images) && data.media.images.length) || !!(step1 && Array.isArray(step1.images) && step1.images.some(i => i && (i.url || i.blobKey)));
         const hasGlossary = !!(data.glossary && data.glossary.enabled && Array.isArray(data.glossary.entries) && data.glossary.entries.length);
-        const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim())));
+        const hasConcept = !!(step1 && step1.concept && ((step1.concept.url && step1.concept.url.trim()) || (step1.concept.imageUrl && step1.concept.imageUrl.trim()) || (step1.concept.blobKey && step1.concept.blobKey.trim())));
         
         if (hasText || hasVideo || hasImages || hasGlossary || hasConcept) {
           if (lessonView) lessonView.style.display = 'block';
@@ -389,13 +421,153 @@
         // Blocchi
         if (data.textIA?.enabled) window.LessonTextIA.render(el.text, data.textIA);
         if (data.glossary?.enabled) window.LessonGlossary.render(el.glossary, data.glossary);
-        window.LessonImage.render(el.media, data.media?.images || []);
+        // Immagini con bottone "Apri immagine" e gestione errori
+        if (data.media?.images && Array.isArray(data.media.images) && data.media.images.length) {
+          const wrap = document.createElement("div");
+          wrap.className = "card media";
+          wrap.innerHTML = `<h2>🖼️ Immagini</h2>`;
+          
+          for (const img of data.media.images) {
+            const descBox = document.createElement('div');
+            descBox.className = 'desc-box';
+            
+            const openUrl = (img.url && img.url.trim()) ? img.url.trim() : (img.src && img.src.trim() ? img.src.trim() : '');
+            
+            const imgEl = document.createElement('img');
+            imgEl.alt = img.alt || "";
+            imgEl.style.display = 'block';
+            imgEl.style.margin = '0 auto 0.75rem';
+            imgEl.style.maxWidth = '520px';
+            imgEl.style.width = '100%';
+            imgEl.style.borderRadius = '8px';
+            imgEl.addEventListener('error', function() {
+              this.style.display = 'none';
+            });
+            
+            if (img.blobKey && img.blobKey.trim()) {
+              (async () => {
+                try {
+                  const blob = await idbGetBlob(img.blobKey);
+                  if (blob) {
+                    imgEl.src = URL.createObjectURL(blob);
+                  }
+                } catch(e) {
+                  console.error('Errore caricamento blob immagine', e);
+                }
+              })();
+            } else if (img.url && img.url.trim()) {
+              imgEl.src = img.url.trim();
+            } else if (img.src && img.src.trim()) {
+              imgEl.src = img.src.trim();
+            }
+            
+            descBox.appendChild(imgEl);
+            
+            if (openUrl) {
+              const openBtn = document.createElement('a');
+              openBtn.href = openUrl;
+              openBtn.target = '_blank';
+              openBtn.rel = 'noopener';
+              openBtn.textContent = 'Apri immagine';
+              openBtn.className = 'btn';
+              openBtn.style.display = 'inline-block';
+              openBtn.style.marginBottom = '0.75rem';
+              descBox.appendChild(openBtn);
+            }
+            
+            if (img.alt && img.alt.trim()) {
+              const descP = document.createElement('p');
+              descP.style.margin = '0';
+              descP.innerHTML = '<strong>Descrizione:</strong> ' + img.alt.trim();
+              descBox.appendChild(descP);
+            }
+            
+            wrap.appendChild(descBox);
+          }
+          
+          el.media.appendChild(wrap);
+        }
+        
+        // Video da step1.videos con bottone sempre visibile
+        if (step1 && Array.isArray(step1.videos) && step1.videos.length) {
+          for (const video of step1.videos) {
+            if (!video) return;
+            
+            const url = (video.url || '').trim();
+            const blobKey = (video.blobKey || '').trim();
+            if (!url && !blobKey) return;
+            
+            const videoWrap = document.createElement('div');
+            videoWrap.className = 'desc-box';
+            
+            if (url) {
+              const openBtn = document.createElement('a');
+              openBtn.href = url;
+              openBtn.target = '_blank';
+              openBtn.rel = 'noopener';
+              openBtn.textContent = 'Apri video';
+              openBtn.className = 'btn';
+              openBtn.style.display = 'inline-block';
+              openBtn.style.marginBottom = '0.75rem';
+              videoWrap.appendChild(openBtn);
+            }
+            
+            const videoEl = document.createElement('video');
+            videoEl.controls = true;
+            videoEl.style.width = '100%';
+            videoEl.style.maxWidth = '520px';
+            videoEl.style.display = 'block';
+            videoEl.style.margin = '0 auto 0.75rem';
+            videoEl.addEventListener('error', function() {
+              this.style.display = 'none';
+            });
+            
+            if (blobKey) {
+              (async () => {
+                try {
+                  const blob = await idbGetBlob(blobKey);
+                  if (blob) {
+                    const objUrl = URL.createObjectURL(blob);
+                    videoEl.src = objUrl;
+                  }
+                } catch(e) {
+                  console.error('Errore caricamento blob video', e);
+                }
+              })();
+            } else if (url) {
+              videoEl.src = url;
+            }
+            
+            videoWrap.appendChild(videoEl);
+            
+            if (video.transcript && video.transcript.trim()) {
+              const transcriptP = document.createElement('p');
+              transcriptP.style.margin = '0.5rem 0 0 0';
+              transcriptP.innerHTML = '<strong>Trascrizione:</strong> ' + video.transcript.trim();
+              videoWrap.appendChild(transcriptP);
+            }
+            
+            if (video.summary && video.summary.trim()) {
+              const summaryP = document.createElement('p');
+              summaryP.style.margin = '0.5rem 0 0 0';
+              summaryP.innerHTML = '<strong>Riassunto:</strong> ' + video.summary.trim();
+              videoWrap.appendChild(summaryP);
+            }
+            
+            const cardWrap = document.createElement('div');
+            cardWrap.className = 'card media';
+            cardWrap.innerHTML = '<h2>🎥 Video</h2>';
+            cardWrap.appendChild(videoWrap);
+            el.media.appendChild(cardWrap);
+          }
+        }
+        
         window.LessonVideo.render(el.media, data.media?.video);
         
         // 2.5 Mappa concettuale (solo se c'è contenuto)
         if (step1 && step1.concept) {
           const concept = step1.concept;
-          const hasConceptContent = (concept.imageUrl && concept.imageUrl.trim()) || (concept.url && concept.url.trim());
+          const hasConceptContent = (concept.imageUrl && concept.imageUrl.trim()) || (concept.url && concept.url.trim()) || (concept.blobKey && concept.blobKey.trim());
           if (hasConceptContent) {
             el.concept.innerHTML = '';
             const conceptSection = document.createElement('div');
@@ -405,34 +577,52 @@
             const descBox = document.createElement('div');
             descBox.className = 'desc-box';
             
-            if (concept.url && concept.url.trim()) {
+            const openUrl = (concept.url && concept.url.trim()) ? concept.url.trim() : ((concept.imageUrl && concept.imageUrl.trim()) ? concept.imageUrl.trim() : '');
+            
+            if (concept.url && concept.url.trim() && !concept.imageUrl && !concept.blobKey) {
               const link = document.createElement('a');
-              link.href = concept.url;
+              link.href = concept.url.trim();
               link.target = '_blank';
               link.rel = 'noopener';
               link.textContent = 'Apri mappa concettuale';
               link.className = 'btn';
               descBox.appendChild(link);
-            } else if (concept.imageUrl && concept.imageUrl.trim()) {
-              const link = document.createElement('a');
-              link.href = concept.imageUrl.trim();
-              link.target = '_blank';
-              link.rel = 'noopener';
-              
+            } else {
               const img = document.createElement('img');
-              img.src = concept.imageUrl;
               img.alt = concept.imageAlt || '';
               img.style.cssText = 'display: block; margin: 0 auto 0.75rem; width: 100%; max-width: 520px; border-radius: 8px; cursor: zoom-in;';
-              link.appendChild(img);
-              descBox.appendChild(link);
+              img.addEventListener('error', function() {
+                this.style.display = 'none';
+              });
               
-              const noteP = document.createElement('p');
-              noteP.textContent = 'Clicca sulla mappa per ingrandire.';
-              noteP.style.margin = '0 0 0.5rem 0';
-              noteP.style.fontSize = '0.9rem';
-              noteP.style.fontStyle = 'italic';
-              noteP.style.textAlign = 'center';
-              descBox.appendChild(noteP);
+              if (concept.blobKey && concept.blobKey.trim()) {
+                (async () => {
+                  try {
+                    const blob = await idbGetBlob(concept.blobKey);
+                    if (blob) {
+                      img.src = URL.createObjectURL(blob);
+                    }
+                  } catch(e) {
+                    console.error('Errore caricamento blob mappa', e);
+                  }
+                })();
+              } else if (concept.imageUrl && concept.imageUrl.trim()) {
+                img.src = concept.imageUrl.trim();
+              }
+              
+              descBox.appendChild(img);
+              
+              if (openUrl) {
+                const openBtn = document.createElement('a');
+                openBtn.href = openUrl;
+                openBtn.target = '_blank';
+                openBtn.rel = 'noopener';
+                openBtn.textContent = 'Apri immagine';
+                openBtn.className = 'btn';
+                openBtn.style.display = 'inline-block';
+                openBtn.style.marginBottom = '0.75rem';
+                descBox.appendChild(openBtn);
+              }
               
               if (concept.imageAlt && concept.imageAlt.trim()) {
                 const descP = document.createElement('p');
