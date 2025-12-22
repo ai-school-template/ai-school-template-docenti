@@ -84,6 +84,8 @@ body.with-global-header {
   .global-header .global-header-content {
     height: auto !important;
     overflow: visible !important;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
   .global-logo img {
@@ -92,10 +94,12 @@ body.with-global-header {
   }
   
   .global-header .global-nav {
+gap: 0 !important;  
     flex-wrap: nowrap;
     flex-direction: column !important;
     align-items: flex-start !important;
     justify-content: flex-start !important;
+    align-self: flex-start;
     max-width: 100%;
     row-gap: 0.15rem;
     column-gap: 0;
