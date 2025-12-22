@@ -6,6 +6,12 @@
 (function() {
   'use strict';
   
+  // FIX MINIMO: evita doppia inizializzazione (GitHub/navigation/caching)
+  if (window.__VOICE_READER_STARTED__) {
+    return;
+  }
+  window.__VOICE_READER_STARTED__ = true;
+  
   const VOICE_AUDIT = true;
   
   // Helper per audit logging
