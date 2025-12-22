@@ -497,6 +497,9 @@
             const blobKey = (video.blobKey || '').trim();
             if (!url && !blobKey) return;
             
+            // FIX MINIMO: video da URL viene renderizzato da LessonVideo.render (evita duplicati)
+            if (url) continue;
+            
             const videoWrap = document.createElement('div');
             videoWrap.className = 'desc-box';
             
