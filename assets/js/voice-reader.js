@@ -183,15 +183,27 @@
               warm.volume = 0.01; // quasi muto, ma "sblocca" la sintesi su mobile
 
               warm.onend = function() {
+                // controlla se è stato stoppato prima di avviare la lettura vera
+                if (!isReading || btn.dataset.voiceBusy === '0') return;
                 // ora avvia la lettura vera
                 window.speechSynthesis.cancel();
                 synthesis.speak(utterance);
               };
               warm.onerror = function() {
+                // controlla se è stato stoppato prima di avviare la lettura vera
+                if (!isReading || btn.dataset.voiceBusy === '0') return;
                 // fallback: prova comunque la lettura vera
                 window.speechSynthesis.cancel();
                 synthesis.speak(utterance);
               };
+
+              // aggiorna UI come se stesse leggendo
+              isReading = true;
+              btn.classList.add('reading');
+              icon.textContent = '⏸️';
+              const vt = document.getElementById('voiceText');
+              if (vt) vt.textContent = 'Stop';
+              btn.dataset.voiceBusy = '1';
 
               window.speechSynthesis.cancel();
               synthesis.speak(warm);
