@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   const path = window.location.pathname;
 
 const href = (window.location.href || "");
@@ -77,4 +77,24 @@ const isWizard = href.includes("create-lesson-wizard.html");
   document.body.insertBefore(header, document.body.firstChild);
 
   document.body.classList.add("with-global-header");
+
+  function syncGlobalHeaderPadding() {
+    // NON applicare nel wizard
+    if (document.body.classList.contains('wizard-page')) return;
+
+    const header = document.querySelector('header.global-header');
+    if (!header) return;
+
+    const h = header.offsetHeight || 60;
+    document.body.style.paddingTop = (h + 4) + 'px'; // +4px tolleranza
+  }
+
+  // Sincronizza immediatamente
+  syncGlobalHeaderPadding();
+
+  // Aggiorna su resize
+  window.addEventListener('resize', syncGlobalHeaderPadding);
+
+  // Aggiorna su cambio orientamento
+  window.addEventListener('orientationchange', syncGlobalHeaderPadding);
 })();
