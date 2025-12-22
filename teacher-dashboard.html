@@ -418,6 +418,28 @@
       display: block;
       margin: 0 auto 0.75rem;
     }
+    /* FIX MINIMO: badge avatar circolare in dashboard (non ovale) */
+    .lesson-item .avatar-badge {
+      width: 112px !important;
+      height: 112px !important;
+      min-width: 112px !important;
+      min-height: 112px !important;
+      padding: 0 !important;
+      flex-shrink: 0;
+    }
+    /* FIX MINIMO: spazio verticale tra titolo / avatar / data */
+    .lesson-item .avatar-badge {
+      margin: 0.75rem auto 0.9rem auto !important;
+    }
+    /* FIX MINIMO: immagine centrata e a piena dimensione nel badge */
+    .lesson-item .avatar-badge img.lesson-avatar {
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      border-radius: 50% !important;
+      object-fit: cover;
+      display: block;
+    }
     /* Data in basso, corsivo, piccola */
     .lesson-item .lesson-date {
       margin-top: 0.75rem;
@@ -500,6 +522,11 @@
       margin-top: 1rem;
       justify-items: stretch;
       align-items: stretch;
+    }
+    /* FIX MINIMO: testo e icona bianchi nel pulsante Crea nuova lezione */
+    .create-lesson-btn,
+    .create-lesson-btn * {
+      color: #ffffff !important;
     }
   </style>
 </head>
