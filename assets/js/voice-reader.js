@@ -261,32 +261,6 @@
           
           // FIX MINIMO: retry se la pagina non è ancora pronta (tipico lezione su smartphone)
           const text = gatherPageContent();
-          
-          // FIX MINIMO DIAGNOSTICO: mostra quanti caratteri raccoglie in Lezione (solo pages/lezione.html)
-          if (location.pathname.includes('/pages/lezione.html')) {
-            const n = (text || '').trim().length;
-            const preview = (text || '').trim().slice(0, 120).replace(/\s+/g, ' ');
-            let dbg = document.getElementById('vrDbg');
-            if (!dbg) {
-              dbg = document.createElement('div');
-              dbg.id = 'vrDbg';
-              dbg.style.position = 'fixed';
-              dbg.style.left = '12px';
-              dbg.style.right = '12px';
-              dbg.style.bottom = '12px';
-              dbg.style.zIndex = '99999';
-              dbg.style.background = 'rgba(0,0,0,0.80)';
-              dbg.style.color = '#fff';
-              dbg.style.padding = '10px 12px';
-              dbg.style.borderRadius = '12px';
-              dbg.style.fontSize = '14px';
-              dbg.style.lineHeight = '1.3';
-              document.body.appendChild(dbg);
-            }
-            dbg.textContent = 'TTS Lezione: testo=' + n + ' caratteri | preview: ' + (preview || '[VUOTO]');
-            setTimeout(() => { const d = document.getElementById('vrDbg'); if (d) d.remove(); }, 2500);
-          }
-          
           const okText = (text && text.trim().length >= 40);
           
           if (!okText) {
