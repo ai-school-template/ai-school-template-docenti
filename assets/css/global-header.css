@@ -77,6 +77,13 @@ body.with-global-header {
   .global-header {
     padding: 0.6rem 1rem;
     min-height: 60px;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .global-header .global-header-content {
+    height: auto !important;
+    overflow: visible !important;
   }
   
   .global-logo img {
