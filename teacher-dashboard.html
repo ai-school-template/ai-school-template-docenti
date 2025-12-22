@@ -1123,6 +1123,22 @@
           const content = localStorage.getItem(`lesson_${lessonId}_content`);
           const infoEthics = localStorage.getItem(`lesson_${lessonId}_info_ethics`);
           
+          // ✅ Raccoglie tutte le sezioni salvate dal wizard/pages
+          const sections = {};
+          const sectionPrefix = `lesson_section_${lessonId}_`;
+          for (let j = 0; j < localStorage.length; j++) {
+            const k = localStorage.key(j);
+            if (!k || !k.startsWith(sectionPrefix)) continue;
+            const sectionName = k.substring(sectionPrefix.length);
+            const raw = localStorage.getItem(k);
+            if (!raw) continue;
+            try {
+              sections[sectionName] = JSON.parse(raw);
+            } catch {
+              sections[sectionName] = raw;
+            }
+          }
+          
           // Esporta blob avatar se presenti
           const blobs = {};
           if(config.avatarBlobKey){
@@ -1138,7 +1154,8 @@
             id: lessonId,
             config: config,
             content: content ? JSON.parse(content) : null,
-            info_ethics: infoEthics ? JSON.parse(infoEthics) : null
+            info_ethics: infoEthics ? JSON.parse(infoEthics) : null,
+            sections: sections
           };
           if(Object.keys(blobs).length > 0){
             lessonObj.blobs = blobs;
