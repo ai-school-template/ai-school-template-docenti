@@ -214,8 +214,28 @@ body.wizard-page .global-header .global-nav{
 }
 
 @media (max-width: 768px) {
-  body.wizard-page .global-header .global-nav { row-gap: 0.15rem !important; }
-  body.wizard-page .global-header .global-nav a { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+  body.wizard-page .global-header .global-header-content{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+  }
+
+  body.wizard-page .global-header{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+
+  body.wizard-page .global-header .global-nav{
+    align-items:flex-end !important;
+    text-align:right !important;
+    row-gap:0.15rem !important;
+  }
+
+  body.wizard-page .global-header .global-nav a{
+    padding-top:0.25rem !important;
+    padding-bottom:0.25rem !important;
+  }
 }
 
 /* FIX wizard: rimuove banner giallo iniziale */
@@ -1722,6 +1742,7 @@ if (prevAvatarKey !== newAvatarKey) {
           };
           try{
             localStorage.setItem('lesson_config_'+lessonId, JSON.stringify(cfg));
+            window.onbeforeunload = null;
           }catch(e){
             console.warn('LocalStorage quota, ritento con pointer forzati', e);
             if(/^data:/.test(cfg.home.heroImage)) cfg.home.heroImage = toSessionPointer('cover_image', cfg.home.heroImage);
@@ -1734,7 +1755,7 @@ if (prevAvatarKey !== newAvatarKey) {
               const avatarKind = (cfg.avatarMode === 'video') ? 'avatar_video' : 'avatar_image';
               cfg.avatar = toSessionPointer(avatarKind, cfg.avatar);
             }
-            try{ localStorage.setItem('lesson_config_'+lessonId, JSON.stringify(cfg)); }
+            try{ localStorage.setItem('lesson_config_'+lessonId, JSON.stringify(cfg)); window.onbeforeunload = null; }
             catch(e2){ alert('⚠️ Spazio locale insufficiente per salvare in bozza. Riduci il peso dei media o usa URL esterni.'); }
           }
           sessionStorage.setItem('currentDraftId', lessonId);
@@ -1745,6 +1766,7 @@ if (prevAvatarKey !== newAvatarKey) {
         const payload = collectStep(current);
         try {
           localStorage.setItem(`lesson_section_${lessonId}_${current}`, JSON.stringify(payload));
+          window.onbeforeunload = null;
         } catch (e) {
           alert('Errore salvataggio: spazio insufficiente o dati troppo grandi.');
           console.error(e);
@@ -3708,6 +3730,7 @@ state.avatar.src = state.avatar.url;
             cfg.currentStep = 6;
             localStorage.setItem('lesson_config_'+lessonId, JSON.stringify(cfg));
           }
+          window.onbeforeunload = null;
           alert('✅ Bozza resa definitiva! Ora appare in "Le mie lezioni" in Dashboard. Per renderla visibile agli studenti, usa "Pubblica lezioni (lessons.json)" dalla Dashboard.');
         });
         $('#btnPublish')?.addEventListener('click', ()=> {
