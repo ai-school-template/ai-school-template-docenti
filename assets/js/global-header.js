@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   const path = window.location.pathname;
 
 const href = (window.location.href || "");
@@ -24,7 +24,7 @@ const isWizard = href.includes("create-lesson-wizard.html");
     path.includes("guida-docenti") ||
     path.includes("crea-lezione") ||
     path.endsWith("home.html") ||
-    path.endsWith("index.html")
+    (path.endsWith("index.html") || path.endsWith("/") || !path.includes("."))
   )) || (isPages && !isStudentContext);
 
 
