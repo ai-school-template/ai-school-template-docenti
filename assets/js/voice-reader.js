@@ -175,6 +175,23 @@
           // Micro-retry: raccogli una prima volta
           if (runId !== voiceRunId) return;  // controllo runId prima di gatherPageContent
           
+          // FIX MINIMO: in pagina lezione attendi che #lesson-view sia visibile prima di raccogliere testo
+          const lessonView = document.getElementById('lesson-view');
+          if (lessonView) {
+            const cs = window.getComputedStyle(lessonView);
+            const hidden = (cs.display === 'none' || cs.visibility === 'hidden');
+            if (hidden) {
+              if (__vrRetryCount < 6) {
+                __vrRetryCount++;
+                if (__vrRetryTimer) clearTimeout(__vrRetryTimer);
+                __vrRetryTimer = setTimeout(() => { btn.click(); }, 400);
+              } else {
+                __vrRetryCount = 0;
+              }
+              return;
+            }
+          }
+          
           // FIX MINIMO: retry se la pagina non è ancora pronta (tipico lezione su smartphone)
           const text = gatherPageContent();
           const okText = (text && text.trim().length >= 40);
