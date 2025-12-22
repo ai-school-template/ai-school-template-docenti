@@ -245,6 +245,13 @@
         font-size: 2.5rem;
       }
     }
+    /* FIX MINIMO: testo empty-state bianco in student-lessons */
+    .lessons-grid > div:not(.lesson-card) h3 {
+      color: #ffffff !important;
+    }
+    .lessons-grid > div:not(.lesson-card) p {
+      color: #ffffff !important;
+    }
   </style>
 </head>
 <body class="student-home">
@@ -658,8 +665,19 @@
               }));
               
               // Salva anche in localStorage per compatibility
-              lessons.forEach(lesson => {
-                localStorage.setItem(`lesson_config_${lesson.id}`, JSON.stringify(lesson));
+              data.lessons.forEach(l => {
+                localStorage.setItem(`lesson_config_${l.id}`, JSON.stringify(l.config));
+                if (l.content) {
+                  localStorage.setItem(`lesson_${l.id}_content`, JSON.stringify(l.content));
+                }
+                if (l.sections && typeof l.sections === 'object') {
+                  for (const s in l.sections) {
+                    const sectionData = l.sections[s];
+                    if (sectionData !== null && sectionData !== undefined) {
+                      localStorage.setItem(`lesson_section_${l.id}_${s}`, JSON.stringify(sectionData));
+                    }
+                  }
+                }
               });
             }
           }
