@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const path = window.location.pathname;
 
 const href = (window.location.href || "");
