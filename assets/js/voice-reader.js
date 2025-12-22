@@ -143,6 +143,33 @@
             utterance.pitch = 1;
             utterance.volume = 1;
             
+            // FIX MINIMO MOBILE: selezione voce italiana e attesa voiceschanged
+            const voices = window.speechSynthesis.getVoices() || [];
+            let pickedVoice =
+              voices.find(v => (v.lang || '').toLowerCase() === 'it-it') ||
+              voices.find(v => (v.lang || '').toLowerCase().startsWith('it')) ||
+              null;
+            
+            if (!pickedVoice) {
+              window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.onvoiceschanged = null;
+                const vs = window.speechSynthesis.getVoices() || [];
+                const pv =
+                  vs.find(v => (v.lang || '').toLowerCase() === 'it-it') ||
+                  vs.find(v => (v.lang || '').toLowerCase().startsWith('it')) ||
+                  null;
+                
+                if (pv) {
+                  utterance.voice = pv;
+                  window.speechSynthesis.cancel();
+                  window.speechSynthesis.speak(utterance);
+                }
+              };
+              return; // IMPORTANTISSIMO: evita speak doppio
+            }
+            
+            utterance.voice = pickedVoice;
+            
             utterance.onend = function() {
               if (runId !== voiceRunId) return;  // controllo runId in onend
               isReading = false;
@@ -287,6 +314,10 @@
       if (cs.display === 'none' || cs.visibility === 'hidden') return false;
       const op = parseFloat(cs.opacity || '1');
       if (op <= 0) return false;
+      // FIX MINIMO: nella pagina lezione non usare getClientRects (su mobile può risultare 0 anche se visibile)
+      if (el.closest && el.closest('#lesson-view')) {
+        return true;
+      }
       if (el.getClientRects().length === 0) return false;
       return true;
     }
