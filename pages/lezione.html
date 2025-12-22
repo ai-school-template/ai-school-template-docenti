@@ -663,5 +663,33 @@
   
   <!-- Lettore Vocale per Accessibilità -->
   <script src="../assets/js/voice-reader.js"></script>
+  
+  <script>
+    /* FIX MINIMO: se la lezione non è ancora visibile, ritenta "Ascolta" dopo poco (solo lezione) */
+    (function(){
+      let retrying = false;
+
+      document.addEventListener('click', function(e){
+        const btn = e.target && e.target.closest ? e.target.closest('#voiceReaderBtn') : null;
+        if (!btn) return;
+
+        const lessonView = document.getElementById('lesson-view');
+        if (!lessonView) return;
+
+        // Se la lezione è ancora nascosta, blocca il click e riprova tra poco
+        const hidden = (lessonView.style.display === 'none');
+        if (hidden && !retrying) {
+          e.preventDefault();
+          e.stopPropagation();
+          retrying = true;
+          setTimeout(function(){
+            retrying = false;
+            // riprova automaticamente
+            btn.click();
+          }, 500);
+        }
+      }, true);
+    })();
+  </script>
 </body>
 </html>
