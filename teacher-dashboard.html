@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
   
+  <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/global-header.css">
   
   <style>
@@ -1191,6 +1192,22 @@
         const infoEthicsRaw = localStorage.getItem(`lesson_${id}_info_ethics`);
         const infoEthics = infoEthicsRaw ? JSON.parse(infoEthicsRaw) : null;
         
+        // ✅ Raccoglie tutte le sezioni salvate dal wizard/pages
+        const sections = {};
+        const sectionPrefix = `lesson_section_${id}_`;
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (!k || !k.startsWith(sectionPrefix)) continue;
+          const sectionName = k.substring(sectionPrefix.length);
+          const raw = localStorage.getItem(k);
+          if (!raw) continue;
+          try {
+            sections[sectionName] = JSON.parse(raw);
+          } catch {
+            sections[sectionName] = raw;
+          }
+        }
+        
         // Esporta blob avatar se presenti
         const blobs = {};
         if(config.avatarBlobKey){
@@ -1202,7 +1219,7 @@
           if(b) blobs[config.avatarImageBlobKey] = await blobToDataUrl(b);
         }
         
-        const lessonObj = { id, config, content, info_ethics: infoEthics };
+        const lessonObj = { id, config, content, info_ethics: infoEthics, sections };
         if(Object.keys(blobs).length > 0){
           lessonObj.blobs = blobs;
         }
@@ -1333,6 +1350,18 @@
             if (lesson.info_ethics) {
               localStorage.setItem(`lesson_${lesson.id}_info_ethics`, JSON.stringify(lesson.info_ethics));
             }
+            
+            // ✅ Ripristina le sezioni del wizard/pages
+            if (lesson.sections && typeof lesson.sections === 'object') {
+              for (const [sectionName, sectionData] of Object.entries(lesson.sections)) {
+                const key = `lesson_section_${lesson.id}_${sectionName}`;
+                try {
+                  localStorage.setItem(key, JSON.stringify(sectionData));
+                } catch {
+                  localStorage.setItem(key, String(sectionData));
+                }
+              }
+            }
           }
           
           alert(`✅ Importate ${data.lessons.length} lezioni con successo!\n\nLa pagina verrà ricaricata.`);
@@ -1360,7 +1389,18 @@
             const config = JSON.parse(localStorage.getItem(key));
             if (config && config.isDraft) continue; // salta bozze
             const content = localStorage.getItem(`lesson_${id}_content`);
-            published.push({ id, config, content: content ? JSON.parse(content) : null });
+            const sections = {};
+            for (let s = 1; s <= 6; s++) {
+              const raw = localStorage.getItem(`lesson_section_${id}_${s}`);
+              if (raw) {
+                try {
+                  sections[String(s)] = JSON.parse(raw);
+                } catch (e) {
+                  // Ignora sezione se parse fallisce
+                }
+              }
+            }
+            published.push({ id, config, content: content ? JSON.parse(content) : null, sections });
           } catch (e) { console.error('Errore serializzazione lezione', key, e); }
         }
       }
@@ -1419,7 +1459,19 @@
         const contentRaw = localStorage.getItem(`lesson_${id}_content`);
         const content = contentRaw ? JSON.parse(contentRaw) : null;
 
-        const payload = { lessons: [{ id, config, content }] };
+        const sections = {};
+        for (let s = 1; s <= 6; s++) {
+          const sectionRaw = localStorage.getItem(`lesson_section_${id}_${s}`);
+          if (sectionRaw) {
+            try {
+              sections[String(s)] = JSON.parse(sectionRaw);
+            } catch (e) {
+              // Ignora sezione se parse fallisce
+            }
+          }
+        }
+
+        const payload = { lessons: [{ id, config, content, sections }] };
         const dataStr = JSON.stringify(payload, null, 2);
 
         // Salva come lessons.json
