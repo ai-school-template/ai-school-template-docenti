@@ -987,3 +987,23 @@ section ol > li:first-child {
 .row-left{flex:1;min-width:0;}
 
 .row-right{flex:0 0 auto;}
+
+/* === FIX MINIMO: header mobile coerente (NO wizard) === */
+@media (max-width: 768px) {
+  body:not(.wizard-page) .global-header .global-header-content{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+  }
+
+  body:not(.wizard-page) .global-header{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+
+  body:not(.wizard-page) .global-header .global-nav{
+    align-items:flex-end !important;
+    text-align:right !important;
+  }
+}
