@@ -68,6 +68,8 @@
   let isReading = false;
   let voiceRunId = 0;
   let voiceRetryTimer = null;
+  let __vrRetryCount = 0;
+  let __vrRetryTimer = null;
   
   // Verifica supporto browser
   if (!('speechSynthesis' in window)) {
@@ -172,23 +174,44 @@
           
           // Micro-retry: raccogli una prima volta
           if (runId !== voiceRunId) return;  // controllo runId prima di gatherPageContent
-          let t1 = gatherPageContent();
+          
+          // FIX MINIMO: retry se la pagina non è ancora pronta (tipico lezione su smartphone)
+          const text = gatherPageContent();
+          const okText = (text && text.trim().length >= 40);
+          
+          if (!okText) {
+            if (__vrRetryCount < 3) {
+              __vrRetryCount++;
+              if (__vrRetryTimer) clearTimeout(__vrRetryTimer);
+              __vrRetryTimer = setTimeout(() => {
+                // riprova a partire (senza creare nuovi pulsanti)
+                btn.click();
+              }, 500);
+            } else {
+              __vrRetryCount = 0;
+            }
+            return; // esce senza cambiare stato (ci riprova)
+          }
+          
+          // se arriviamo qui, testo ok: azzera retry e continua col flusso normale
+          __vrRetryCount = 0;
+          if (__vrRetryTimer) { clearTimeout(__vrRetryTimer); __vrRetryTimer = null; }
           
           // Determina se ci sono video nella pagina (per aumentare timeout)
           const hasVideo = document.querySelectorAll('.transcript-body, .desc-box strong, .desc-box b, .desc-box .label').length > 0;
           const retryDelay = hasVideo ? 800 : 250;
           
           // Se è troppo corto, aspetta e raccogli di nuovo
-          if (t1.replace(/\s+/g, ' ').length < 120) {
+          if (text.replace(/\s+/g, ' ').length < 120) {
             voiceRetryTimer = setTimeout(() => {
               if (runId !== voiceRunId) return;  // controllo runId nel timer
               let t2 = gatherPageContent();
               if (runId !== voiceRunId) return;  // controllo runId prima di speakText
-              speakText(t2.length > t1.length ? t2 : t1);
+              speakText(t2.length > text.length ? t2 : text);
               voiceRetryTimer = null;
             }, retryDelay);
           } else {
-            speakText(t1);
+            speakText(text);
           }
         });
       });
