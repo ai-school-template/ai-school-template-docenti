@@ -260,12 +260,17 @@ body.wizard-page .global-header .global-nav{
     display:grid !important;
     grid-template-columns: 1fr 1fr;
     gap:10px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .avatar-options > label{
-    width:100%;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     justify-content:center;
     text-align:center;
     min-height:48px;
+    font-size: 0.9rem;
   }
 
   /* Mobile fix: Copertina da URL (immagine/video) non deve sforare */
