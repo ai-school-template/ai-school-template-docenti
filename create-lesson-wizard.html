@@ -3832,8 +3832,17 @@ state.avatar.src = state.avatar.url;
     .wizard-header{padding:16px;border-radius:16px}
     .steps{gap:6px}
     .steps .pill{font-size:.85rem;padding:6px 10px}
-    .btnbar{flex-direction:column;align-items:stretch}
-    .btnbar .btn{width:100%}
+    .btnbar{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      align-items:stretch;
+    }
+    .btnbar .row{display:contents;}
+    .btnbar .btn{
+      width:100%;
+      min-height:48px;
+    }
   }
   @media print{
     body{background:#fff}
