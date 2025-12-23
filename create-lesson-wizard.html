@@ -255,6 +255,37 @@ body.wizard-page .global-header .global-nav{
     justify-content:center;
     text-align:center;
   }
+
+  .avatar-options{
+    display:grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  .avatar-options > label{
+    width:100%;
+    justify-content:center;
+    text-align:center;
+    min-height:48px;
+  }
+
+  /* Mobile fix: Copertina da URL (immagine/video) non deve sforare */
+  #row-image_url .row,
+  #row-video_url .row{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #row-image_url input[type="url"],
+  #row-video_url input[type="url"]{
+    min-width: 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #row-image_url button,
+  #row-video_url button{
+    width: 100%;
+  }
 }
 
 /* FIX wizard: rimuove banner giallo iniziale */
@@ -696,7 +727,7 @@ oppure caricare il tuo avatar personalizzato (immagine o breve video quadrato 1:
 
 Se vuoi invece inserire un video introduttivo o un'immagine di copertina più ampia, fallo nella sezione Copertina della lezione.</p>
       
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:10px;">
+      <div class="avatar-options" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:10px;">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:6px;background:#fff;border:2px solid var(--border);"><input type="radio" name="avatarMode" value="logo" checked style="margin:0;"> Logo</label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:6px;background:#fff;border:2px solid var(--border);"><input type="radio" name="avatarMode" value="img_f" style="margin:0;"> Immagine F</label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:6px;background:#fff;border:2px solid var(--border);"><input type="radio" name="avatarMode" value="img_m" style="margin:0;"> Immagine M</label>
