@@ -25,8 +25,11 @@ Il template è progettato per essere utilizzato direttamente online, tramite bro
 
 ## ⚖️ Licenza
 
-Questo progetto è distribuito con licenza  
-**Creative Commons Attribution–NonCommercial–ShareAlike 4.0 International (CC BY-NC-SA 4.0)**.
+AI School Template è distribuito con una **licenza d'uso**.
+
+È consentito utilizzare il template in ambito didattico secondo le condizioni indicate nel file `LICENSE`, disponibile nel repository.
+
+Il codice può essere visibile nel browser, ma questo non implica libertà di redistribuzione o riutilizzo del template come prodotto.
 
 ---
 
