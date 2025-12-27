@@ -115,190 +115,76 @@
       text.textContent = 'Ascolta';
       btn.dataset.voiceBusy = '0';
     } else {
-      // Avvia la lettura (doppio requestAnimationFrame per attendere che il DOM sia pronto)
-      const runId = ++voiceRunId;  // incrementa e salva copia locale
+      // Avvia la lettura immediatamente (senza RAF/setTimeout per mantenere user gesture)
+      const runId = ++voiceRunId;
       
-      requestAnimationFrame(() => {
-        if (runId !== voiceRunId) return;  // controllo runId nel primo RAF
+      // Funzione helper per parlare
+      function speakText(contentToRead) {
+        if (runId !== voiceRunId) return;
         
-        requestAnimationFrame(() => {
-          if (runId !== voiceRunId) return;  // controllo runId nel secondo RAF
-          
-          // Funzione helper per parlare
-          function speakText(contentToRead) {
-            if (runId !== voiceRunId) return;  // controllo runId prima di parlare
-            
-            if (!contentToRead) {
-              alert('Nessun contenuto da leggere su questa pagina.');
-              btn.dataset.voiceBusy = '0';
-              return;
-            }
-            
-            // Aggiorna stato quando avvii lettura
-            btn.dataset.voiceBusy = '1';
-            
-            utterance = new SpeechSynthesisUtterance(contentToRead);
-            utterance.lang = 'it-IT';
-            utterance.rate = 0.9;  // Velocità leggermente più lenta per comprensione
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            
-            // FIX MINIMO MOBILE: selezione voce italiana e attesa voiceschanged
-            const voices = window.speechSynthesis.getVoices() || [];
-            let pickedVoice =
-              voices.find(v => (v.lang || '').toLowerCase() === 'it-it') ||
-              voices.find(v => (v.lang || '').toLowerCase().startsWith('it')) ||
-              null;
-            
-            if (!pickedVoice) {
-              window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.onvoiceschanged = null;
-                const vs = window.speechSynthesis.getVoices() || [];
-                const pv =
-                  vs.find(v => (v.lang || '').toLowerCase() === 'it-it') ||
-                  vs.find(v => (v.lang || '').toLowerCase().startsWith('it')) ||
-                  null;
-                
-                if (pv) {
-                  utterance.voice = pv;
-                  window.speechSynthesis.cancel();
-                  window.speechSynthesis.speak(utterance);
-                }
-              };
-              return; // IMPORTANTISSIMO: evita speak doppio
-            }
-            
-            utterance.voice = pickedVoice;
-            
-            // FIX MINIMO MOBILE: warm-up speechSynthesis (alcuni smartphone restano muti senza sblocco)
-            if (!window.__VR_SPEECH_WARMED__) {
-              window.__VR_SPEECH_WARMED__ = true;
-
-              const warm = new SpeechSynthesisUtterance('...');
-              warm.lang = utterance.lang || 'it-IT';
-              // usa la stessa voce se già selezionata
-              if (utterance.voice) warm.voice = utterance.voice;
-              warm.rate = 1;
-              warm.pitch = 1;
-              warm.volume = 0.01; // quasi muto, ma "sblocca" la sintesi su mobile
-
-              warm.onend = function() {
-                // controlla se è stato stoppato prima di avviare la lettura vera
-                if (!isReading || btn.dataset.voiceBusy === '0') return;
-                // ora avvia la lettura vera
-                window.speechSynthesis.cancel();
-                synthesis.speak(utterance);
-              };
-              warm.onerror = function() {
-                // controlla se è stato stoppato prima di avviare la lettura vera
-                if (!isReading || btn.dataset.voiceBusy === '0') return;
-                // fallback: prova comunque la lettura vera
-                window.speechSynthesis.cancel();
-                synthesis.speak(utterance);
-              };
-
-              // aggiorna UI come se stesse leggendo
-              isReading = true;
-              btn.classList.add('reading');
-              icon.textContent = '⏸️';
-              const vt = document.getElementById('voiceText');
-              if (vt) vt.textContent = 'Stop';
-              btn.dataset.voiceBusy = '1';
-
-              window.speechSynthesis.cancel();
-              synthesis.speak(warm);
-              return; // IMPORTANTISSIMO: evita speak doppio
-            }
-            
-            utterance.onend = function() {
-              if (runId !== voiceRunId) return;  // controllo runId in onend
-              isReading = false;
-              btn.classList.remove('reading');
-              icon.textContent = '🔊';
-              btn.dataset.voiceBusy = '0';
-              const vt = document.getElementById('voiceText');
-              if (vt) vt.textContent = 'Ascolta';
-            };
-            
-            utterance.onerror = function(event) {
-              if (runId !== voiceRunId) return;  // controllo runId in onerror
-              console.error('Errore lettura vocale:', event);
-              isReading = false;
-              btn.classList.remove('reading');
-              icon.textContent = '🔊';
-              btn.dataset.voiceBusy = '0';
-              const vt = document.getElementById('voiceText');
-              if (vt) vt.textContent = 'Ascolta';
-            };
-            
-            synthesis.speak(utterance);
-            isReading = true;
-            btn.classList.add('reading');
-            icon.textContent = '⏸️';
-            const vt = document.getElementById('voiceText');
-            if (vt) vt.textContent = 'Stop';
-          }
-          
-          // Micro-retry: raccogli una prima volta
-          if (runId !== voiceRunId) return;  // controllo runId prima di gatherPageContent
-          
-          // FIX MINIMO: in pagina lezione attendi che #lesson-view sia visibile prima di raccogliere testo
-          const lessonView = document.getElementById('lesson-view');
-          if (lessonView) {
-            const cs = window.getComputedStyle(lessonView);
-            const hidden = (cs.display === 'none' || cs.visibility === 'hidden');
-            if (hidden) {
-              if (__vrRetryCount < 6) {
-                __vrRetryCount++;
-                if (__vrRetryTimer) clearTimeout(__vrRetryTimer);
-                __vrRetryTimer = setTimeout(() => { btn.click(); }, 400);
-              } else {
-                __vrRetryCount = 0;
-              }
-              return;
-            }
-          }
-          
-          // FIX MINIMO: retry se la pagina non è ancora pronta (tipico lezione su smartphone)
-          const text = gatherPageContent();
-          const okText = (text && text.trim().length >= 40);
-          
-          if (!okText) {
-            if (__vrRetryCount < 3) {
-              __vrRetryCount++;
-              if (__vrRetryTimer) clearTimeout(__vrRetryTimer);
-              __vrRetryTimer = setTimeout(() => {
-                // riprova a partire (senza creare nuovi pulsanti)
-                btn.click();
-              }, 500);
-            } else {
-              __vrRetryCount = 0;
-            }
-            return; // esce senza cambiare stato (ci riprova)
-          }
-          
-          // se arriviamo qui, testo ok: azzera retry e continua col flusso normale
-          __vrRetryCount = 0;
-          if (__vrRetryTimer) { clearTimeout(__vrRetryTimer); __vrRetryTimer = null; }
-          
-          // Determina se ci sono video nella pagina (per aumentare timeout)
-          const hasVideo = document.querySelectorAll('.transcript-body, .desc-box strong, .desc-box b, .desc-box .label').length > 0;
-          const retryDelay = hasVideo ? 800 : 250;
-          
-          // Se è troppo corto, aspetta e raccogli di nuovo
-          if (text.replace(/\s+/g, ' ').length < 120) {
-            voiceRetryTimer = setTimeout(() => {
-              if (runId !== voiceRunId) return;  // controllo runId nel timer
-              let t2 = gatherPageContent();
-              if (runId !== voiceRunId) return;  // controllo runId prima di speakText
-              speakText(t2.length > text.length ? t2 : text);
-              voiceRetryTimer = null;
-            }, retryDelay);
-          } else {
-            speakText(text);
-          }
-        });
-      });
+        if (!contentToRead) {
+          alert('Nessun contenuto da leggere su questa pagina.');
+          btn.dataset.voiceBusy = '0';
+          return;
+        }
+        
+        utterance = new SpeechSynthesisUtterance(contentToRead);
+        utterance.lang = 'it-IT';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        // Selezione voce italiana (solo se disponibile immediatamente, non aspetta voiceschanged)
+        const voices = window.speechSynthesis.getVoices() || [];
+        let pickedVoice =
+          voices.find(v => (v.lang || '').toLowerCase() === 'it-it') ||
+          voices.find(v => (v.lang || '').toLowerCase().startsWith('it')) ||
+          null;
+        
+        if (pickedVoice) {
+          utterance.voice = pickedVoice;
+        }
+        // Se voce non disponibile, procede comunque con lang='it-IT' (browser userà default)
+        
+        utterance.onend = function() {
+          if (runId !== voiceRunId) return;
+          isReading = false;
+          btn.classList.remove('reading');
+          icon.textContent = '🔊';
+          btn.dataset.voiceBusy = '0';
+          const vt = document.getElementById('voiceText');
+          if (vt) vt.textContent = 'Ascolta';
+        };
+        
+        utterance.onerror = function(event) {
+          if (runId !== voiceRunId) return;
+          console.error('Errore lettura vocale:', event);
+          isReading = false;
+          btn.classList.remove('reading');
+          icon.textContent = '🔊';
+          btn.dataset.voiceBusy = '0';
+          const vt = document.getElementById('voiceText');
+          if (vt) vt.textContent = 'Ascolta';
+        };
+        
+        synthesis.speak(utterance);
+        isReading = true;
+        btn.classList.add('reading');
+        icon.textContent = '⏸️';
+        const vt = document.getElementById('voiceText');
+        if (vt) vt.textContent = 'Stop';
+      }
+      
+      // Raccogli testo immediatamente (senza retry)
+      const text = gatherPageContent();
+      if (!text || text.trim().length < 40) {
+        alert('Nessun contenuto da leggere su questa pagina.');
+        btn.dataset.voiceBusy = '0';
+        return;
+      }
+      
+      // Chiama speakText immediatamente (dentro user gesture)
+      speakText(text);
     }
   });
   
