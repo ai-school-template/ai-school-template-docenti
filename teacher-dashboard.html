@@ -1509,7 +1509,52 @@
                 }
               }
             }
-            published.push({ id, config, content: content ? JSON.parse(content) : null, sections });
+            
+            // Helper per aggiungere blobKey all'export
+            async function addBlobKeyToExport(key, blobs) {
+              if (!key || typeof key !== 'string') return;
+              const k = key.trim();
+              if (!k || blobs[k]) return;
+              const b = await idbGetBlob(k);
+              if (b) blobs[k] = await blobToDataUrl(b);
+            }
+            
+            // Raccoglie tutti i blob per l'export
+            const blobs = {};
+            
+            // Avatar
+            await addBlobKeyToExport(config.avatarBlobKey, blobs);
+            await addBlobKeyToExport(config.avatarImageBlobKey, blobs);
+            
+            // COVER (immagine + video)
+            await addBlobKeyToExport(config.coverImageBlobKey, blobs);
+            await addBlobKeyToExport(config.coverVideoBlobKey, blobs);
+            
+            // SEZIONE 1: immagini, video, concept map
+            const s1 = sections && (sections['1'] || sections[1]);
+            if (s1) {
+              const imgs = Array.isArray(s1.images) ? s1.images : [];
+              for (const it of imgs) await addBlobKeyToExport(it && it.blobKey, blobs);
+              
+              const vids = Array.isArray(s1.videos) ? s1.videos : [];
+              for (const it of vids) await addBlobKeyToExport(it && it.blobKey, blobs);
+              
+              const c = s1.concept || {};
+              await addBlobKeyToExport(c && c.blobKey, blobs);
+            }
+            
+            // SEZIONE 3: documenti
+            const s3 = sections && (sections['3'] || sections[3]);
+            if (s3) {
+              const docs = Array.isArray(s3.docs) ? s3.docs : [];
+              for (const d of docs) await addBlobKeyToExport(d && d.blobKey, blobs);
+            }
+            
+            const lessonObj = { id, config, content: content ? JSON.parse(content) : null, sections };
+            if(Object.keys(blobs).length > 0){
+              lessonObj.blobs = blobs;
+            }
+            published.push(lessonObj);
           } catch (e) { console.error('Errore serializzazione lezione', key, e); }
         }
       }
