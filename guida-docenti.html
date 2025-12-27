@@ -364,7 +364,7 @@
           </ul>
 
           <h4>Step 3-6: Altre Sezioni</h4>
-          <p>Attività, Risorse, Valutazione, Info & Etica IA</p>
+          <p>Negli step successivi compili le altre sezioni della lezione (Attività, Risorse, Valutazione, Info & Etica IA), tutte già disponibili nel template.</p>
         </div>
 
         <div class="alert-box">
@@ -423,10 +423,12 @@
         </div>
         <div class="step-box">
           <ol>
+            <li>Scarica il template studenti (file ZIP)</li>
+            <li>Estrai il contenuto del ZIP in una cartella sul tuo computer</li>
             <li>Vai alla <strong>Dashboard Docente</strong></li>
             <li>Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
             <li><strong>Rinomina</strong> il file esportato da <code>lezioni-YYYY-MM-DD.json</code> a <code>lessons.json</code></li>
-            <li><strong>Copia</strong> il file <code>lessons.json</code> nella cartella dedicata alle lezioni all'interno del template studenti</li>
+            <li><strong>Copia</strong> il file <code>lessons.json</code> nella cartella prevista per le lezioni nel template studenti</li>
           </ol>
         </div>
 
@@ -475,25 +477,24 @@
         <h2>Aggiornare</h2>
         
         <div class="content-box">
-          <p>Hai già pubblicato il sito e vuoi aggiungere o modificare lezioni? Segui la stessa procedura.</p>
+          <p>Hai già pubblicato il sito e vuoi aggiungere o modificare lezioni? Segui questa procedura:</p>
         </div>
 
         <div class="step-box">
           <strong>Procedura Completa:</strong>
           <ol>
-            <li>Nel Template Docenti, aggiungi o modifica le lezioni</li>
+            <li>Modifica, aggiungi o elimina lezioni nel Template Docenti (accesso tramite link)</li>
             <li>Dashboard → Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
-            <li>Rinomina il file in <code>lessons.json</code></li>
-            <li>Copia <code>lessons.json</code> nella cartella dedicata alle lezioni del template studenti</li>
-            <li>Vai su <strong><code>https://app.netlify.com/drop</code></strong></li>
-            <li><strong>Trascina di nuovo</strong> tutta la cartella del template studenti</li>
-            <li>Il sito viene aggiornato automaticamente</li>
+            <li>Rinomina il file esportato in <code>lessons.json</code></li>
+            <li>Sostituisci <code>lessons.json</code> nella cartella prevista per le lezioni nel template studenti</li>
+            <li>Ripubblica o aggiorna il sito su Netlify</li>
           </ol>
         </div>
 
         <div class="alert-box">
-          <strong>IMPORTANTE:</strong> Ottieni un nuovo link ogni volta che ricarichi!<br>
-          Per mantenere lo stesso link, devi usare l'account Netlify (opzione "Claim this site").
+          <strong>IMPORTANTE – Link Netlify:</strong><br>
+          Se usi Netlify Drop senza "claim", il link può cambiare ad ogni pubblicazione.<br>
+          Se hai creato un account Netlify e fatto "claim" del sito, il link resta lo stesso.
         </div>
 
         <div class="content-box">
@@ -535,23 +536,27 @@
         <h2>Problemi Comuni</h2>
         
         <div class="content-box">
+          <h3>"Dove trovo il file esportato?"</h3>
+          <p>Quando esporti le lezioni, il browser chiede dove salvare il file. Controlla la cartella che hai scelto in quel momento.</p>
+        </div>
+
+        <div class="content-box">
           <h3>"Non vedo le mie lezioni sul sito Netlify"</h3>
           <p><strong>Controlli:</strong></p>
           <ul>
-            <li>Il file <code>lessons.json</code> è nella cartella prevista per i contenuti del sito studenti?</li>
-            <li>Il file si chiama <strong>ESATTAMENTE</strong> <code>lessons.json</code> (no date, no maiuscole)?</li>
-            <li>Stai andando su <code>https://...netlify.app/student-home.html</code>?</li>
-            <li>Hai trascinato la cartella COMPLETA su Netlify?</li>
+            <li>Il file <code>lessons.json</code> è nella cartella prevista per le lezioni nel template studenti?</li>
+            <li>Il file si chiama <strong>ESATTAMENTE</strong> <code>lessons.json</code> (senza date o altri caratteri aggiuntivi)?</li>
+            <li>Stai usando il link studenti <code>https://...netlify.app/student-home.html</code>?</li>
           </ul>
         </div>
 
         <div class="content-box">
           <h3>"Ho perso le mie lezioni!"</h3>
-          <p><strong>Soluzioni:</strong></p>
+          <p>Le lezioni create nel template docenti vengono salvate nel browser. Se svuoti la cache, cambi browser o computer senza aver esportato le lezioni, queste possono non essere più disponibili.</p>
+          <p><strong>Soluzione:</strong></p>
           <ul>
-            <li>Hai il file <code>lessons.json</code> salvato? → Usa "Importa Lezioni"</li>
-            <li>Controlla le cartelle dove hai salvato i file di backup</li>
-            <li>Controlla backup su chiavetta USB o cloud</li>
+            <li>Usa la funzione "Importa Lezioni" nella Dashboard del template docenti</li>
+            <li>Seleziona il file di backup (<code>lessons.json</code>) che hai salvato in precedenza</li>
           </ul>
         </div>
 
@@ -603,12 +608,25 @@
           </p>
 
           <p>
-            Il progetto è stato ideato e sviluppato da <strong>Sandra Giurazzi</strong>.
+            Il progetto è stato ideato e sviluppato da <strong>Sandra Giurazzi</strong>, docente di matematica e scienze, animatrice digitale e formatrice.
           </p>
 
           <p class="muted">
             Versione 1.0 – 2025<br>
-            Licenza: CC BY-NC-SA 4.0
+            Licenza: licenza d'uso (vedi file LICENSE)
+          </p>
+
+          <h3>Licenza e trasparenza</h3>
+
+          <p class="muted">
+            Il template è distribuito con una <strong>licenza d'uso</strong>: è consentito utilizzarlo in ambito didattico secondo le condizioni indicate nel file <strong>LICENSE</strong>.
+            Il codice può essere visibile nel browser, ma questo non implica libertà di redistribuzione.
+            Nel footer delle pagine è presente un avviso sintetico.
+          </p>
+
+          <p class="muted">
+            Nota di trasparenza: nello sviluppo sono stati utilizzati strumenti di <strong>IA generativa</strong> come supporto alla scrittura e revisione.
+            Le scelte progettuali e la validazione finale sono state svolte con <strong>controllo umano</strong>.
           </p>
         </div>
       </section>
