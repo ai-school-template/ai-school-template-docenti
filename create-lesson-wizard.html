@@ -1928,16 +1928,36 @@ if (prevAvatarKey !== newAvatarKey) {
             const coverVideoKey = `session_blob_${lessonId}_cover_video`;
             sessionStorage.setItem(coverVideoKey, 'idb://' + cfg.coverVideoBlobKey);
           }
-          state.intro.type = cfg.introType || 'none';
+          // FIX MINIMO: assicurati che cfg.home esista sempre prima del restore Step 0
+          if (!cfg.home || typeof cfg.home !== 'object') cfg.home = {};
+          state.intro.type = cfg.introType || cfg.home?.introType || 'none';
           state.intro.kind = cfg.heroKind || cfg.home?.heroKind || null;
           state.intro.source = cfg.heroSource || cfg.home?.heroSource || null;
           state.intro.name = cfg.heroName || cfg.home?.heroName || '';
           state.intro.image.url = cfg.heroImage || '';
           state.intro.image.alt = cfg.heroImageAlt || '';
-          state.intro.video.url = cfg.heroVideo || '';
+          state.intro.video.url = cfg.heroVideo || cfg.home.heroVideo || cfg.heroName || cfg.home.heroName || '';
+          // FIX MINIMO DEFINITIVO: recupero URL/puntatore video da campi legacy e puntatori (session:// / idb://)
+          if (!state.intro.video.url) {
+            const legacy = cfg.home?.heroVideo || cfg.heroVideo || cfg.home?.heroName || cfg.heroName || '';
+            if (legacy) state.intro.video.url = legacy;
+          }
+          if (typeof state.intro.video.url === 'string') {
+            const s = state.intro.video.url.trim();
+            // se è un link, ok; se è un puntatore session:// o idb://, resta valido come sorgente video (non deve far tornare "none")
+            if (s) state.intro.video.url = s;
+          }
           state.intro.video.thumbnail = cfg.heroVideoThumb || cfg.home?.heroVideoThumb || '';
           state.intro.video.transcript = cfg.introVideoTranscript || cfg.home?.videoTranscript || '';
           state.intro.video.summary = cfg.introVideoSummary || cfg.home?.videoSummary || '';
+          // FIX MINIMO DEFINITIVO: normalizza type in base ai dati reali
+          if (state.intro.video && state.intro.video.url) {
+            state.intro.type = 'video';
+          } else if (state.intro.image && state.intro.image.url) {
+            state.intro.type = 'image';
+          } else {
+            state.intro.type = 'none';
+          }
           // reflect UI (avatar radio coerente con scelta salvata)
           (function reflectAvatarRadio(){
             const radios = $$('input[name="avatarMode"]');
@@ -1955,8 +1975,49 @@ if (prevAvatarKey !== newAvatarKey) {
             updateAvatarUI(true);
           })();
           
+          // FIX CRITICO: clearPreview usata da reflectCoverMode ma può non esistere (evita crash Step 0)
+          function clearPreview() {
+            const link = document.getElementById('coverPreviewYTLink');
+            const thumb = document.getElementById('coverPreviewYTThumb');
+            const v = document.getElementById('coverPreviewVideoURL');
+            const box = document.getElementById('coverPreviewBoxVideoURL');
+            if (link) link.hidden = true;
+            if (thumb) thumb.removeAttribute('src');
+            if (v) { try { v.pause(); } catch(e) {} v.removeAttribute('src'); v.hidden = true; try { v.load(); } catch(e) {} }
+            if (box) box.style.display = 'none';
+          }
           // FIX: ricostruzione coverMode selezionato + UI + preview + etichetta nome
           (function reflectCoverMode(){
+            // FIX DEFINITIVO: ricostruisci SEMPRE la URL video anche se salvata in campi "strani" (heroName, name, ecc.)
+(() => {
+  // assicura oggetti
+  if (!state.intro) state.intro = { type: 'none' };
+  if (!state.intro.video) state.intro.video = {};
+
+  // fallback: dove può finire la URL nei salvataggi precedenti
+  const fallbackVideoUrl =
+    state.intro.video.url ||
+    state.intro.heroVideo ||
+    state.intro.heroName ||
+    (typeof state.intro.name === 'string' && /^https?:\/\//i.test(state.intro.name) ? state.intro.name : '');
+
+  // se abbiamo una URL, mettila nel posto "giusto"
+  if (!state.intro.video.url && fallbackVideoUrl) {
+    state.intro.video.url = fallbackVideoUrl;
+  }
+
+  // se c'è una URL video valida, NON permettere che resti "none"
+  if ((state.intro.type === 'none' || !state.intro.type) && state.intro.video.url) {
+    state.intro.type = 'video';
+  }
+
+  // compatibilità: alcuni salvataggi potrebbero avere type "video_url"
+  if (state.intro.type === 'video_url') {
+    state.intro.type = 'video';
+  }
+})();
+
+            
             const setRadio = (val) => {
               const r = document.querySelector(`#coverModeWrap input[name="coverMode"][value="${val}"]`);
               if (r) r.checked = true;
@@ -1983,7 +2044,7 @@ if (prevAvatarKey !== newAvatarKey) {
 
             // Heuristic da stato salvato
             const type  = state.intro.type;               // none | image | video
-            const src   = (type==='image') ? state.intro.image.url : (type==='video' ? state.intro.video.url : '');
+            const src   = (type==='image') ? (state.intro.image?.url || '') : (type==='video' ? (state.intro.video?.url || '') : '');
             const kind  = state.intro.kind || (type!=='none' ? type : null);
             const fromSession = (s)=> s && s.startsWith('session://');
             const isYT = (u)=> /youtu\.be|youtube\.com/.test(u||'');
@@ -2148,6 +2209,8 @@ if (prevAvatarKey !== newAvatarKey) {
                     link.href = `https://www.youtube.com/watch?v=${id}`;
                     thumb.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
                     link.hidden = false;
+                    const previewContainer = document.getElementById('coverPreview');
+                    if (previewContainer) previewContainer.style.display = 'block';
                     if (v){ v.hidden = true; try{ v.pause(); }catch(_){} v.removeAttribute('src'); v.load(); }
                     setMeta(link.href);
                   } else {
@@ -2155,15 +2218,24 @@ if (prevAvatarKey !== newAvatarKey) {
                     if (link){
                       link.href = src;
                       link.hidden = false;
+                      const previewContainer = document.getElementById('coverPreview');
+                      if (previewContainer) previewContainer.style.display = 'block';
                       if (thumb){ thumb.removeAttribute('src'); }
                       setMeta(src);
                     }
                     if (v){ v.hidden = true; try{ v.pause(); }catch(_){} v.removeAttribute('src'); v.load(); }
                   }
                 } else {
-                  if (v){ v.src = src; v.hidden = !src; v.playsInline = true; v.muted = false; v.controls = true; v.load(); }
-                  // FIX: assicura la visualizzazione del contenitore .preview-box su load
-                  showPreviewBoxOf(v);
+                  if (v){ 
+                    v.removeAttribute('hidden');
+                    v.src = src; 
+                    v.playsInline = true; 
+                    v.muted = false; 
+                    v.controls = true; 
+                    v.load(); 
+                  }
+                  const box = document.getElementById('coverPreviewBoxVideoURL');
+                  if (box) box.style.display = 'block';
                   if (link) link.hidden = true;
                   setMeta(src);
                 }
@@ -2175,7 +2247,11 @@ if (prevAvatarKey !== newAvatarKey) {
               }
             }
           })();
-          
+          // FIX FINALE: riallinea radio coverMode dopo reflectCoverMode (override default HTML "none")
+          if (state.intro.type === 'video' && state.intro.video?.url) {
+            const r = document.querySelector('#coverModeWrap input[value="video_url"]');
+            if (r) r.checked = true;
+          }
           return;
         }
 
@@ -2189,8 +2265,48 @@ if (prevAvatarKey !== newAvatarKey) {
           $('#lessonText') && ($('#lessonText').value = data.text || '');
           // immagini
           const imgList = $('#imgList'); (data.images||[]).forEach(addImageItemUI);
+          // FIX: re-idratazione preview immagini locali da IndexedDB (Wizard Step 1)
+          (data.images || []).forEach(img => {
+            if (img.blobKey) {
+              idbGetBlob(img.blobKey).then(blob => {
+                const wrap = Array.from(document.querySelectorAll('#imgList .item')).find(it => it.dataset.blobKey === img.blobKey);
+                if (wrap && blob) {
+                  let preview = wrap.querySelector('img');
+                  if (!preview) {
+                    preview = document.createElement('img');
+                    preview.style.maxWidth = '100%';
+                    preview.style.marginTop = '0.5rem';
+                    wrap.appendChild(preview);
+                  }
+                  preview.src = URL.createObjectURL(blob);
+                  preview.hidden = false;
+                }
+              });
+            }
+          });
           // video
           const vidList = $('#vidList'); (data.videos||[]).forEach(addVideoItemUI);
+          // FIX: re-idratazione preview video locali da IndexedDB (Wizard Step 1)
+          (data.videos || []).forEach(vid => {
+            if (vid.blobKey) {
+              idbGetBlob(vid.blobKey).then(blob => {
+                const wrap = Array.from(document.querySelectorAll('#vidList .item')).find(it => it.dataset.blobKey === vid.blobKey);
+                if (wrap && blob) {
+                  let preview = wrap.querySelector('video');
+                  if (!preview) {
+                    preview = document.createElement('video');
+                    preview.controls = true;
+                    preview.style.maxWidth = '100%';
+                    preview.style.marginTop = '0.5rem';
+                    wrap.appendChild(preview);
+                  }
+                  preview.src = URL.createObjectURL(blob);
+                  preview.hidden = false;
+                  preview.load();
+                }
+              });
+            }
+          });
           // glossario
           (data.glossary||[]).forEach(item => {
             // Compatibilità: se esiste translation o note, ignorare
@@ -2202,6 +2318,23 @@ if (prevAvatarKey !== newAvatarKey) {
           const conceptMapBox = $('#conceptMapBox');
           if (conceptMapBox && data.concept?.blobKey) {
             conceptMapBox.dataset.conceptBlobKey = data.concept.blobKey;
+          }
+          // FIX: re-idratazione preview mappa concettuale locale da IndexedDB (Wizard Step 1)
+          if (data.concept?.blobKey) {
+            idbGetBlob(data.concept.blobKey).then(blob => {
+              const box = document.getElementById('conceptMapBox');
+              if (box && blob) {
+                let img = box.querySelector('img');
+                if (!img) {
+                  img = document.createElement('img');
+                  img.style.maxWidth = '100%';
+                  img.style.marginTop = '0.5rem';
+                  box.appendChild(img);
+                }
+                img.src = URL.createObjectURL(blob);
+                img.hidden = false;
+              }
+            });
           }
           // Aggiorna visibilità pulsante Elimina
           const cu = $('#conceptImageUrl');
@@ -3667,7 +3800,17 @@ state.avatar.src = state.avatar.url;
             }
           });
         }
-        wrap.querySelector('.btnDel').addEventListener('click', ()=> wrap.remove());
+        wrap.querySelector('.btnDel').addEventListener('click', async ()=> {
+          const blobKey = wrap.dataset.blobKey;
+          if (blobKey) {
+            try {
+              await idbDelBlob(blobKey);
+            } catch(e) {
+              console.warn('Errore cancellazione blob da IDB:', e);
+            }
+          }
+          wrap.remove();
+        });
         $('#docList').appendChild(wrap);
       }
       function addResVidItemUI(data){
