@@ -344,27 +344,52 @@
         
         <div class="content-box">
           <h3>Procedura Guidata per Creare una Lezione</h3>
-          <p>Il sistema ti guida attraverso 6 passaggi:</p>
+          <p>Il sistema ti guida attraverso 7 step (0-6):</p>
           
-          <h4>Step 1: Configurazione</h4>
+          <h4>Step 0 – Home</h4>
           <ul>
-            <li><strong>Titolo:</strong> es. "Il Sistema Solare"</li>
-            <li><strong>Sottotitolo:</strong> breve descrizione</li>
-            <li><strong>Layout:</strong> scegli tra A-F (vedi anteprima)</li>
-            <li><strong>Avatar:</strong> immagine rappresentativa</li>
-            <li><strong>Tema:</strong> colori (Standard/Alto Contrasto/Bassa Luminosità)</li>
+            <li><strong>Titolo:</strong> es. "Il Sistema Solare" (obbligatorio)</li>
+            <li><strong>Descrizione:</strong> breve descrizione della lezione (obbligatorio)</li>
+            <li><strong>Avatar:</strong> immagine o video rotondo rappresentativo (obbligatorio)</li>
+            <li><strong>Copertina introduttiva:</strong> immagine o video più ampio per introdurre la lezione (facoltativo)</li>
+            <li><strong>Contesto/Target:</strong> per chi è pensata la lezione (facoltativo)</li>
+            <li><strong>Livello CEFR:</strong> difficoltà linguistica (facoltativo)</li>
+            <li><strong>Docente:</strong> nome del docente (facoltativo)</li>
           </ul>
 
-          <h4>Step 2: Contenuto Lezione</h4>
+          <h4>Step 1 – Lezione / Spiegazione</h4>
           <ul>
             <li>Testo della spiegazione</li>
-            <li>Video (URL YouTube)</li>
-            <li>Trascrizione (per accessibilità)</li>
-            <li>Registro IA (se hai usato intelligenza artificiale)</li>
+            <li>Immagini con descrizioni per ipovedenti</li>
+            <li>Video (da file o URL YouTube) con trascrizione</li>
+            <li>Glossario bilingue (termini chiave)</li>
+            <li>Mappa concettuale</li>
           </ul>
 
-          <h4>Step 3-6: Altre Sezioni</h4>
-          <p>Negli step successivi compili le altre sezioni della lezione (Attività, Risorse, Valutazione, Info & Etica IA), tutte già disponibili nel template.</p>
+          <h4>Step 2 – Attività</h4>
+          <p>Inserisci attività pratiche, esercizi o laboratori per gli studenti.</p>
+
+          <h4>Step 3 – Risorse</h4>
+          <p>Aggiungi link, documenti, approfondimenti e materiali aggiuntivi.</p>
+
+          <h4>Step 4 – Valutazione</h4>
+          <p>Quiz di ripasso, autovalutazione e riflessione personale.</p>
+
+          <h4>Step 5 – Info & Etica IA</h4>
+          <ul>
+            <li>Dichiarazione uso intelligenza artificiale (se utilizzata)</li>
+            <li><strong>Registro IA:</strong> elenco degli strumenti IA utilizzati (se presente)</li>
+            <li>Fonti e crediti</li>
+          </ul>
+
+          <h4>Step 6 – Conclusione & Feedback</h4>
+          <p>Messaggio di chiusura e spazio per feedback degli studenti.</p>
+        </div>
+
+        <div class="alert-box">
+          <strong>Bozze e Lezioni Definite:</strong><br>
+          Durante la creazione, puoi salvare la lezione come <strong>bozza</strong> in qualsiasi momento. Le bozze sono visibili solo nella dashboard docenti.<br>
+          Quando la lezione è completa, rendila <strong>definitiva</strong> cliccando "✅ Rendi bozza definitiva" nella dashboard. Solo le lezioni definitive possono essere pubblicate per gli studenti.
         </div>
 
         <div class="alert-box">
@@ -381,17 +406,29 @@
         </div>
 
         <div class="step-box">
-          <strong>Procedura di Esportazione</strong>
+          <strong>Procedura di Esportazione (Backup Completo)</strong>
           <ol>
             <li>Vai alla <strong>Dashboard Docente</strong></li>
-            <li>Clicca il pulsante <strong>"Esporta Tutte le Lezioni"</strong></li>
+            <li>Clicca il pulsante <strong>"⬇️ Backup lezioni"</strong></li>
             <li>Il browser chiede dove salvare il file: scegli liberamente la cartella.</li>
             <li>Il file esportato si chiama: <code>lezioni-YYYY-MM-DD.json</code></li>
           </ol>
         </div>
 
         <div class="alert-box">
-          <strong>IMPORTANTE:</strong> Questo file contiene TUTTE le tue lezioni. Conservalo come backup!
+          <strong>IMPORTANTE – Distinzione File:</strong><br>
+          <strong>File di BACKUP (questo):</strong> contiene TUTTE le lezioni (bozze + definitive). Serve per backup, cambio PC o importazione nel template docenti.<br>
+          <strong>File lessons.json (per studenti):</strong> viene creato separatamente con "🚀 Genera lessons.json" e contiene SOLO lezioni definitive per il sito studenti.
+        </div>
+
+        <div class="content-box">
+          <h3>Backup Singola Lezione</h3>
+          <p>Puoi anche esportare una singola lezione:</p>
+          <ul>
+            <li>Nella dashboard, trova la lezione che vuoi esportare</li>
+            <li>Clicca <strong>"⬇️ Backup lezione"</strong> (o "⬇️ Backup bozza" se è una bozza)</li>
+            <li>Il file viene salvato con il nome della lezione</li>
+          </ul>
         </div>
 
         <div class="content-box">
@@ -415,7 +452,7 @@
         <h2>Pubblicare</h2>
         
         <div class="content-box">
-          <p>Per pubblicare le lezioni online puoi usare Netlify Drop: non serve creare account né configurare nulla. Basta trascinare la cartella del template studenti.</p>
+          <p>Per pubblicare le lezioni online puoi usare Netlify Drop. È necessario creare un account gratuito ed effettuare il login per pubblicare.</p>
         </div>
 
         <div class="content-box">
@@ -423,48 +460,86 @@
         </div>
         <div class="step-box">
           <ol>
-            <li>Scarica il template studenti (file ZIP)</li>
+            <li>Scarica il template studenti (file ZIP) da GitHub:
+              <ul style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                <li>Apri il repository: <strong><a href="https://github.com/ai-school-template/ai-school-template-studenti" target="_blank" rel="noopener">https://github.com/ai-school-template/ai-school-template-studenti</a></strong></li>
+                <li>Clicca il pulsante <strong>Code</strong> (in alto a destra)</li>
+                <li>Clicca <strong>Download ZIP</strong></li>
+                <li><strong>Non serve</strong> un account GitHub per scaricare</li>
+              </ul>
+            </li>
             <li>Estrai il contenuto del ZIP in una cartella sul tuo computer</li>
             <li>Vai alla <strong>Dashboard Docente</strong></li>
-            <li>Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
-            <li><strong>Rinomina</strong> il file esportato da <code>lezioni-YYYY-MM-DD.json</code> a <code>lessons.json</code></li>
-            <li><strong>Copia</strong> il file <code>lessons.json</code> nella cartella prevista per le lezioni nel template studenti</li>
+            <li>Clicca il pulsante <strong>"🚀 Genera lessons.json"</strong></li>
+            <li>Il browser ti chiede dove salvare il file: <strong>salvalo direttamente nella cartella del template studenti, accanto a <code>index.html</code></strong></li>
+            <li>Il file si chiama <code>lessons.json</code> e deve stare nella <strong>ROOT</strong> del template studenti (non in sottocartelle)</li>
           </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>IMPORTANTE:</strong> Il file <code>lessons.json</code> <strong>NON</strong> viene scaricato da GitHub. Deve essere generato dal Template Docenti usando il pulsante "🚀 Genera lessons.json" nella dashboard.
+        </div>
+
+        <div class="alert-box">
+          <strong>Attenzione:</strong> Il file <code>lessons.json</code> contiene SOLO le lezioni definitive (non le bozze). Se non vedi le tue lezioni, verifica che siano state rese definitive nella dashboard.
         </div>
 
         <div class="content-box">
           <h3>PASSO 2: Pubblica su Netlify</h3>
         </div>
+        <div class="alert-box">
+          <strong>IMPORTANTE:</strong> Per pubblicare le lezioni su Netlify è necessario creare un account gratuito ed effettuare il login. Netlify richiede l'accesso anche per il caricamento tramite drag&drop.
+        </div>
         <div class="step-box">
           <ol>
-            <li>Apri il browser e vai su: <strong><code>https://app.netlify.com/drop</code></strong></li>
-            <li><strong>Trascina</strong> l'intera cartella del template studenti nella finestra</li>
-            <li>Aspetta qualche secondo mentre carica</li>
-            <li>Vedrai il link del tuo sito pubblicato</li>
+            <li>Vai su <strong><a href="https://www.netlify.com" target="_blank" rel="noopener">https://www.netlify.com</a></strong> e clicca <strong>"Sign up"</strong> (registrazione gratuita)</li>
+            <li>Completa la registrazione (email + password oppure accesso con Google)</li>
+            <li>Fai login su Netlify</li>
+            <li>Apri <strong><a href="https://app.netlify.com/drop" target="_blank" rel="noopener">https://app.netlify.com/drop</a></strong></li>
+            <li><strong>Trascina</strong> l'intera cartella del template studenti (deve contenere <code>index.html</code> + <code>lessons.json</code> + <code>assets/</code>)</li>
+            <li>Attendi il deploy e copia il link del sito</li>
           </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>Attenzione:</strong> su Netlify devi trascinare <strong>l'intera cartella del template studenti</strong> (quella che contiene <code>index.html</code> e <code>lessons.json</code>), <strong>non singoli file</strong>.
         </div>
 
         <div class="content-box">
           <p><strong>Il sito è online all'indirizzo:</strong></p>
           <p><code>https://nome-sito.netlify.app</code></p>
-          <p><strong>Gli studenti accedono direttamente alle lezioni tramite:</strong></p>
-          <p><code>https://nome-sito.netlify.app/student-home.html</code></p>
-          <p>Entrambi gli indirizzi funzionano. Il secondo è quello da condividere con gli studenti.</p>
+          <p>Questo è il link da condividere con gli studenti.</p>
         </div>
 
         <div class="content-box">
-          <h3>PASSO 3: Personalizza il Nome (Opzionale)</h3>
-          <p>Se vuoi un nome più bello tipo <code>lezioni-prof-rossi.netlify.app</code>:</p>
+          <h3>PASSO 3: Personalizza il Nome (IMPORTANTE)</h3>
+          <p><strong>Ogni docente DEVE scegliere un nome univoco per il proprio sito.</strong></p>
+          <p>Evita nomi generici come <code>ai-school-template-students</code>.</p>
+          <p><strong>Esempi consigliati:</strong></p>
+          <ul>
+            <li><code>lezioni-prof-rossi.netlify.app</code></li>
+            <li><code>scienze-cpia-legnano.netlify.app</code></li>
+            <li><code>ai-school-studenti-maria-bianchi.netlify.app</code></li>
+          </ul>
+          <p>Il nome serve per riconoscere il tuo sito, evitare confusione e mantenere il controllo sugli aggiornamenti.</p>
+          <p><strong>Per rinominare e mantenere lo stesso link nel tempo è necessario avere un account Netlify ed essere loggati.</strong></p>
         </div>
         
         <div class="step-box">
           <ol>
             <li>Clicca <strong>"Claim this site"</strong> sulla pagina Netlify</li>
-            <li>Crea account gratuito (email + password)</li>
             <li>Vai su <strong>"Site settings" → "Change site name"</strong></li>
             <li>Scrivi il nome che vuoi (es: <code>lezioni-prof-rossi</code>)</li>
             <li>Salva!</li>
           </ol>
+        </div>
+
+        <div class="alert-box">
+          <strong>IMPORTANTE:</strong> Senza "claim" del sito, il link cambia ad ogni pubblicazione. Con "claim" e nome personalizzato, mantieni sempre lo stesso link per aggiornare i contenuti.
+        </div>
+
+        <div class="alert-box">
+          <strong>Consiglio:</strong> Scegli un nome univoco che ti identifichi (es. <code>lezioni-cpia-legnano-rossi</code> oppure <code>ai-school-rossi-studenti</code>). Evita nomi generici uguali per tutti.
         </div>
 
         <div class="alert-box">
@@ -484,17 +559,15 @@
           <strong>Procedura Completa:</strong>
           <ol>
             <li>Modifica, aggiungi o elimina lezioni nel Template Docenti (accesso tramite link)</li>
-            <li>Dashboard → Clicca <strong>"Esporta Tutte le Lezioni"</strong></li>
-            <li>Rinomina il file esportato in <code>lessons.json</code></li>
-            <li>Sostituisci <code>lessons.json</code> nella cartella prevista per le lezioni nel template studenti</li>
+            <li>Dashboard → clicca <strong>"🚀 Genera lessons.json"</strong></li>
+            <li>Sostituisci <code>lessons.json</code> nella ROOT della cartella studenti (accanto a <code>index.html</code>)</li>
             <li>Ripubblica o aggiorna il sito su Netlify</li>
           </ol>
         </div>
 
         <div class="alert-box">
           <strong>IMPORTANTE – Link Netlify:</strong><br>
-          Se usi Netlify Drop senza "claim", il link può cambiare ad ogni pubblicazione.<br>
-          Se hai creato un account Netlify e fatto "claim" del sito, il link resta lo stesso.
+          Per pubblicare su Netlify è necessario avere un account gratuito ed essere loggati. Se fai "claim" del sito e personalizzi il nome, il link resta lo stesso ad ogni aggiornamento.
         </div>
 
         <div class="content-box">
@@ -508,9 +581,19 @@
             <li>Vai sui tuoi <strong>"Sites"</strong></li>
             <li>Clicca sul tuo sito (es: <code>lezioni-prof-rossi</code>)</li>
             <li>Clicca <strong>"Deploys"</strong> in alto</li>
-            <li><strong>Trascina</strong> la nuova cartella nel box "Drag and drop"</li>
+            <li><strong>Trascina</strong> l'intera cartella del template studenti (con il nuovo <code>lessons.json</code>) nel box "Drag and drop"</li>
             <li>Aspetta il deploy completato: stesso link, contenuti aggiornati</li>
           </ol>
+        </div>
+
+        <div class="content-box">
+          <h3>Duplicare una Lezione</h3>
+          <p>Se vuoi creare una copia di una lezione esistente:</p>
+          <ul>
+            <li>Nella dashboard, trova la lezione che vuoi duplicare</li>
+            <li>Clicca <strong>"📋 Duplica"</strong></li>
+            <li>La copia viene creata con "(Copia)" nel titolo e puoi modificarla liberamente</li>
+          </ul>
         </div>
 
         <div class="content-box">
@@ -521,7 +604,7 @@
             <li>Accedi di nuovo al Template Docenti tramite il link</li>
             <li>Vai alla Dashboard</li>
             <li>Clicca <strong>"Importa Lezioni"</strong></li>
-            <li>Seleziona il file <code>lessons.json</code> salvato</li>
+            <li>Seleziona il file di backup esportato in precedenza (es: <code>lezioni-YYYY-MM-DD.json</code>)</li>
             <li>Tutte le lezioni vengono recuperate</li>
           </ol>
         </div>
@@ -544,9 +627,9 @@
           <h3>"Non vedo le mie lezioni sul sito Netlify"</h3>
           <p><strong>Controlli:</strong></p>
           <ul>
-            <li>Il file <code>lessons.json</code> è nella cartella prevista per le lezioni nel template studenti?</li>
+            <li>Il file <code>lessons.json</code> è nella <strong>ROOT</strong> del template studenti (accanto a <code>index.html</code>)?</li>
             <li>Il file si chiama <strong>ESATTAMENTE</strong> <code>lessons.json</code> (senza date o altri caratteri aggiuntivi)?</li>
-            <li>Stai usando il link studenti <code>https://...netlify.app/student-home.html</code>?</li>
+            <li>Stai usando il link del sito Netlify (home studenti), ad esempio <code>https://...netlify.app</code>?</li>
           </ul>
         </div>
 
@@ -555,17 +638,23 @@
           <p>Le lezioni create nel template docenti vengono salvate nel browser. Se svuoti la cache, cambi browser o computer senza aver esportato le lezioni, queste possono non essere più disponibili.</p>
           <p><strong>Soluzione:</strong></p>
           <ul>
-            <li>Usa la funzione "Importa Lezioni" nella Dashboard del template docenti</li>
-            <li>Seleziona il file di backup (<code>lessons.json</code>) che hai salvato in precedenza</li>
+            <li>Usa la funzione "📤 Importa Lezioni" nella Dashboard del template docenti</li>
+            <li>Seleziona il file di backup che hai esportato in precedenza (es: <code>lezioni-YYYY-MM-DD.json</code>)</li>
+            <li><strong>NON usare</strong> il file <code>lessons.json</code> per importare: quello è solo per il sito studenti</li>
           </ul>
         </div>
 
         <div class="content-box">
+          <h3>"Non riesco a pubblicare su Netlify / mi chiede il login"</h3>
+          <p>È normale: Netlify richiede registrazione e login (account gratuito) anche per il caricamento tramite drag&drop. Dopo il login usa <strong><a href="https://app.netlify.com/drop" target="_blank" rel="noopener">https://app.netlify.com/drop</a></strong> e trascina la cartella studenti completa.</p>
+        </div>
+
+        <div class="content-box">
           <h3>"Il link cambia ogni volta"</h3>
-          <p><strong>Problema:</strong> Netlify Drop crea un nuovo link random ogni volta.</p>
+          <p><strong>Problema:</strong> Il link cambia ad ogni pubblicazione.</p>
           <p><strong>Soluzione:</strong></p>
           <ul>
-            <li>Crea un account Netlify gratuito</li>
+            <li>Assicurati di essere loggato su Netlify</li>
             <li>Clicca "Claim this site" dopo il primo upload</li>
             <li>Personalizza il nome (es: <code>lezioni-prof-rossi.netlify.app</code>)</li>
             <li>Usa sempre il pannello Netlify per aggiornare → stesso link!</li>
