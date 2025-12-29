@@ -362,7 +362,7 @@
             <li>Testo della spiegazione</li>
             <li>Immagini con descrizioni per ipovedenti</li>
             <li>Video (da file o URL YouTube) con trascrizione</li>
-            <li>Glossario bilingue (termini chiave)</li>
+            <li>Glossario (termini chiave)</li>
             <li>Mappa concettuale</li>
           </ul>
 
@@ -378,7 +378,7 @@
           <h4>Step 5 – Info & Etica IA</h4>
           <ul>
             <li>Dichiarazione uso intelligenza artificiale (se utilizzata)</li>
-            <li><strong>Registro IA:</strong> elenco degli strumenti IA utilizzati (se presente)</li>
+            <li><strong>Etichettatura IA:</strong> elenco degli strumenti IA utilizzati (se presente)</li>
             <li>Fonti e crediti</li>
           </ul>
 
@@ -417,7 +417,7 @@
 
         <div class="alert-box">
           <strong>IMPORTANTE – Distinzione File:</strong><br>
-          <strong>File di BACKUP (questo):</strong> contiene TUTTE le lezioni (bozze + definitive). Serve per backup, cambio PC o importazione nel template docenti.<br>
+          <strong>File di BACKUP lezioni:</strong> contiene TUTTE le lezioni (bozze + definitive). Serve per backup, cambio PC o importazione nel template docenti.<br>
           <strong>File lessons.json (per studenti):</strong> viene creato separatamente con "🚀 Genera lessons.json" e contiene SOLO lezioni definitive per il sito studenti.
         </div>
 
@@ -527,15 +527,16 @@
         
         <div class="step-box">
           <ol>
-            <li>Clicca <strong>"Claim this site"</strong> sulla pagina Netlify</li>
-            <li>Vai su <strong>"Site settings" → "Change site name"</strong></li>
+            <li>Clicca sul <strong>progetto appena creato</strong> sulla pagina Netlify</li>
+            <li>Vai su <strong>"Project configuration" → "Change project name"</strong></li>
             <li>Scrivi il nome che vuoi (es: <code>lezioni-prof-rossi</code>)</li>
             <li>Salva!</li>
           </ol>
         </div>
 
         <div class="alert-box">
-          <strong>IMPORTANTE:</strong> Senza "claim" del sito, il link cambia ad ogni pubblicazione. Con "claim" e nome personalizzato, mantieni sempre lo stesso link per aggiornare i contenuti.
+          <strong>IMPORTANTE:</strong> Dopo la prima pubblicazione, apri il tuo progetto Netlify e assegna un nome personalizzato al progetto.
+In questo modo il link rimane sempre lo stesso anche quando aggiorni i contenuti.
         </div>
 
         <div class="alert-box">
@@ -567,22 +568,23 @@
 
         <div class="alert-box">
           <strong>IMPORTANTE – Link Netlify:</strong><br>
-          Per pubblicare su Netlify è necessario avere un account gratuito ed essere loggati. Se fai "claim" del sito e personalizzi il nome, il link resta lo stesso ad ogni aggiornamento.
+          Per pubblicare su Netlify è necessario avere un account gratuito ed essere loggati.
+Se apri il tuo progetto Netlify e assegni un nome al progetto, il link resta lo stesso ad ogni aggiornamento.
         </div>
 
         <div class="content-box">
           <h3>Mantenere lo Stesso Link</h3>
-          <p>Se hai creato un account Netlify e "claimed" il sito:</p>
+          <p>Se hai creato un account Netlify e hai aperto il tuo progetto:</p>
         </div>
         
         <div class="step-box">
           <ol>
             <li>Fai login su <strong>netlify.com</strong></li>
-            <li>Vai sui tuoi <strong>"Sites"</strong></li>
-            <li>Clicca sul tuo sito (es: <code>lezioni-prof-rossi</code>)</li>
-            <li>Clicca <strong>"Deploys"</strong> in alto</li>
+            <li>Vai sui tuoi <strong>"Projects"</strong></li>
+            <li>Clicca sul tuo progetto (es: <code>lezioni-prof-rossi</code>)</li>
+            <li>Clicca <strong>"Production deploys"</strong> subito sotto al tuo progetto</li>
             <li><strong>Trascina</strong> l'intera cartella del template studenti (con il nuovo <code>lessons.json</code>) nel box "Drag and drop"</li>
-            <li>Aspetta il deploy completato: stesso link, contenuti aggiornati</li>
+            <li>Aspetta il deploy completato (Production Published): stesso link, contenuti aggiornati</li>
           </ol>
         </div>
 
@@ -655,7 +657,7 @@
           <p><strong>Soluzione:</strong></p>
           <ul>
             <li>Assicurati di essere loggato su Netlify</li>
-            <li>Clicca "Claim this site" dopo il primo upload</li>
+            <li>Dopo il primo caricamento, accedi al tuo progetto Netlify</li>
             <li>Personalizza il nome (es: <code>lezioni-prof-rossi.netlify.app</code>)</li>
             <li>Usa sempre il pannello Netlify per aggiornare → stesso link!</li>
           </ul>
