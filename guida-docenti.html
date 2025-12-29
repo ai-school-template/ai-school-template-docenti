@@ -452,7 +452,7 @@
         <h2>Pubblicare</h2>
         
         <div class="content-box">
-          <p>Per pubblicare le lezioni online puoi usare Netlify Drop. È necessario creare un account gratuito ed effettuare il login per pubblicare.</p>
+          <p>Per pubblicare le lezioni online puoi usare Netlify Drop. È necessario creare un account gratuito ed effettuare il login. Dopo la registrazione e la compilazione dei dati iniziali (nome, cognome, ruolo docente, scuola/progetto), Netlify può mostrare una pagina "Deploy your first project": in questo caso, clicca "Try Netlify Drop" (o "Netlify Drop") per pubblicare tramite drag&drop.</p>
         </div>
 
         <div class="content-box">
@@ -493,11 +493,10 @@
         <div class="step-box">
           <ol>
             <li>Vai su <strong><a href="https://www.netlify.com" target="_blank" rel="noopener">https://www.netlify.com</a></strong> e clicca <strong>"Sign up"</strong> (registrazione gratuita)</li>
-            <li>Completa la registrazione (email + password oppure accesso con Google)</li>
-            <li>Fai login su Netlify</li>
-            <li>Apri <strong><a href="https://app.netlify.com/drop" target="_blank" rel="noopener">https://app.netlify.com/drop</a></strong></li>
-            <li><strong>Trascina</strong> l'intera cartella del template studenti (deve contenere <code>index.html</code> + <code>lessons.json</code> + <code>assets/</code>)</li>
-            <li>Attendi il deploy e copia il link del sito</li>
+            <li>Completa la registrazione (email + password oppure accesso con Google) e fai login</li>
+            <li>Dopo il sign up, Netlify può mostrare una pagina "Deploy your first project" con diverse opzioni: <strong>clicca "Try Netlify Drop"</strong> (o "Netlify Drop") per pubblicare tramite drag&drop</li>
+            <li><strong>Trascina</strong> l'intera cartella del template studenti (deve contenere <code>index.html</code> + <code>lessons.json</code> + <code>assets/</code>) nell'area di drag&drop</li>
+            <li>Attendi il deploy completato: si apre automaticamente la pagina del progetto</li>
           </ol>
         </div>
 
@@ -521,16 +520,17 @@
             <li><code>scienze-cpia-legnano.netlify.app</code></li>
             <li><code>ai-school-studenti-maria-bianchi.netlify.app</code></li>
           </ul>
-          <p>Il nome serve per riconoscere il tuo sito, evitare confusione e mantenere il controllo sugli aggiornamenti.</p>
-          <p><strong>Per rinominare e mantenere lo stesso link nel tempo è necessario avere un account Netlify ed essere loggati.</strong></p>
+          <p>Rinominare il progetto rende il link riconoscibile e riduce confusione.</p>
+          <p>Attenzione: se cambi il nome del progetto, cambia anche l'indirizzo del sito. Dopo aver salvato, condividi il nuovo link .netlify.app.</p>
+          <p>Il link da condividere con gli studenti è l'URL .netlify.app del progetto: tasto destro sul link → "Copia indirizzo link" (o copia URL).</p>
         </div>
         
         <div class="step-box">
           <ol>
-            <li>Clicca sul <strong>progetto appena creato</strong> sulla pagina Netlify</li>
+            <li>Apri il progetto appena creato</li>
             <li>Vai su <strong>"Project configuration" → "Change project name"</strong></li>
-            <li>Scrivi il nome che vuoi (es: <code>lezioni-prof-rossi</code>)</li>
-            <li>Salva!</li>
+            <li>Inserisci un nome univoco (es: <code>lezioni-prof-rossi</code>)</li>
+            <li>Salva</li>
           </ol>
         </div>
 
@@ -580,10 +580,9 @@ Se apri il tuo progetto Netlify e assegni un nome al progetto, il link resta lo 
         <div class="step-box">
           <ol>
             <li>Fai login su <strong>netlify.com</strong></li>
-            <li>Vai sui tuoi <strong>"Projects"</strong></li>
+            <li>Vai sui tuoi <strong>"Projects"</strong> (o "Sites")</li>
             <li>Clicca sul tuo progetto (es: <code>lezioni-prof-rossi</code>)</li>
-            <li>Clicca <strong>"Production deploys"</strong> subito sotto al tuo progetto</li>
-            <li><strong>Trascina</strong> l'intera cartella del template studenti (con il nuovo <code>lessons.json</code>) nel box "Drag and drop"</li>
+            <li>Nell'area deploy del progetto (Deploys o Production deploys), <strong>trascina</strong> l'intera cartella del template studenti (con il nuovo <code>lessons.json</code>) nell'area di drag&drop</li>
             <li>Aspetta il deploy completato (Production Published): stesso link, contenuti aggiornati</li>
           </ol>
         </div>
@@ -648,18 +647,17 @@ Se apri il tuo progetto Netlify e assegni un nome al progetto, il link resta lo 
 
         <div class="content-box">
           <h3>"Non riesco a pubblicare su Netlify / mi chiede il login"</h3>
-          <p>È normale: Netlify richiede registrazione e login (account gratuito) anche per il caricamento tramite drag&drop. Dopo il login usa <strong><a href="https://app.netlify.com/drop" target="_blank" rel="noopener">https://app.netlify.com/drop</a></strong> e trascina la cartella studenti completa.</p>
+          <p>È normale: Netlify richiede registrazione e login (account gratuito) anche per il caricamento tramite drag&drop. Dopo il sign up e la compilazione dei dati iniziali, se appare la pagina "Deploy your first project", clicca "Try Netlify Drop" (o "Netlify Drop") per pubblicare tramite drag&drop. Trascina l'intera cartella studenti completa.</p>
         </div>
 
         <div class="content-box">
           <h3>"Il link cambia ogni volta"</h3>
-          <p><strong>Problema:</strong> Il link cambia ad ogni pubblicazione.</p>
+          <p><strong>Problema:</strong> Se ripubblichi senza gestire sempre lo stesso progetto, rischi confusione. Il link può cambiare se ripubblichi creando un nuovo progetto oppure se cambi il nome del progetto.</p>
           <p><strong>Soluzione:</strong></p>
           <ul>
             <li>Assicurati di essere loggato su Netlify</li>
-            <li>Dopo il primo caricamento, accedi al tuo progetto Netlify</li>
-            <li>Personalizza il nome (es: <code>lezioni-prof-rossi.netlify.app</code>)</li>
-            <li>Usa sempre il pannello Netlify per aggiornare → stesso link!</li>
+            <li>Dopo il primo caricamento, entra nel tuo progetto Netlify e mantieni un nome univoco</li>
+            <li>Per aggiornare, usa il deploy del progetto (drag&drop della cartella nell'area deploy): così resta lo stesso link</li>
           </ul>
         </div>
 
